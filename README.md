@@ -7,7 +7,7 @@ implementation of Petar Maymounkov and David Mazières
 
 > Kademlia: A Peer-to-peer Information System Based on the XOR Metric
 
-The goal of this simulator is test the inherent nature of the routing protocol and make experiments.
+The goal of this simulator is to test the inherent nature of the routing protocol and to make experiments.
 
 # How to use it:
 
