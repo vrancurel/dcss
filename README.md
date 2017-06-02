@@ -31,4 +31,4 @@ The goal of this simulator is to test the inherent nature of the routing protoco
 In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
 
-[image](graphviz.png "Graphical Output of Simulator")
+![Graphical Output of Simulator](graphviz.png )
