@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include "shell.h"
 
 static char sargmem[SHELL_MAX_ARGV][SHELL_MAX_ARG_LEN];
