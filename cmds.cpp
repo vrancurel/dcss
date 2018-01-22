@@ -346,9 +346,16 @@ cmd_call_contract(Shell *shell,
 	     int argc,
 	     char **argv)
 {
-  for (int i = 0; i < argc; ++i) {
-      std::cout << argv[i] << "\n";
-  }
+  if (argc != 2)
+    {
+      fprintf(stderr, "usage: account_address\n");
+      return SHELL_CONT;
+    }
+
+  KadNetwork *network = (KadNetwork *) shell->get_handle();
+
+  network->call_contract(argv[1]);
+
   return SHELL_CONT;
 }
 

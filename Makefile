@@ -23,7 +23,10 @@ cmds.o
 kadsim: $(OBJS)
 	$(CC) -o kadsim $(OBJS) $(LDFLAGS)
 
-$(OBJS): *.h
+gethclient.h: geth_spec.json
+	jsonrpcstub $< --cpp-client=GethClient
+
+$(OBJS): *.h gethclient.h
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $<

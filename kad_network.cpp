@@ -1,4 +1,6 @@
+#include <jsonrpccpp/client/connectors/httpclient.h>
 
+#include "gethclient.h"
 #include "kadsim.h"
 
 KadNetwork::KadNetwork(KadConf *conf)
@@ -240,4 +242,18 @@ KadNetwork::graphviz(std::ostream& fout)
     }
 
   fout << "}\n";
+}
+
+void
+KadNetwork::call_contract(const std::string& account_address)
+{
+  jsonrpc::HttpClient httpclient("http://localhost:32785");
+  GethClient client(httpclient);
+
+  try {
+    const std::string balance = client.eth_getBalance(account_address, "latest");
+    std::cout << "balance for " << account_address << ": " << balance << '\n';
+  } catch (jsonrpc::JsonRpcException exn) {
+    fprintf(stderr, "error: %s\n", exn.what());
+  }
 }
