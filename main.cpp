@@ -3,7 +3,8 @@
 
 using namespace std;
 
-KadConf::KadConf(int n_bits, int k, int alpha, int n_nodes)
+KadConf::KadConf(int n_bits, int k, int alpha, int n_nodes,
+                 const std::string&geth_addr) : geth_addr(geth_addr)
 {
   this->n_bits = n_bits;
   this->k = k;
@@ -29,6 +30,7 @@ usage()
   std::cerr << "\t-a\tKademlia alpha parameter\n";
   std::cerr << "\t-n\tnumber of nodes\n";
   std::cerr << "\t-c\tinitial number of connections per node\n";
+  std::cerr << "\t-g\tgeth RPC server address\n";
   std::cerr << "\t-N\tnumber of files\n";
   std::cerr << "\t-S\trandom seed\n";
   exit(1);
@@ -52,10 +54,11 @@ int main(int argc, char **argv)
   int n_files = 5000;
   int rand_seed = 0;
   char *fname = NULL;
+  std::string geth_addr = "localhost:8545";
      
   opterr = 0;
      
-  while ((c = getopt (argc, argv, "b:k:a:n:c:S:f:N:")) != -1)
+  while ((c = getopt (argc, argv, "b:k:a:n:c:g:S:f:N:")) != -1)
     {
       switch (c)
 	{
@@ -73,6 +76,9 @@ int main(int argc, char **argv)
 	  break;
 	case 'c':
 	  n_init_conn = atoi(optarg);
+	  break;
+	case 'g':
+	  geth_addr = optarg;
 	  break;
 	case 'S':
 	  rand_seed = atoi(optarg);
@@ -110,7 +116,7 @@ int main(int argc, char **argv)
       GETLINE(); n_nodes = atoi(p);
     }
 
-  KadConf conf(n_bits, k, alpha, n_nodes);
+  KadConf conf(n_bits, k, alpha, n_nodes, geth_addr);
   //conf.save(std::cout);
   KadNetwork network(&conf);
   Shell shell;
