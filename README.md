@@ -32,3 +32,7 @@ In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
 
 ![Graphical Output of Simulator](graphviz.png )
+
+# Dependencies
+
+- [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)

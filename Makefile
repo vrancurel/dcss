@@ -2,7 +2,13 @@
 CC = g++
 
 CFLAGS = -g -Wall -Werror -DHAVE_READLINE
-LDFLAGS = -lcrypto -lreadline
+LDFLAGS = \
+-lcrypto \
+-lreadline \
+-ljsoncpp \
+-lcurl \
+-ljsonrpccpp-common \
+-ljsonrpccpp-client
 
 OBJS = \
 main.o \
