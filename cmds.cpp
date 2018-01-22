@@ -341,6 +341,17 @@ cmd_graphviz(Shell *shell,
   return SHELL_CONT;
 }
 
+int
+cmd_call_contract(Shell *shell,
+	     int argc,
+	     char **argv)
+{
+  for (int i = 0; i < argc; ++i) {
+      std::cout << argv[i] << "\n";
+  }
+  return SHELL_CONT;
+}
+
 struct cmd_def quit_cmd = {"quit", "quit program", cmd_quit};
 struct cmd_def help_cmd = {"help", "help", cmd_help};
 struct cmd_def jump_cmd = {"jump", "jump to a node", cmd_jump};
@@ -355,6 +366,7 @@ struct cmd_def save_cmd = {"save", "save the network to file", cmd_save};
 struct cmd_def xor_cmd = {"xor", "xor between 2 bignums", cmd_xor};
 struct cmd_def bit_length_cmd = {"bit_length", "bit length of bignum", cmd_bit_length};
 struct cmd_def graphviz_cmd = {"graphviz", "dump a graphviz of the nodes acc/ to their k-buckets", cmd_graphviz};
+struct cmd_def call_contract_cmd = {"call_contract", "call a contract", cmd_call_contract};
 
 struct cmd_def	*cmd_defs[] =
   {
@@ -370,6 +382,7 @@ struct cmd_def	*cmd_defs[] =
     &rand_key_cmd,
     &save_cmd,
     &show_cmd,
+    &call_contract_cmd,
     &verbose_cmd,
     &xor_cmd,
     NULL,
