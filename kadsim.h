@@ -23,12 +23,14 @@
 class KadConf
 {
  public:
-  KadConf(int n_bits, int k, int alpha, int n_nodes);
+  KadConf(int n_bits, int k, int alpha, int n_nodes,
+          const std::string &geth_addr);
   void save(std::ostream& fout);
   int n_bits;
   u_int k;
   u_int alpha;
   u_int n_nodes;
+  std::string geth_addr;
 };
 
 enum KadRoutableType

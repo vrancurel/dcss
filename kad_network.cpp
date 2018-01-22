@@ -247,7 +247,7 @@ KadNetwork::graphviz(std::ostream& fout)
 void
 KadNetwork::call_contract(const std::string& account_address)
 {
-  jsonrpc::HttpClient httpclient("http://localhost:32785");
+  jsonrpc::HttpClient httpclient(conf->geth_addr);
   GethClient client(httpclient);
 
   try {
