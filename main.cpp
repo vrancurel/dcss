@@ -1,3 +1,6 @@
+#include <sstream>
+#include <iomanip>
+
 #include "kadsim.h"
 
 using namespace std;
@@ -57,6 +60,26 @@ void call_contract(GethClient &geth,
           }
       }
   }
+}
+
+// From https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI:
+//
+// > uint<M>: enc(X) is the big-endian encoding of X, padded on the
+// > higher-order (left) side with zero-bytes such that the length is a
+// > multiple of 32 bytes.
+std::string encode_uint256(uint64_t v)
+{
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(64) << std::hex << v;
+    return oss.str();
+}
+
+std::string encode_address(const std::string &addr)
+{
+    std::ostringstream oss;
+    // Skip the leading 0x, pad for 160 bytes.
+    oss << std::setfill('0') << std::setw(40) << addr.substr(2);
+    return oss.str();
 }
 
 void

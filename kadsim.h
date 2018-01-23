@@ -10,6 +10,7 @@
 // Address of the QuadIron contract on the blockchain.
 #define QUADIRON_CONTRACT_ADDR  "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
 
+#include <cstdint>
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
@@ -146,6 +147,12 @@ class KadNetwork
 };
 
 extern struct cmd_def *cmd_defs[];
+
+// Encode an integer as an uint256 according to the Ethereum Contract ABI.
+// See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+std::string encode_uint256(uint64_t v);
+// Address are encoded as uint160
+std::string encode_address(const std::string &addr);
 
 void call_contract(GethClient &geth,
                    const std::string &node_addr,
