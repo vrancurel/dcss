@@ -9,11 +9,21 @@ KadNode::KadNode(KadConf *conf, CBigNum id) : KadRoutable(id, KAD_ROUTABLE_NODE)
   this->id = id;
   this->name = std::string();
   this->verbose = false;
+
+  // The passphrase of the account is the hex of the node ID.
+  this->eth_passphrase = id.ToString(16);
+  this->eth_account = conf->geth.personal_newAccount(eth_passphrase);
+  conf->geth.personal_unlockAccount(eth_account, eth_passphrase, 0);
 }
 
 KadNode::~KadNode()
 {
 
+}
+
+const std::string& KadNode::get_eth_account() const
+{
+  return eth_account;
 }
 
 /** 
@@ -205,7 +215,11 @@ print_list(std::string comment,
   std::cout << "target " << routable.get_id().ToString(16) << "\n";
   std::list<KadNode*>::iterator it;
   for (it = list.begin();it != list.end();++it)
-    std::cout << "id " << (*it)->get_id().ToString(16) << " dist " << (*it)->distance_to(routable).ToString(16) << " queried " << (*queried)[*it] << "\n";
+    std::cout << "id " << (*it)->get_id().ToString(16)
+              << " eth_account " << (*it)->get_eth_account()
+              << " dist " << (*it)->distance_to(routable).ToString(16)
+              << " queried " << (*queried)[*it]
+              << "\n";
 }
 
 /** 
@@ -392,6 +406,7 @@ void
 KadNode::show()
 {
   std::cout << "id " << get_id().ToString(16) << "\n";
+  std::cout << "eth_account " << get_eth_account() << "\n";
   std::cout << "n_conns " << get_n_conns() << "\n";
   save(std::cout);
 }
