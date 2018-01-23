@@ -103,6 +103,7 @@ class KadNode : public KadRoutable
   void graphviz(std::ostream& fout);
 
   void buy_storage(const std::string &seller, uint64_t nb_bytes);
+  void put_bytes(const std::string &seller, uint64_t nb_bytes);
 
  private:
   //DISALLOW_COPY_AND_ASSIGN(KadNode);
