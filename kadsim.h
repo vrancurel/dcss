@@ -16,8 +16,11 @@
 #include <fstream>
 #include <getopt.h>
 
+#include <jsonrpccpp/client/connectors/httpclient.h>
+
 #include "bignum.h"
 #include "bit_map.h"
+#include "gethclient.h"
 #include "shell.h"
 
 class KadConf
@@ -30,7 +33,9 @@ class KadConf
   u_int k;
   u_int alpha;
   u_int n_nodes;
-  std::string geth_addr;
+
+  jsonrpc::HttpClient httpclient;
+  GethClient geth;
 };
 
 enum KadRoutableType

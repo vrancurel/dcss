@@ -1,10 +1,10 @@
-
 #include "kadsim.h"
 
 using namespace std;
 
 KadConf::KadConf(int n_bits, int k, int alpha, int n_nodes,
-                 const std::string&geth_addr) : geth_addr(geth_addr)
+                 const std::string& geth_addr)
+  : httpclient(geth_addr), geth(httpclient)
 {
   this->n_bits = n_bits;
   this->k = k;

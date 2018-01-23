@@ -1,6 +1,3 @@
-#include <jsonrpccpp/client/connectors/httpclient.h>
-
-#include "gethclient.h"
 #include "kadsim.h"
 
 KadNetwork::KadNetwork(KadConf *conf)
@@ -248,8 +245,6 @@ void
 KadNetwork::call_contract(const std::string& name, const std::string& from,
                           const std::string& payload)
 {
-  jsonrpc::HttpClient httpclient(conf->geth_addr);
-  GethClient client(httpclient);
   Json::Value params;
 
   params["from"] = from;
@@ -258,7 +253,7 @@ KadNetwork::call_contract(const std::string& name, const std::string& from,
 
   std::string tx_hash;
   try {
-      tx_hash = client.eth_sendTransaction(params);
+      tx_hash = conf->geth.eth_sendTransaction(params);
       std::cout << "tx_hash: " << tx_hash << '\n';
   } catch (jsonrpc::JsonRpcException exn) {
     fprintf(stderr, "transaction error: %s\n", exn.what());
@@ -268,7 +263,7 @@ KadNetwork::call_contract(const std::string& name, const std::string& from,
   // FIXME: busy way is ugly.
   while (true) {
       try {
-          const Json::Value receipt = client.eth_getTransactionReceipt(tx_hash);
+          const Json::Value receipt = conf->geth.eth_getTransactionReceipt(tx_hash);
           std::cout << "result: " << receipt.toStyledString() << '\n';
           // TODO: we should probably return a bool to the caller, or raise…
           if (receipt["status"] == "0x0") {
