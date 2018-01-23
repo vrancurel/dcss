@@ -256,10 +256,34 @@ KadNetwork::call_contract(const std::string& name, const std::string& from,
   params["to"] = ""; // TODO: lookup address from name in hashtbl
   params["data"] = payload;
 
+  std::string tx_hash;
   try {
-    const std::string tx_hash = client.eth_sendTransaction(params);
-    std::cout << "transaction hash: " << tx_hash << '\n';
+      tx_hash = client.eth_sendTransaction(params);
+      std::cout << "tx_hash: " << tx_hash << '\n';
   } catch (jsonrpc::JsonRpcException exn) {
-    fprintf(stderr, "error: %s\n", exn.what());
+    fprintf(stderr, "transaction error: %s\n", exn.what());
+    return;
+  }
+
+  // FIXME: busy way is ugly.
+  while (true) {
+      try {
+          const Json::Value receipt = client.eth_getTransactionReceipt(tx_hash);
+          std::cout << "result: " << receipt.toStyledString() << '\n';
+          // TODO: we should probably return a bool to the caller, or raise…
+          if (receipt["status"] == "0x0") {
+              std::cout << "transaction failed\n";
+          } else {
+              std::cout << "transaction successed: " << receipt["status"] << '\n';
+          }
+          return;
+      } catch (jsonrpc::JsonRpcException exn) {
+          if (exn.GetCode() == -32000) {
+              continue;  // Transaction is pending…
+          } else {
+              fprintf(stderr, "error: %s\n", exn.what());
+              return;
+          }
+      }
   }
 }
