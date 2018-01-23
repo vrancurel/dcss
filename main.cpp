@@ -1,10 +1,14 @@
+
 #include "kadsim.h"
 
 using namespace std;
 
 KadConf::KadConf(int n_bits, int k, int alpha, int n_nodes,
-                 const std::string& geth_addr)
-  : httpclient(geth_addr), geth(httpclient)
+                 const std::string&geth_addr,
+                 const std::vector<std::string> bstraplist)
+  : httpclient(geth_addr),
+    geth(httpclient),
+    bstraplist(bstraplist)
 {
   this->n_bits = n_bits;
   this->k = k;
@@ -31,6 +35,7 @@ usage()
   std::cerr << "\t-n\tnumber of nodes\n";
   std::cerr << "\t-c\tinitial number of connections per node\n";
   std::cerr << "\t-g\tgeth RPC server address\n";
+  std::cerr << "\t-B\tbootstrap list (comma-separated list of IPs)\n";
   std::cerr << "\t-N\tnumber of files\n";
   std::cerr << "\t-S\trandom seed\n";
   exit(1);
@@ -55,10 +60,11 @@ int main(int argc, char **argv)
   int rand_seed = 0;
   char *fname = NULL;
   std::string geth_addr = "localhost:8545";
+  std::vector<std::string> bstraplist;
      
   opterr = 0;
      
-  while ((c = getopt (argc, argv, "b:k:a:n:c:g:S:f:N:")) != -1)
+  while ((c = getopt (argc, argv, "b:k:a:n:c:g:B:S:f:N:")) != -1)
     {
       switch (c)
 	{
@@ -80,6 +86,17 @@ int main(int argc, char **argv)
 	case 'g':
 	  geth_addr = optarg;
 	  break;
+        case 'B':
+          {
+            char *bstraplist_dup = strdup(optarg);
+            char *bstrap;
+            while (NULL != (bstrap = strtok(bstraplist_dup, ",")))
+              {
+                bstraplist_dup = NULL;
+                bstraplist.push_back(bstrap);
+              }
+            break;
+          }
 	case 'S':
 	  rand_seed = atoi(optarg);
 	  break ;
@@ -116,14 +133,14 @@ int main(int argc, char **argv)
       GETLINE(); n_nodes = atoi(p);
     }
 
-  KadConf conf(n_bits, k, alpha, n_nodes, geth_addr);
+  KadConf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
   //conf.save(std::cout);
   KadNetwork network(&conf);
   Shell shell;
 
   srand(rand_seed);
 
-  network.initialize_nodes(n_init_conn);
+  network.initialize_nodes(n_init_conn, bstraplist);
   network.initialize_files(n_files);
   network.check_files();
 

@@ -1,17 +1,36 @@
 
 #include "kadsim.h"
 
-KadNode::KadNode(KadConf *conf, CBigNum id) : KadRoutable(id, KAD_ROUTABLE_NODE)
+KadNode::KadNode(KadConf *conf, CBigNum id, std::string addr)
+  : KadRoutable(id, KAD_ROUTABLE_NODE)
 {
   //std::cout << id1.ToString(16) << std::endl;
 
   this->conf = conf;
   this->id = id;
-  this->name = std::string();
   this->verbose = false;
+  this->addr = addr;
+  if (!addr.empty())
+    {
+      // FIXME use port
+      this->httpclient = new jsonrpc::HttpClient(addr);
+      this->kadc = new KadClient(*this->httpclient);
+    }
 
-  // The passphrase of the account is the hex of the node ID.
-  this->eth_account = conf->geth.personal_newAccount(id.ToString(16));
+  try
+    {
+      // The passphrase of the account is the hex of the node ID.
+      this->eth_account = conf->geth.personal_newAccount(id.ToString(16));
+    }
+  catch (jsonrpc::JsonRpcException)
+    {
+      this->eth_account = "";
+    }
+}
+
+KadNode::KadNode(KadConf *conf, CBigNum id)
+  : KadNode(conf, id, "")
+{
 }
 
 KadNode::~KadNode()
@@ -112,6 +131,26 @@ KadNode::add_conn(KadNode *node,
   return false;
 }
 
+std::list<KadNode*> 
+KadNode::find_nearest_nodes(KadRoutable routable,
+                            int amount)
+{
+  if (!this->addr.empty())
+    {
+      Json::Value params;
+      params["to"] = routable.get_id().ToString();
+      params["amount"] = amount;
+      Json::Value val = this->kadc->find_nearest_nodes(params);
+      std::cout << val << "\n";
+      return std::list<KadNode*>();
+    }
+  else
+    {
+      return this->find_nearest_nodes_local(routable, amount);
+    }
+}
+
+
 /** 
  * Find nodes closest to the given ID.
  * 
@@ -121,8 +160,8 @@ KadNode::add_conn(KadNode *node,
  * @return the list
  */
 std::list<KadNode*> 
-KadNode::find_nearest_nodes(KadRoutable routable,
-			    int amount)
+KadNode::find_nearest_nodes_local(KadRoutable routable,
+                                  int amount)
 {
   CBigNum distance = distance_to(routable);
   int bit_length = distance.bit_length();
