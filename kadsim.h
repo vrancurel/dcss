@@ -7,6 +7,9 @@
   TypeName(const TypeName&);		   \
   void operator=(const TypeName&)
 
+// Address of the QuadIron contract on the blockchain.
+#define QUADIRON_CONTRACT_ADDR  "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
+
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
@@ -130,8 +133,6 @@ class KadNetwork
   void save(std::ostream& fout);
   void graphviz(std::ostream& fout);
   void check_files();
-  void call_contract(const std::string& name, const std::string& from,
-                     const std::string& payload);
 
  private:
   //DISALLOW_COPY_AND_ASSIGN(KadNetwork);
@@ -145,4 +146,10 @@ class KadNetwork
 };
 
 extern struct cmd_def *cmd_defs[];
+
+void call_contract(GethClient &geth,
+                   const std::string &node_addr,
+                   const std::string &contract_addr,
+                   const std::string &payload);
+
 #endif

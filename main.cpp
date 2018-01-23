@@ -21,6 +21,44 @@ KadConf::save(std::ostream& fout)
   fout << "n_nodes " << n_nodes << "\n";
 }
 
+void call_contract(GethClient &geth,
+                   const std::string &node_addr,
+                   const std::string &contract_addr,
+                   const std::string &payload)
+
+{
+  Json::Value params;
+
+  params["from"] = node_addr;
+  params["to"]   = contract_addr;
+  params["data"] = payload;
+
+  const std::string tx_hash = geth.eth_sendTransaction(params);
+  std::cout << "tx_hash: " << tx_hash << '\n';
+
+  // FIXME: busy way is ugly.
+  while (true) {
+      try {
+          const Json::Value receipt = geth.eth_getTransactionReceipt(tx_hash);
+          std::cout << "result: " << receipt.toStyledString() << '\n';
+          // TODO: we should probably return a bool to the caller, or raise…
+          if (receipt["status"] == "0x0") {
+              std::cout << "transaction failed\n";
+          } else {
+              std::cout << "transaction successed: " << receipt["status"] << '\n';
+          }
+          return;
+      } catch (jsonrpc::JsonRpcException exn) {
+          if (exn.GetCode() == -32000) {
+              continue;  // Transaction is pending…
+          } else {
+              fprintf(stderr, "error: %s\n", exn.what());
+              throw;
+          }
+      }
+  }
+}
+
 void
 usage()
 {
