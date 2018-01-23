@@ -26,7 +26,10 @@ kadsim: $(OBJS)
 gethclient.h: geth_spec.json
 	jsonrpcstub $< --cpp-client=GethClient
 
-$(OBJS): *.h gethclient.h
+kadclient.h: kad_spec.json
+	jsonrpcstub $< --cpp-client=KadClient
+
+$(OBJS): *.h gethclient.h kadclient.h
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $<
