@@ -243,6 +243,10 @@ contract QuadIron is owned, TokenERC20 {
     storagePriceOf[target][putPriceIndex] = newPutPrice;
     storagePriceOf[target][buyPriceIndex] = newReservePrice;
   }
+  
+  function getStoragePrices(address target) public view returns (uint256) {
+    return storagePriceOf[target][getPriceIndex];
+  }
 
   /// @notice Buy tokens from contract by sending ether
   function buyIQToken() payable public {
@@ -259,27 +263,27 @@ contract QuadIron is owned, TokenERC20 {
   }
 
   function buyStorage(address from, address to, uint256 nBytes) public returns (bool success) {
-    uint256 cost = nBytes * storagePriceOf[to][buyPriceIndex];
-    uint256 thirdPartyCost = totalCost * 0.03;
+    uint256 totalCost = nBytes * storagePriceOf[to][buyPriceIndex];
+    uint256 thirdPartyCost = totalCost * 3 / 100;
     uint256 renterCost = totalCost - thirdPartyCost;
-    transferFrom(from, to, renterCost); // Transfer to renter
-    return transferFrom(from, msg.sender, thirdPartyCost); // Transfer to thirdParty
+    transferFrom(from, to, renterCost);
+    return transferFrom(from, msg.sender, thirdPartyCost);
   }
 
   function buyerPutBytes(address from, address to, uint256 nBytes) public returns (bool success) {
-    uint256 cost = nBytes * storagePriceOf[to][putPriceIndex];
-    uint256 thirdPartyCost = totalCost * 0.03;
+    uint256 totalCost = nBytes * storagePriceOf[to][putPriceIndex];
+    uint256 thirdPartyCost = totalCost * 3 / 100;
     uint256 renterCost = totalCost - thirdPartyCost;
-    transferFrom(from, to, renterCost); // Transfer to renter
-    return transferFrom(from, msg.sender, thirdPartyCost); // Transfer to thirdParty
+    transferFrom(from, to, renterCost);
+    return transferFrom(from, msg.sender, thirdPartyCost);
   }
 
   function buyerGetBytes(address from, address to, uint256 nBytes) public returns (bool success) {
     uint256 totalCost = nBytes * storagePriceOf[to][getPriceIndex];
-    uint256 thirdPartyCost = totalCost * 0.03;
+    uint256 thirdPartyCost = totalCost * 3 / 100;
     uint256 renterCost = totalCost - thirdPartyCost;
-    transferFrom(from, to, renterCost); // Transfer to renter
-    return transferFrom(from, msg.sender, thirdPartyCost); // Transfer to thirdParty
+    transferFrom(from, to, renterCost);
+    return transferFrom(from, msg.sender, thirdPartyCost);
   }
 }
 
