@@ -346,15 +346,15 @@ cmd_call_contract(Shell *shell,
 	     int argc,
 	     char **argv)
 {
-  if (argc != 2)
+  if (argc != 4)
     {
-      fprintf(stderr, "usage: account_address\n");
+      fprintf(stderr, "usage: call_contract NAME FROM PAYLOAD\n");
       return SHELL_CONT;
     }
 
   KadNetwork *network = (KadNetwork *) shell->get_handle();
 
-  network->call_contract(argv[1]);
+  network->call_contract(argv[1], argv[2], argv[3]);
 
   return SHELL_CONT;
 }

@@ -122,7 +122,8 @@ class KadNetwork
   void save(std::ostream& fout);
   void graphviz(std::ostream& fout);
   void check_files();
-  void call_contract(const std::string& account_adrress);
+  void call_contract(const std::string& name, const std::string& from,
+                     const std::string& payload);
 
  private:
   //DISALLOW_COPY_AND_ASSIGN(KadNetwork);

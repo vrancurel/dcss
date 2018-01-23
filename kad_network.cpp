@@ -245,14 +245,20 @@ KadNetwork::graphviz(std::ostream& fout)
 }
 
 void
-KadNetwork::call_contract(const std::string& account_address)
+KadNetwork::call_contract(const std::string& name, const std::string& from,
+                          const std::string& payload)
 {
   jsonrpc::HttpClient httpclient(conf->geth_addr);
   GethClient client(httpclient);
+  Json::Value params;
+
+  params["from"] = from;
+  params["to"] = ""; // TODO: lookup address from name in hashtbl
+  params["data"] = payload;
 
   try {
-    const std::string balance = client.eth_getBalance(account_address, "latest");
-    std::cout << "balance for " << account_address << ": " << balance << '\n';
+    const std::string tx_hash = client.eth_sendTransaction(params);
+    std::cout << "transaction hash: " << tx_hash << '\n';
   } catch (jsonrpc::JsonRpcException exn) {
     fprintf(stderr, "error: %s\n", exn.what());
   }
