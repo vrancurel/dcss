@@ -258,7 +258,9 @@ KadNetwork::call_contract(const std::string& name, const std::string& from,
 
   try {
     const std::string tx_hash = client.eth_sendTransaction(params);
-    std::cout << "transaction hash: " << tx_hash << '\n';
+    // TODO: check if we need to poll for the receipt!
+    const Json::Value receipt = client.eth_getTransactionReceipt(tx_hash);
+    std::cout << "result: " << receipt.toStyledString() << '\n';
   } catch (jsonrpc::JsonRpcException exn) {
     fprintf(stderr, "error: %s\n", exn.what());
   }
