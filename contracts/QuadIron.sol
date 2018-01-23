@@ -260,17 +260,26 @@ contract QuadIron is owned, TokenERC20 {
 
   function buyStorage(address from, address to, uint256 nBytes) public returns (bool success) {
     uint256 cost = nBytes * storagePriceOf[to][buyPriceIndex];
-    return transferFrom(from, to, cost);
+    uint256 thirdPartyCost = totalCost * 0.03;
+    uint256 renterCost = totalCost - thirdPartyCost;
+    transferFrom(from, to, renterCost); // Transfer to renter
+    return transferFrom(from, msg.sender, thirdPartyCost); // Transfer to thirdParty
   }
 
   function buyerPutBytes(address from, address to, uint256 nBytes) public returns (bool success) {
     uint256 cost = nBytes * storagePriceOf[to][putPriceIndex];
-    return transferFrom(from, to, cost);
+    uint256 thirdPartyCost = totalCost * 0.03;
+    uint256 renterCost = totalCost - thirdPartyCost;
+    transferFrom(from, to, renterCost); // Transfer to renter
+    return transferFrom(from, msg.sender, thirdPartyCost); // Transfer to thirdParty
   }
 
   function buyerGetBytes(address from, address to, uint256 nBytes) public returns (bool success) {
-    uint256 cost = nBytes * storagePriceOf[to][getPriceIndex];
-    return transferFrom(from, to, cost);
+    uint256 totalCost = nBytes * storagePriceOf[to][getPriceIndex];
+    uint256 thirdPartyCost = totalCost * 0.03;
+    uint256 renterCost = totalCost - thirdPartyCost;
+    transferFrom(from, to, renterCost); // Transfer to renter
+    return transferFrom(from, msg.sender, thirdPartyCost); // Transfer to thirdParty
   }
 }
 
