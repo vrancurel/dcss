@@ -1,7 +1,7 @@
 
-CC = g++
+CC = clang++
 
-CFLAGS = -g -Wall -Werror -DHAVE_READLINE
+CFLAGS = -std=c++11 -g -Wall -Werror -DHAVE_READLINE
 LDFLAGS = \
 -lcrypto \
 -lreadline \
