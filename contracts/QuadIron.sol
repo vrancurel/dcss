@@ -175,13 +175,13 @@ contract QuadIron is owned, TokenERC20 {
 
   uint256 public sellPrice;
   uint256 public buyPrice;
-  uint256 public getPrice;
-  uint256 public putPrice;
-  uint256 public reservePrice;
+
+  uint constant buyPriceIndex = 0;
+  uint constant getPriceIndex = 1;
+  uint constant putPriceIndex = 2;
 
   // This creates an array with all balances
   mapping (address => uint256[3]) public storagePriceOf;
-  mapping (address => mapping (address => uint256)) public storagePrices;
 
   mapping (address => bool) public frozenAccount;
 
@@ -194,7 +194,7 @@ contract QuadIron is owned, TokenERC20 {
     string  tokenName,
     string  tokenSymbol,
     uint256 sellTokenPrice,
-    uint256 buyTokenPrice,
+    uint256 buyTokenPrice
   ) TokenERC20(initialSupply, tokenName, tokenSymbol) public {
     sellPrice = sellTokenPrice;
     buyPrice = buyTokenPrice;
@@ -239,10 +239,9 @@ contract QuadIron is owned, TokenERC20 {
   }
 
   function setStoragePrices(address target, uint256 newGetPrice, uint256 newPutPrice, uint256 newReservePrice) public {
-    storagePrices[target][0] = newGetPrice;
-    storagePrices[target][1] = newPutPrice;
-    storagePrices[target][2] = newReservePrice;
-    return true;
+    storagePriceOf[target][getPriceIndex] = newGetPrice;
+    storagePriceOf[target][putPriceIndex] = newPutPrice;
+    storagePriceOf[target][buyPriceIndex] = newReservePrice;
   }
 
   /// @notice Buy tokens from contract by sending ether
@@ -259,18 +258,19 @@ contract QuadIron is owned, TokenERC20 {
     msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
   }
 
-  function buyStorage(address from, address to, uint256 nBytes) public {
-    cost = nBytes * storagePrices[to][2];
+  function buyStorage(address from, address to, uint256 nBytes) public returns (bool success) {
+    uint256 cost = nBytes * storagePriceOf[to][buyPriceIndex];
     return transferFrom(from, to, cost);
   }
 
-  function buyerPutBytes(address target, address to, uint256 nBytes) public {
-    cost = nBytes * storagePrices[to][1];
+  function buyerPutBytes(address from, address to, uint256 nBytes) public returns (bool success) {
+    uint256 cost = nBytes * storagePriceOf[to][putPriceIndex];
     return transferFrom(from, to, cost);
   }
 
-  function buyerGetBytes(address target, address to, uint256 nBytes) public returns (bool success) {
-    cost = nBytes * storagePrices[to][0];
+  function buyerGetBytes(address from, address to, uint256 nBytes) public returns (bool success) {
+    uint256 cost = nBytes * storagePriceOf[to][getPriceIndex];
     return transferFrom(from, to, cost);
   }
 }
+
