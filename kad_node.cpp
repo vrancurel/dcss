@@ -454,3 +454,19 @@ KadNode::graphviz(std::ostream& fout)
 	}
     }
 }
+
+void KadNode::buy_storage(const std::string &seller, uint64_t nb_bytes)
+{
+  // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+  // web3.sha3("buyStorage(address,address,uint256)").substr(0, 8)
+  const std::string selector = "0x366e4d";
+  const std::string payload = selector + encode_address(eth_account)
+                                       + encode_address(seller)
+                                       + encode_uint256(nb_bytes);
+
+  try {
+      call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+  } catch (jsonrpc::JsonRpcException exn) {
+      std::cerr << "cannot buy " << nb_bytes << "bytes from " << seller << ": " << exn.what() << '\n';
+  }
+}
