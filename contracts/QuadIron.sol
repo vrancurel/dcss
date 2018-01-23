@@ -175,6 +175,13 @@ contract QuadIron is owned, TokenERC20 {
 
   uint256 public sellPrice;
   uint256 public buyPrice;
+  uint256 public getPrice;
+  uint256 public putPrice;
+  uint256 public reservePrice;
+
+  // This creates an array with all balances
+  mapping (address => uint256[3]) public storagePriceOf;
+  mapping (address => mapping (address => uint256)) public storagePrices;
 
   mapping (address => bool) public frozenAccount;
 
@@ -231,6 +238,13 @@ contract QuadIron is owned, TokenERC20 {
     buyPrice = newBuyPrice;
   }
 
+  function setStoragePrices(address target, uint256 newGetPrice, uint256 newPutPrice, uint256 newReservePrice) public {
+    storagePrices[target][0] = newGetPrice;
+    storagePrices[target][1] = newPutPrice;
+    storagePrices[target][2] = newReservePrice;
+    return true;
+  }
+
   /// @notice Buy tokens from contract by sending ether
   function buyIQToken() payable public {
     uint amount = msg.value / buyPrice;               // calculates the amount
@@ -245,12 +259,18 @@ contract QuadIron is owned, TokenERC20 {
     msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
   }
 
-  function buyStorage(uint256 nBytes, uint256 replicationFactor) public {
+  function buyStorage(address from, address to, uint256 nBytes) public {
+    cost = nBytes * storagePrices[to][2];
+    return transferFrom(from, to, cost);
   }
 
-  function buyerPutBytes(uint256 nBytes, uint256 replicationFactor) public {
+  function buyerPutBytes(address target, address to, uint256 nBytes) public {
+    cost = nBytes * storagePrices[to][1];
+    return transferFrom(from, to, cost);
   }
 
-  function buyerGetBytes(uint256 nBytes, uint256 replicationFactor) public {
+  function buyerGetBytes(address target, address to, uint256 nBytes) public returns (bool success) {
+    cost = nBytes * storagePrices[to][0];
+    return transferFrom(from, to, cost);
   }
 }
