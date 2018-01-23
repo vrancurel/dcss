@@ -35,5 +35,11 @@
             }],
             "logsBloom": "0x00...0"
         }
+    }, {
+        "method": "personal_newAccount",
+        "params": [
+            "your_passphrase"
+        ],
+        "returns" : "0x431ee08dc1874e463ed9bc28f8936a38668a0d36"
     }
 ]

@@ -16,6 +16,8 @@
 #include <fstream>
 #include <getopt.h>
 
+#include <jsonrpccpp/client/connectors/httpclient.h>
+
 #include "bignum.h"
 #include "bit_map.h"
 #include "gethclient.h"
@@ -85,6 +87,7 @@ class KadNode : public KadRoutable
   ~KadNode();
 
   int get_n_conns();
+  const std::string& get_eth_account() const;
   bool add_conn(KadNode *node, bool contacted_us);
   std::list<KadNode*> find_nearest_nodes(KadRoutable routable, int amount);
   std::list<KadNode*> lookup(KadRoutable routable);
@@ -105,6 +108,7 @@ class KadNode : public KadRoutable
   int verbose;
 
   std::vector<KadFile*> files;
+  std::string eth_account;
 };
 
 typedef void (*tnode_callback_func)(KadNode *node, void *cb_arg);

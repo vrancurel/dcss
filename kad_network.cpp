@@ -30,6 +30,7 @@ KadNetwork::initialize_nodes(int n_init_conn)
   //create nodes
   for (u_int i = 0;i < conf->n_nodes;i++)
     {
+      std::cerr << "creating node " << i << '\n';
       KadNode *node = new KadNode(conf, bitmap.get_rand_bit()*keyspace);
       nodes.push_back(node);
       nodes_map[node->get_id().ToString(16)] = node;
