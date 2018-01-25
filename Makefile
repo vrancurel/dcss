@@ -1,8 +1,14 @@
 
-CC = g++
+CC = clang++
 
-CFLAGS = -g -Wall -Werror -DHAVE_READLINE
-LDFLAGS = -lcrypto -lreadline
+CFLAGS = -std=c++11 -g -Wall -Werror -DHAVE_READLINE
+LDFLAGS = \
+-lcrypto \
+-lreadline \
+-ljsoncpp \
+-lcurl \
+-ljsonrpccpp-common \
+-ljsonrpccpp-client
 
 OBJS = \
 main.o \
@@ -17,7 +23,13 @@ cmds.o
 kadsim: $(OBJS)
 	$(CC) -o kadsim $(OBJS) $(LDFLAGS)
 
-$(OBJS): *.h
+gethclient.h: geth_spec.json
+	jsonrpcstub $< --cpp-client=GethClient
+
+kadclient.h: kad_spec.json
+	jsonrpcstub $< --cpp-client=KadClient
+
+$(OBJS): *.h gethclient.h kadclient.h
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $<

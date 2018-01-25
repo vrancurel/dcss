@@ -1,5 +1,8 @@
-
 #include "kadsim.h"
+
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 KadNetwork::KadNetwork(KadConf *conf)
 {
@@ -17,7 +20,8 @@ KadNetwork::~KadNetwork()
  * @param n_init_conn 
  */
 void 
-KadNetwork::initialize_nodes(int n_init_conn)
+KadNetwork::initialize_nodes(int n_init_conn,
+                             std::vector<std::string> bstraplist)
 {
   std::cout << "initialize nodes\n";
 
@@ -31,7 +35,21 @@ KadNetwork::initialize_nodes(int n_init_conn)
   //create nodes
   for (u_int i = 0;i < conf->n_nodes;i++)
     {
-      KadNode *node = new KadNode(conf, bitmap.get_rand_bit()*keyspace);
+      std::cerr << "creating node " << i << '\n';
+      KadNode *node;
+      if (!bstraplist.empty())
+        {
+          std::string bstrap = bstraplist.back();
+          bstraplist.pop_back();
+          std::cout << "create remote node (" << bstrap << ")\n";
+          // create remote node from a bootstrap
+          node = new KadNode(conf, bitmap.get_rand_bit()*keyspace, bstrap);
+        }
+      else
+        {
+          // simulate node
+          node = new KadNode(conf, bitmap.get_rand_bit()*keyspace);
+        }
       nodes.push_back(node);
       nodes_map[node->get_id().ToString(16)] = node;
     }
@@ -240,4 +258,24 @@ KadNetwork::graphviz(std::ostream& fout)
     }
 
   fout << "}\n";
+}
+
+void
+KadNetwork::call_contract(const std::string& name, const std::string& from,
+                          const std::string& payload)
+{
+  Json::Value params;
+
+  params["from"] = from;
+  params["to"] = ""; // TODO: lookup address from name in hashtbl
+  params["data"] = payload;
+
+  try {
+    const std::string tx_hash = conf->geth.eth_sendTransaction(params);
+    // TODO: check if we need to poll for the receipt!
+    const Json::Value receipt = conf->geth.eth_getTransactionReceipt(tx_hash);
+    std::cout << "result: " << receipt.toStyledString() << '\n';
+  } catch (jsonrpc::JsonRpcException exn) {
+    fprintf(stderr, "error: %s\n", exn.what());
+  }
 }

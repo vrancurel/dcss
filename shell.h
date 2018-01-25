@@ -42,6 +42,7 @@ class Shell
 {
  public:
   Shell();
+
   void set_cmds(struct cmd_def **defs);
   void set_handle(void *hande);
   void set_handle2(void *hande);

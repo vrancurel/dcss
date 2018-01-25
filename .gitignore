@@ -1,0 +1,4 @@
+*.o
+*.swp
+kadsim
+gethclient.h
