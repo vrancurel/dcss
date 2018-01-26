@@ -1,0 +1,10 @@
+[
+    {
+        "method": "find_nearest_nodes",
+        "params": [{
+            "to": "to",
+            "amount": 42
+        }],
+        "returns" : ["a", "list", "of", "node"]
+    }
+]

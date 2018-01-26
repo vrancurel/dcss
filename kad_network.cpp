@@ -1,5 +1,9 @@
 #include "kadsim.h"
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 KadNetwork::KadNetwork(KadConf *conf)
 {
   this->conf = conf;
@@ -16,7 +20,8 @@ KadNetwork::~KadNetwork()
  * @param n_init_conn 
  */
 void 
-KadNetwork::initialize_nodes(int n_init_conn)
+KadNetwork::initialize_nodes(int n_init_conn,
+                             std::vector<std::string> bstraplist)
 {
   std::cout << "initialize nodes\n";
 
@@ -31,7 +36,20 @@ KadNetwork::initialize_nodes(int n_init_conn)
   for (u_int i = 0;i < conf->n_nodes;i++)
     {
       std::cerr << "creating node " << i << '\n';
-      KadNode *node = new KadNode(conf, bitmap.get_rand_bit()*keyspace);
+      KadNode *node;
+      if (!bstraplist.empty())
+        {
+          std::string bstrap = bstraplist.back();
+          bstraplist.pop_back();
+          std::cout << "create remote node (" << bstrap << ")\n";
+          // create remote node from a bootstrap
+          node = new KadNode(conf, bitmap.get_rand_bit()*keyspace, bstrap);
+        }
+      else
+        {
+          // simulate node
+          node = new KadNode(conf, bitmap.get_rand_bit()*keyspace);
+        }
       nodes.push_back(node);
       nodes_map[node->get_id().ToString(16)] = node;
     }
