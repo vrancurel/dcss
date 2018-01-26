@@ -7,6 +7,10 @@
   TypeName(const TypeName&);		   \
   void operator=(const TypeName&)
 
+// Address of the QuadIron contract on the blockchain.
+#define QUADIRON_CONTRACT_ADDR  "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
+
+#include <cstdint>
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
@@ -16,19 +20,26 @@
 #include <fstream>
 #include <getopt.h>
 
+#include <jsonrpccpp/client/connectors/httpclient.h>
+
 #include "bignum.h"
 #include "bit_map.h"
+#include "gethclient.h"
 #include "shell.h"
 
 class KadConf
 {
  public:
-  KadConf(int n_bits, int k, int alpha, int n_nodes);
+  KadConf(int n_bits, int k, int alpha, int n_nodes,
+          const std::string &geth_addr);
   void save(std::ostream& fout);
   int n_bits;
   u_int k;
   u_int alpha;
   u_int n_nodes;
+
+  jsonrpc::HttpClient httpclient;
+  GethClient geth;
 };
 
 enum KadRoutableType
@@ -80,6 +91,7 @@ class KadNode : public KadRoutable
   ~KadNode();
 
   int get_n_conns();
+  const std::string& get_eth_account() const;
   bool add_conn(KadNode *node, bool contacted_us);
   std::list<KadNode*> find_nearest_nodes(KadRoutable routable, int amount);
   std::list<KadNode*> lookup(KadRoutable routable);
@@ -89,6 +101,10 @@ class KadNode : public KadRoutable
   void store(KadFile *file);
   std::vector<KadFile*> get_files();
   void graphviz(std::ostream& fout);
+
+  void buy_storage(const std::string &seller, uint64_t nb_bytes);
+  void put_bytes(const std::string &seller, uint64_t nb_bytes);
+  void get_bytes(const std::string &seller, uint64_t nb_bytes);
 
  private:
   //DISALLOW_COPY_AND_ASSIGN(KadNode);
@@ -100,6 +116,8 @@ class KadNode : public KadRoutable
   int verbose;
 
   std::vector<KadFile*> files;
+  std::string eth_passphrase;
+  std::string eth_account;
 };
 
 typedef void (*tnode_callback_func)(KadNode *node, void *cb_arg);
@@ -133,4 +151,16 @@ class KadNetwork
 };
 
 extern struct cmd_def *cmd_defs[];
+
+// Encode an integer as an uint256 according to the Ethereum Contract ABI.
+// See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+std::string encode_uint256(uint64_t v);
+// Address are encoded as uint160
+std::string encode_address(const std::string &addr);
+
+void call_contract(GethClient &geth,
+                   const std::string &node_addr,
+                   const std::string &contract_addr,
+                   const std::string &payload);
+
 #endif

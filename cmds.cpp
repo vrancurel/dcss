@@ -341,6 +341,69 @@ cmd_graphviz(Shell *shell,
   return SHELL_CONT;
 }
 
+int cmd_buy_storage(Shell *shell, int argc, char **argv)
+{
+  if (argc != 3)
+    {
+      fprintf(stderr, "usage: buy_storage SELLER N_BYTES\n");
+      return SHELL_CONT;
+    }
+
+  KadNode *node = (KadNode *) shell->get_handle2();
+  if (NULL == node)
+    {
+      fprintf(stderr, "shall jump to a node first\n");
+      return SHELL_CONT;
+    }
+
+  // FIXME: atoi is so dirty…
+  node->buy_storage(argv[1], atoi(argv[2]));
+
+  return SHELL_CONT;
+}
+
+int cmd_put_bytes(Shell *shell, int argc, char **argv)
+{
+  if (argc != 3)
+    {
+      fprintf(stderr, "usage: put_bytes SELLER N_BYTES\n");
+      return SHELL_CONT;
+    }
+
+  KadNode *node = (KadNode *) shell->get_handle2();
+  if (NULL == node)
+    {
+      fprintf(stderr, "shall jump to a node first\n");
+      return SHELL_CONT;
+    }
+
+  // FIXME: atoi is so dirty…
+  node->put_bytes(argv[1], atoi(argv[2]));
+
+  return SHELL_CONT;
+}
+
+int cmd_get_bytes(Shell *shell, int argc, char **argv)
+{
+  if (argc != 3)
+    {
+      fprintf(stderr, "usage: get_bytes SELLER N_BYTES\n");
+      return SHELL_CONT;
+    }
+
+  KadNode *node = (KadNode *) shell->get_handle2();
+  if (NULL == node)
+    {
+      fprintf(stderr, "shall jump to a node first\n");
+      return SHELL_CONT;
+    }
+
+  // FIXME: atoi is so dirty…
+  node->get_bytes(argv[1], atoi(argv[2]));
+
+  return SHELL_CONT;
+}
+
 struct cmd_def quit_cmd = {"quit", "quit program", cmd_quit};
 struct cmd_def help_cmd = {"help", "help", cmd_help};
 struct cmd_def jump_cmd = {"jump", "jump to a node", cmd_jump};
@@ -355,16 +418,22 @@ struct cmd_def save_cmd = {"save", "save the network to file", cmd_save};
 struct cmd_def xor_cmd = {"xor", "xor between 2 bignums", cmd_xor};
 struct cmd_def bit_length_cmd = {"bit_length", "bit length of bignum", cmd_bit_length};
 struct cmd_def graphviz_cmd = {"graphviz", "dump a graphviz of the nodes acc/ to their k-buckets", cmd_graphviz};
+struct cmd_def buy_storage_cmd = {"buy_storage", "buy N bytes of storage", cmd_buy_storage};
+struct cmd_def put_bytes_cmd = {"put_bytes", "put N bytes on storage", cmd_put_bytes};
+struct cmd_def get_bytes_cmd = {"get_bytes", "get N bytes from storage", cmd_get_bytes};
 
 struct cmd_def	*cmd_defs[] =
   {
     &bit_length_cmd,
+    &buy_storage_cmd,
     &cheat_lookup_cmd,
     &find_nearest_cmd,
+    &get_bytes_cmd,
     &graphviz_cmd,
     &help_cmd,   
     &jump_cmd,
     &lookup_cmd,
+    &put_bytes_cmd,
     &quit_cmd,
     &rand_node_cmd,
     &rand_key_cmd,

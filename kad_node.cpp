@@ -9,11 +9,21 @@ KadNode::KadNode(KadConf *conf, CBigNum id) : KadRoutable(id, KAD_ROUTABLE_NODE)
   this->id = id;
   this->name = std::string();
   this->verbose = false;
+
+  // The passphrase of the account is the hex of the node ID.
+  this->eth_passphrase = id.ToString(16);
+  this->eth_account = conf->geth.personal_newAccount(eth_passphrase);
+  conf->geth.personal_unlockAccount(eth_account, eth_passphrase, 0);
 }
 
 KadNode::~KadNode()
 {
 
+}
+
+const std::string& KadNode::get_eth_account() const
+{
+  return eth_account;
 }
 
 /** 
@@ -205,7 +215,11 @@ print_list(std::string comment,
   std::cout << "target " << routable.get_id().ToString(16) << "\n";
   std::list<KadNode*>::iterator it;
   for (it = list.begin();it != list.end();++it)
-    std::cout << "id " << (*it)->get_id().ToString(16) << " dist " << (*it)->distance_to(routable).ToString(16) << " queried " << (*queried)[*it] << "\n";
+    std::cout << "id " << (*it)->get_id().ToString(16)
+              << " eth_account " << (*it)->get_eth_account()
+              << " dist " << (*it)->distance_to(routable).ToString(16)
+              << " queried " << (*queried)[*it]
+              << "\n";
 }
 
 /** 
@@ -392,6 +406,7 @@ void
 KadNode::show()
 {
   std::cout << "id " << get_id().ToString(16) << "\n";
+  std::cout << "eth_account " << get_eth_account() << "\n";
   std::cout << "n_conns " << get_n_conns() << "\n";
   save(std::cout);
 }
@@ -438,4 +453,54 @@ KadNode::graphviz(std::ostream& fout)
 	    fout << "node_" << get_id().ToString(16) << " -> node_" << (*it)->get_id().ToString(16) << ";\n";
 	}
     }
+}
+
+// TODO: factorize all of this
+void KadNode::buy_storage(const std::string &seller, uint64_t nb_bytes)
+{
+  // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+  // web3.sha3("buyStorage(address,address,uint256)").substr(0, 8)
+  const std::string selector = "0x366e4d";
+  const std::string payload = selector + encode_address(eth_account)
+                                       + encode_address(seller)
+                                       + encode_uint256(nb_bytes);
+
+  try {
+      call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+  } catch (jsonrpc::JsonRpcException exn) {
+      std::cerr << "cannot buy " << nb_bytes << "bytes from " << seller << ": " << exn.what() << '\n';
+  }
+}
+
+void KadNode::put_bytes(const std::string &seller, uint64_t nb_bytes)
+{
+  // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+  // web3.sha3("buyerPutBytes(address,address,uint256)").substr(0, 8)
+  const std::string selector = "0xed69a0";
+  const std::string payload = selector + encode_address(eth_account)
+                                       + encode_address(seller)
+                                       + encode_uint256(nb_bytes);
+
+  try {
+      call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+  } catch (jsonrpc::JsonRpcException exn) {
+      std::cerr << "cannot put " << nb_bytes << "bytes on storage of " << seller << ": " << exn.what() << '\n';
+  }
+}
+
+
+void KadNode::get_bytes(const std::string &seller, uint64_t nb_bytes)
+{
+  // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
+  // web3.sha3("buyerGetBytes(address,address,uint256)").substr(0, 8)
+  const std::string selector = "0xdad071";
+  const std::string payload = selector + encode_address(eth_account)
+                                       + encode_address(seller)
+                                       + encode_uint256(nb_bytes);
+
+  try {
+      call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+  } catch (jsonrpc::JsonRpcException exn) {
+      std::cerr << "cannot get " << nb_bytes << "bytes from storage of " << seller << ": " << exn.what() << '\n';
+  }
 }

@@ -1,9 +1,13 @@
+#include <sstream>
+#include <iomanip>
 
 #include "kadsim.h"
 
 using namespace std;
 
-KadConf::KadConf(int n_bits, int k, int alpha, int n_nodes)
+KadConf::KadConf(int n_bits, int k, int alpha, int n_nodes,
+                 const std::string& geth_addr)
+  : httpclient(geth_addr), geth(httpclient)
 {
   this->n_bits = n_bits;
   this->k = k;
@@ -20,6 +24,64 @@ KadConf::save(std::ostream& fout)
   fout << "n_nodes " << n_nodes << "\n";
 }
 
+void call_contract(GethClient &geth,
+                   const std::string &node_addr,
+                   const std::string &contract_addr,
+                   const std::string &payload)
+
+{
+  Json::Value params;
+
+  params["from"] = node_addr;
+  params["to"]   = contract_addr;
+  params["data"] = payload;
+
+  const std::string tx_hash = geth.eth_sendTransaction(params);
+  std::cout << "tx_hash: " << tx_hash << '\n';
+
+  // FIXME: busy way is ugly.
+  while (true) {
+      try {
+          const Json::Value receipt = geth.eth_getTransactionReceipt(tx_hash);
+          std::cout << "result: " << receipt.toStyledString() << '\n';
+          // TODO: we should probably return a bool to the caller, or raise…
+          if (receipt["status"] == "0x0") {
+              std::cout << "transaction failed\n";
+          } else {
+              std::cout << "transaction successed: " << receipt["status"] << '\n';
+          }
+          return;
+      } catch (jsonrpc::JsonRpcException exn) {
+          if (exn.GetCode() == -32000) {
+              continue;  // Transaction is pending…
+          } else {
+              fprintf(stderr, "error: %s\n", exn.what());
+              throw;
+          }
+      }
+  }
+}
+
+// From https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI:
+//
+// > uint<M>: enc(X) is the big-endian encoding of X, padded on the
+// > higher-order (left) side with zero-bytes such that the length is a
+// > multiple of 32 bytes.
+std::string encode_uint256(uint64_t v)
+{
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(64) << std::hex << v;
+    return oss.str();
+}
+
+std::string encode_address(const std::string &addr)
+{
+    std::ostringstream oss;
+    // Skip the leading 0x, pad for 160 bytes.
+    oss << std::setfill('0') << std::setw(40) << addr.substr(2);
+    return oss.str();
+}
+
 void
 usage()
 {
@@ -29,6 +91,7 @@ usage()
   std::cerr << "\t-a\tKademlia alpha parameter\n";
   std::cerr << "\t-n\tnumber of nodes\n";
   std::cerr << "\t-c\tinitial number of connections per node\n";
+  std::cerr << "\t-g\tgeth RPC server address\n";
   std::cerr << "\t-N\tnumber of files\n";
   std::cerr << "\t-S\trandom seed\n";
   exit(1);
@@ -52,10 +115,11 @@ int main(int argc, char **argv)
   int n_files = 5000;
   int rand_seed = 0;
   char *fname = NULL;
+  std::string geth_addr = "localhost:8545";
      
   opterr = 0;
      
-  while ((c = getopt (argc, argv, "b:k:a:n:c:S:f:N:")) != -1)
+  while ((c = getopt (argc, argv, "b:k:a:n:c:g:S:f:N:")) != -1)
     {
       switch (c)
 	{
@@ -73,6 +137,9 @@ int main(int argc, char **argv)
 	  break;
 	case 'c':
 	  n_init_conn = atoi(optarg);
+	  break;
+	case 'g':
+	  geth_addr = optarg;
 	  break;
 	case 'S':
 	  rand_seed = atoi(optarg);
@@ -110,7 +177,7 @@ int main(int argc, char **argv)
       GETLINE(); n_nodes = atoi(p);
     }
 
-  KadConf conf(n_bits, k, alpha, n_nodes);
+  KadConf conf(n_bits, k, alpha, n_nodes, geth_addr);
   //conf.save(std::cout);
   KadNetwork network(&conf);
   Shell shell;
