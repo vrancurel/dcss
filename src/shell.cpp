@@ -4,8 +4,6 @@ static char sargmem[SHELL_MAX_ARGV][SHELL_MAX_ARG_LEN];
 static char* sargv[SHELL_MAX_ARGV + 1];
 static int sargc;
 
-/**/
-
 const char* shell_err_strings[] = {
     "No error",
     "too many args",
@@ -21,8 +19,7 @@ const char* shell_error_str(enum shell_error err)
 
 static struct cmd_def** g_cmd_defs = NULL;
 
-/**
- * for completion
+/** For completion.
  *
  * @param defs
  */
@@ -130,7 +127,6 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
         return SHELL_CONT;
     } else if (NULL != (p = index(argv[0], '='))) {
         *p++ = 0;
-        // var_set(argv[0], p, VAR_CMD_SET, NULL);
         return SHELL_CONT;
     }
     len = strlen(argv[0]);
@@ -139,7 +135,6 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
     found = 0;
     for (i = 0; defs[i]; i++) {
         tmp = defs[i];
-        // printf("'%s' '%s'\n", argv[0], tmp->name);
         if (!strcmp(argv[0], tmp->name)) {
             found = 1;
             def = tmp;
@@ -163,10 +158,12 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
     return ret;
 }
 
-/**
- * parse a string into multiple commands. everything is done
- * static. understands comments (sharp sign), double quotes, semicolon.
- * ignore whitspaces
+/** Parse a string into multiple commands.
+ *
+ * Everything is done static.
+ *
+ * Understands comments (sharp sign), double quotes, semicolon. ignore
+ * whitspaces
  *
  * @param str the input string
  * @param cmd the callback

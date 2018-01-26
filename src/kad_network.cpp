@@ -1,8 +1,8 @@
-#include "kadsim.h"
-
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+
+#include "kadsim.h"
 
 KadNetwork::KadNetwork(KadConf* conf)
 {
@@ -24,12 +24,12 @@ void KadNetwork::initialize_nodes(
 
     BitMap bitmap = BitMap(conf->n_nodes);
 
-    // split the total keyspace equally among nodes
+    // Split the total keyspace equally among nodes.
     CBigNum keyspace = CBigNum(1);
     keyspace = (keyspace << conf->n_bits);
     keyspace /= conf->n_nodes;
 
-    // create nodes
+    // Create nodes.
     for (u_int i = 0; i < conf->n_nodes; i++) {
         std::cerr << "creating node " << i << '\n';
         KadNode* node;
@@ -37,21 +37,21 @@ void KadNetwork::initialize_nodes(
             std::string bstrap = bstraplist.back();
             bstraplist.pop_back();
             std::cout << "create remote node (" << bstrap << ")\n";
-            // create remote node from a bootstrap
+            // Create remote node from a bootstrap.
             node = new KadNode(conf, bitmap.get_rand_bit() * keyspace, bstrap);
         } else {
-            // simulate node
+            // Simulate node.
             node = new KadNode(conf, bitmap.get_rand_bit() * keyspace);
         }
         nodes.push_back(node);
         nodes_map[node->get_id().ToString(16)] = node;
     }
 
-    // there shall be a responsable for every portion of the keyspace
+    // There shall be a responsable for every portion of the keyspace.
     assert(!bitmap.check());
 
-    // continue creating conns for the nodes that dont meet the initial number
-    // required
+    // Continue creating conns for the nodes that dont meet the initial number
+    // required.
     for (u_int i = 0; i < conf->n_nodes; i++) {
         KadNode* node = nodes[i];
 
@@ -70,14 +70,11 @@ void KadNetwork::initialize_nodes(
                 break;
             }
 
-            // pick a random node
+            // Pick a random node.
             int x = rand() % nodes.size();
             other = nodes[x];
 
-            // connect them 2-way
-            // std::cout << "connecting nodes " << node->get_id().ToString(16)
-            // << " (" << node->get_n_conns() << ") and " <<
-            // other->get_id().ToString(16) << "\n";
+            // Connect them 2-way.
             node->add_conn(other, false);
             other->add_conn(node, false);
 
@@ -97,17 +94,17 @@ void KadNetwork::initialize_files(int n_files)
             std::cerr << "file " << i << "/" << n_files
                       << "                   \r";
 
-        // take a random node
+        // Take a random node.
         int x = rand() % nodes.size();
         KadNode* node = nodes[x];
 
-        // gen a random identifier for the file
+        // Gen a random identifier for the file.
         CBigNum bn;
         bn.Rand(conf->n_bits);
         KadFile* file = new KadFile(bn, node);
         files.push_back(file);
 
-        // store file at multiple location
+        // Store file at multiple location.
         std::list<KadNode*> result = node->lookup(*file);
         for (std::list<KadNode*>::iterator it = result.begin();
              it != result.end();
@@ -116,9 +113,7 @@ void KadNetwork::initialize_files(int n_files)
     }
 }
 
-/**
- * check that files are accessible from random nodes
- */
+/** Check that files are accessible from random nodes. */
 void KadNetwork::check_files()
 {
     std::cout << "checking files\n";
@@ -131,14 +126,14 @@ void KadNetwork::check_files()
 
         KadFile* file = files[i];
 
-        // take a random node
+        // Take a random node.
         int x = rand() % nodes.size();
         KadNode* node = nodes[x];
 
-        // get results
+        // Get results.
         std::list<KadNode*> result = node->lookup(*file);
 
-        // check that at least one result has the file
+        // Check that at least one result has the file.
         bool found = false;
         for (std::list<KadNode*>::iterator it = result.begin();
              it != result.end();
@@ -180,20 +175,18 @@ void KadNetwork::rand_routable(troutable_callback_func cb_func, void* cb_arg)
         cb_func(routable, cb_arg);
 }
 
-/**
- * lookup a node by its id
+/** Lookup a node by its id
  *
- * @param id
+ * @param id node IS
  *
- * @return
+ * @return the node identified by `id`
  */
 KadNode* KadNetwork::lookup_cheat(std::string id)
 {
     return nodes_map[id];
 }
 
-/**
- * find node nearest to specified routable
+/** Find node nearest to specified routable.
  *
  * @param routable
  *

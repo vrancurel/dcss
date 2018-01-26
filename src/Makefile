@@ -1,4 +1,3 @@
-
 CC = clang++
 
 CFLAGS = -std=c++11 -g -Wall -Werror -DHAVE_READLINE

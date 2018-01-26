@@ -1,4 +1,3 @@
-
 #include "kadsim.h"
 
 KadFile::KadFile(CBigNum id, KadNode* referencer)

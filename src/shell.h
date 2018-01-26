@@ -1,10 +1,11 @@
 #ifndef __SHELL_H__
 #define __SHELL_H__ 1
 
+#include <cassert>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
-#include <assert.h>
+
 #include <sys/wait.h>
 #include <unistd.h>
 #if defined(HAVE_READLINE)

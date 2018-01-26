@@ -3,8 +3,6 @@
 
 #include "kadsim.h"
 
-using namespace std;
-
 KadConf::KadConf(
     int n_bits,
     int k,
@@ -33,7 +31,6 @@ void call_contract(
     const std::string& node_addr,
     const std::string& contract_addr,
     const std::string& payload)
-
 {
     Json::Value params;
 

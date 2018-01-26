@@ -1,4 +1,3 @@
-
 #include "kadsim.h"
 
 KadRoutable::KadRoutable(CBigNum id, enum KadRoutableType type)
@@ -19,9 +18,7 @@ CBigNum KadRoutable::distance_to(KadRoutable other) const
     return id ^ other.get_id();
 }
 
-/**
- * will sort from smallest distance to largest
- *
+/** Sort from smallest distance to largest.
  *
  * @return true if first is smaller than second
  */

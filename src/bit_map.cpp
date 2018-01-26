@@ -1,4 +1,3 @@
-
 #include "kadsim.h"
 
 void BitMap::shuffle()
@@ -14,10 +13,7 @@ void BitMap::shuffle()
     }
 }
 
-/**
- * check that all bits are taken
- *
- */
+/** Check that all bits are taken. */
 bool BitMap::check()
 {
     for (int i = 0; i < n_bits; i++)

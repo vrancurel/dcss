@@ -1,11 +1,8 @@
-
 #include "kadsim.h"
 
 KadNode::KadNode(KadConf* conf, CBigNum id, std::string addr)
     : KadRoutable(id, KAD_ROUTABLE_NODE)
 {
-    // std::cout << id1.ToString(16) << std::endl;
-
     this->conf = conf;
     this->id = id;
     this->verbose = false;
@@ -35,12 +32,7 @@ const std::string& KadNode::get_eth_account() const
     return eth_account;
 }
 
-/**
- * get the number of conns
- *
- *
- * @return
- */
+/** Get the number of conns. */
 int KadNode::get_n_conns()
 {
     int i, total;
@@ -52,8 +44,7 @@ int KadNode::get_n_conns()
     return total;
 }
 
-/**
- * insert a node in the routing table
+/** Insert a node in the routing table.
  *
  * @param node the node address to add in the buckets
  * @param contacted_us true if node contacted us (thus is alive)
@@ -63,9 +54,6 @@ int KadNode::get_n_conns()
  */
 bool KadNode::add_conn(KadNode* node, bool contacted_us)
 {
-    // std::cout << get_id().ToString(16) << ": add_conn(" <<
-    // node->get_id().ToString(16) << ")\n";
-
     if (node->get_id() == get_id()) {
         std::cout << "cannot add itself " << get_id().ToString(16) << std::endl;
         return false;
@@ -74,14 +62,10 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
     CBigNum distance = distance_to(*node);
     int bit_length = distance.bit_length();
 
-    // std::cout << "distance=" << distance.ToString(16) << " bit_length=" <<
-    // bit_length << "\n";
-
     std::list<KadNode*>& list = buckets[bit_length];
     std::list<KadNode*>::iterator it;
     bool found = false;
     for (it = list.begin(); it != list.end(); ++it) {
-        // std::cout << (*it).get_id().ToString(16) << "\n";
         if ((*it)->get_id() == node->get_id()) {
             found = true;
             break;
@@ -89,24 +73,20 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
     }
 
     if (found) {
-        // std::cout << "node already in bucket\n";
         if (contacted_us) {
-            // move item to the head
+            // Move item to the head.
             list.splice(list.begin(), list, it);
             return false;
         } else {
-            // nothing to do
+            // Nothing to do.
             return false;
         }
     }
 
-    // add node in bucket
+    // Add node in bucket.
     if (buckets[bit_length].size() < conf->k) {
-        // std::cout << "added in bucket" << bit_length << " \n";
         buckets[bit_length].push_back(node);
         return true;
-    } else {
-        // std::cout << "bucket is full\n";
     }
 
     return false;
@@ -127,8 +107,7 @@ KadNode::find_nearest_nodes(KadRoutable routable, int amount)
     }
 }
 
-/**
- * Find nodes closest to the given ID.
+/** * Find nodes closest to the given ID.
  *
  * @param routable
  * @param amount
@@ -144,7 +123,7 @@ KadNode::find_nearest_nodes_local(KadRoutable routable, int amount)
     int count = 0;
     std::list<KadNode*> closest;
 
-    // first look in the corresponding k-bucket
+    // First look in the corresponding k-bucket.
     std::list<KadNode*> list = buckets[bit_length];
 
     list.sort(routable);
@@ -174,7 +153,7 @@ KadNode::find_nearest_nodes_local(KadRoutable routable, int amount)
         if (verbose)
             std::cout << "other k-buckets\n";
 
-        // find remaining nearest nodes
+        // Find remaining nearest nodes.
         for (int i = 1; i < (conf->n_bits + 1); i++) {
             if (bit_length != i) {
                 std::list<KadNode*>& list = buckets[i];
@@ -193,7 +172,7 @@ KadNode::find_nearest_nodes_local(KadRoutable routable, int amount)
             }
         }
 
-        // sort answers
+        // Sort answers.
         all.sort(routable);
         all.unique();
 
@@ -213,8 +192,7 @@ KadNode::find_nearest_nodes_local(KadRoutable routable, int amount)
     return closest;
 }
 
-/**
- * print a list of nodes and their distance to target
+/** Print a list of nodes and their distance to target.
  *
  * @param list
  * @param routable
@@ -235,8 +213,7 @@ static void print_list(
                   << (*queried)[*it] << "\n";
 }
 
-/**
- * Find the node closest to the given ID.
+/** * Find the node closest to the given ID.
  *
  * @param routable
  *
@@ -244,7 +221,7 @@ static void print_list(
  */
 std::list<KadNode*> KadNode::lookup(KadRoutable routable)
 {
-    // pick our alpha starting nodes
+    // Pick our alpha starting nodes.
     std::list<KadNode*> starting_nodes;
     std::list<KadNode*> answers;
     std::map<KadNode*, bool> queried;
@@ -254,37 +231,37 @@ std::list<KadNode*> KadNode::lookup(KadRoutable routable)
     if (verbose)
         print_list("starting_nodes", starting_nodes, routable, &queried);
 
-    // send find_nodes
+    // Send find_nodes.
     for (std::list<KadNode*>::iterator it = starting_nodes.begin();
          it != starting_nodes.end();
          ++it) {
         std::list<KadNode*> answer =
             (*it)->find_nearest_nodes(routable, conf->k);
 
-        // add to answers
+        // Add to answers.
         for (std::list<KadNode*>::iterator it2 = answer.begin();
              it2 != answer.end();
              ++it2) {
-            // remove oneself from the list
+            // Remove oneself from the list.
             if (get_id() != (*it2)->get_id())
                 answers.push_back(*it2);
         }
     }
 
-    // recursion
+    // Recursion.
     int round_nb = 0;
     while (true) {
         if (verbose)
             std::cout << "round=" << round_nb << "\n";
 
-        // sort answers
+        // Sort answers.
         answers.sort(routable);
         answers.unique();
 
         if (verbose)
             print_list("answers", answers, routable, &queried);
 
-        // take only k answers
+        // Take only k answers.
         std::list<KadNode*> k_answers;
         u_int count = 0;
         for (std::list<KadNode*>::iterator it = answers.begin();
@@ -317,19 +294,14 @@ std::list<KadNode*> KadNode::lookup(KadRoutable routable)
             if (count >= conf->alpha)
                 break;
 
-            // std::cout << "querying " << (*it)->get_id().ToString(16) << "\n";
-
             std::list<KadNode*> answer =
                 (*it)->find_nearest_nodes(routable, conf->k);
 
-            // add to round_answers
+            // Add to round_answers.
             for (std::list<KadNode*>::iterator it2 = answer.begin();
                  it2 != answer.end();
                  ++it2) {
-                // std::cout << "found " << (*it2)->get_id().ToString(16) <<
-                // "\n";
-
-                // remove oneself from the list
+                // Remove oneself from the list.
                 if (get_id() != (*it2)->get_id())
                     round_answers.push_back(*it2);
             }
@@ -340,18 +312,18 @@ std::list<KadNode*> KadNode::lookup(KadRoutable routable)
             it++;
         }
 
-        // break if we are done with the k_answers and nobody was queried
+        // Break if we are done with the k_answers and nobody was queried.
         if (k_answers.end() == it && count == 0)
             return k_answers;
 
-        // sort round answers
+        // Sort round answers.
         round_answers.sort(routable);
         round_answers.unique();
 
         if (verbose)
             print_list("round_answers", round_answers, routable, &queried);
 
-        // check if found closest
+        // Check if found closest.
         bool found_closest;
         if (round_answers.empty() && k_answers.empty())
             found_closest = false;
@@ -369,7 +341,7 @@ std::list<KadNode*> KadNode::lookup(KadRoutable routable)
             std::cout << "found_closest=" << found_closest << "\n";
 
         if (!found_closest) {
-            // send queries to remaining k nodes
+            // Send queries to remaining k nodes.
             while (true) {
                 if (k_answers.end() == it)
                     break;
@@ -382,11 +354,11 @@ std::list<KadNode*> KadNode::lookup(KadRoutable routable)
                 std::list<KadNode*> answer =
                     (*it)->find_nearest_nodes(routable, conf->k);
 
-                // add to answers
+                // Add to answers.
                 for (std::list<KadNode*>::iterator it2 = answer.begin();
                      it2 != answer.end();
                      ++it2) {
-                    // remove oneself from the list
+                    // Remove oneself from the list.
                     if (get_id() != (*it2)->get_id())
                         answers.push_back(*it2);
                 }

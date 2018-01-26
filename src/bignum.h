@@ -8,22 +8,23 @@
 #include <algorithm>
 #include <stdexcept>
 #include <vector>
+
 #include <openssl/bn.h>
 
-//#include "util.h" // for uint64
 typedef long long int64;
 typedef unsigned long long uint64;
 
-/** Errors thrown by the bignum class */
+/** Errors thrown by the bignum class. */
 class bignum_error : public std::runtime_error {
   public:
     explicit bignum_error(const std::string& str) : std::runtime_error(str) {}
 };
 
-/** RAII encapsulated BN_CTX (OpenSSL bignum context) */
+/** RAII encapsulated BN_CTX (OpenSSL bignum context). */
 class CAutoBN_CTX {
   protected:
     BN_CTX* pctx;
+
     BN_CTX* operator=(BN_CTX* pnew)
     {
         return pctx = pnew;
@@ -47,21 +48,24 @@ class CAutoBN_CTX {
     {
         return pctx;
     }
+
     BN_CTX& operator*()
     {
         return *pctx;
     }
+
     BN_CTX** operator&()
     {
         return &pctx;
     }
+
     bool operator!()
     {
         return (pctx == NULL);
     }
 };
 
-/** C++ wrapper for BIGNUM (OpenSSL bignum) */
+/** C++ wrapper for BIGNUM (OpenSSL bignum). */
 class CBigNum : public BIGNUM {
   public:
     CBigNum()
@@ -100,6 +104,7 @@ class CBigNum : public BIGNUM {
         else
             setint64(n);
     }
+
     CBigNum(short n)
     {
         BN_init(this);
@@ -108,6 +113,7 @@ class CBigNum : public BIGNUM {
         else
             setint64(n);
     }
+
     CBigNum(int n)
     {
         BN_init(this);
@@ -116,6 +122,7 @@ class CBigNum : public BIGNUM {
         else
             setint64(n);
     }
+
     CBigNum(long n)
     {
         BN_init(this);
@@ -124,39 +131,42 @@ class CBigNum : public BIGNUM {
         else
             setint64(n);
     }
+
     CBigNum(int64 n)
     {
         BN_init(this);
         setint64(n);
     }
+
     CBigNum(unsigned char n)
     {
         BN_init(this);
         setulong(n);
     }
+
     CBigNum(unsigned short n)
     {
         BN_init(this);
         setulong(n);
     }
+
     CBigNum(unsigned int n)
     {
         BN_init(this);
         setulong(n);
     }
+
     CBigNum(unsigned long n)
     {
         BN_init(this);
         setulong(n);
     }
+
     CBigNum(uint64 n)
     {
         BN_init(this);
         setuint64(n);
     }
-#if 0
-    explicit CBigNum(uint256 n) { BN_init(this); setuint256(n); }
-#endif
 
     explicit CBigNum(const std::vector<unsigned char>& vch)
     {
@@ -180,17 +190,6 @@ class CBigNum : public BIGNUM {
     {
         return BN_get_word(this);
     }
-
-#if 0
-    int getint() const
-    {
-        unsigned long n = BN_get_word(this);
-        if (!BN_is_negative(this))
-            return (n > (unsigned long)std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : n);
-        else
-            return (n > (unsigned long)std::numeric_limits<int>::max() ? std::numeric_limits<int>::min() : -(int)n);
-    }
-#endif
 
     void setint64(int64 sn)
     {
@@ -260,51 +259,6 @@ class CBigNum : public BIGNUM {
         pch[3] = (nSize)&0xff;
         BN_mpi2bn(pch, p - pch, this);
     }
-
-#if 0
-    void setuint256(uint256 n)
-    {
-        unsigned char pch[sizeof(n) + 6];
-        unsigned char* p = pch + 4;
-        bool fLeadingZeroes = true;
-        unsigned char* pbegin = (unsigned char*)&n;
-        unsigned char* psrc = pbegin + sizeof(n);
-        while (psrc != pbegin)
-        {
-            unsigned char c = *(--psrc);
-            if (fLeadingZeroes)
-            {
-                if (c == 0)
-                    continue;
-                if (c & 0x80)
-                    *p++ = 0;
-                fLeadingZeroes = false;
-            }
-            *p++ = c;
-        }
-        unsigned int nSize = p - (pch + 4);
-        pch[0] = (nSize >> 24) & 0xff;
-        pch[1] = (nSize >> 16) & 0xff;
-        pch[2] = (nSize >> 8) & 0xff;
-        pch[3] = (nSize >> 0) & 0xff;
-        BN_mpi2bn(pch, p - pch, this);
-    }
-
-    uint256 getuint256()
-    {
-        unsigned int nSize = BN_bn2mpi(this, NULL);
-        if (nSize < 4)
-            return 0;
-        std::vector<unsigned char> vch(nSize);
-        BN_bn2mpi(this, &vch[0]);
-        if (vch.size() > 4)
-            vch[4] &= 0x7f;
-        uint256 n = 0;
-        for (unsigned int i = 0, j = vch.size()-1; i < sizeof(n) && j >= 4; i++, j--)
-            ((unsigned char*)&n)[i] = vch[j];
-        return n;
-    }
-#endif
 
     void setvch(const std::vector<unsigned char>& vch)
     {
@@ -488,27 +442,6 @@ class CBigNum : public BIGNUM {
         BN_set_bit(&range, n_bits);
         BN_rand_range(this, &range);
     }
-
-#if 0
-    unsigned int GetSerializeSize(int nType=0, int nVersion=PROTOCOL_VERSION) const
-    {
-        return ::GetSerializeSize(getvch(), nType, nVersion);
-    }
-
-    template<typename Stream>
-    void Serialize(Stream& s, int nType=0, int nVersion=PROTOCOL_VERSION) const
-    {
-        ::Serialize(s, getvch(), nType, nVersion);
-    }
-
-    template<typename Stream>
-    void Unserialize(Stream& s, int nType=0, int nVersion=PROTOCOL_VERSION)
-    {
-        std::vector<unsigned char> vch;
-        ::Unserialize(s, vch, nType, nVersion);
-        setvch(vch);
-    }
-#endif
 
     bool operator!() const
     {

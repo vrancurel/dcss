@@ -1,4 +1,3 @@
-
 #include "kadsim.h"
 
 int cmd_quit(Shell* shell, int argc, char** argv)
@@ -105,8 +104,6 @@ int cmd_lookup(Shell* shell, int argc, char** argv)
     bn.SetHex(argv[1]);
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
 
-    // std::cout << bn.ToString(16) << "\n";
-
     std::list<KadNode*> result = node->lookup(routable);
 
     std::list<KadNode*>::iterator it;
@@ -134,8 +131,6 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
     CBigNum bn;
     bn.SetHex(argv[1]);
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
-
-    // std::cout << bn.ToString(16) << "\n";
 
     std::list<KadNode*> result =
         node->find_nearest_nodes(routable, atoi(argv[2]));

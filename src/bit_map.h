@@ -1,4 +1,3 @@
-
 #ifndef __BITMAP_H__
 #define __BITMAP_H__ 1
 
@@ -11,7 +10,7 @@ class BitMap {
 
     int get_bit(int i);
     int
-    get_rand_bit(); /* get a random bit that has never been generated before */
+    get_rand_bit(); /* Get a random bit that has never been generated before. */
     bool check();
 
   private:
