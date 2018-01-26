@@ -1,18 +1,15 @@
 
 #include "kadsim.h"
 
-KadFile::KadFile(CBigNum id, KadNode *referencer) : KadRoutable(id, KAD_ROUTABLE_FILE)
+KadFile::KadFile(CBigNum id, KadNode* referencer)
+    : KadRoutable(id, KAD_ROUTABLE_FILE)
 {
-  this->referencer = referencer;
+    this->referencer = referencer;
 }
 
-KadFile::~KadFile()
-{
+KadFile::~KadFile() {}
 
-}
-
-KadNode *
-KadFile::get_referencer()
+KadNode* KadFile::get_referencer()
 {
-  return referencer;
+    return referencer;
 }

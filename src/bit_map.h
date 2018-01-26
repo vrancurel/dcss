@@ -4,28 +4,28 @@
 
 #include "kadsim.h"
 
-class BitMap
-{
- public:
-  BitMap(int n_bits);
-  ~BitMap();
+class BitMap {
+  public:
+    BitMap(int n_bits);
+    ~BitMap();
 
-  int get_bit(int i);
-  int get_rand_bit(); /* get a random bit that has never been generated before */
-  bool check();
+    int get_bit(int i);
+    int
+    get_rand_bit(); /* get a random bit that has never been generated before */
+    bool check();
 
- private:
-  //DISALLOW_COPY_AND_ASSIGN(BitMap);
+  private:
+    // DISALLOW_COPY_AND_ASSIGN(BitMap);
 
-  int n_bits;
-  char *b;
-  int *reservoir;
-  int pos;
+    int n_bits;
+    char* b;
+    int* reservoir;
+    int pos;
 
-  void set_bit(int i);
-  void clear_bit(int i);
+    void set_bit(int i);
+    void clear_bit(int i);
 
-  void shuffle();
+    void shuffle();
 };
 
 #endif
