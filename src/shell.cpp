@@ -330,7 +330,7 @@ void Shell::loop()
         char* line = NULL;
 
         if ((line = readline(prompt))) {
-            enum shell_error shell_err;
+            enum shell_error shell_err = SHELL_ERROR_NONE;
             int ret;
 
             ret = parse(defs, line, &shell_err);

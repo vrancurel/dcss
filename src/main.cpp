@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     int n_init_conn = 100;
     int n_files = 5000;
     int rand_seed = 0;
-    char* fname = NULL;
+    std::string fname;
     std::string geth_addr = "localhost:8545";
     std::vector<std::string> bstraplist;
 
@@ -143,10 +143,9 @@ int main(int argc, char** argv)
             geth_addr = optarg;
             break;
         case 'B': {
-            char* bstraplist_dup = strdup(optarg);
-            char* bstrap;
-            while (NULL != (bstrap = strtok(bstraplist_dup, ","))) {
-                bstraplist_dup = NULL;
+            std::istringstream input(optarg);
+            std::string bstrap;
+            while (std::getline(input, bstrap, ',')) {
                 bstraplist.push_back(bstrap);
             }
             break;
@@ -155,7 +154,7 @@ int main(int argc, char** argv)
             rand_seed = atoi(optarg);
             break;
         case 'f':
-            fname = strdup(optarg);
+            fname = optarg;
             break;
         case 'N':
             n_files = atoi(optarg);
@@ -166,7 +165,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (fname) {
+    if (fname.empty()) {
         std::ifstream fin(fname);
         if (!fin.is_open()) {
             std::cerr << "unable to open " << fname << "\n";
