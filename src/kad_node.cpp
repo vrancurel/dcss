@@ -1,6 +1,6 @@
 #include "kadsim.h"
 
-KadNode::KadNode(KadConf* conf, CBigNum id, std::string addr)
+KadNode::KadNode(KadConf* conf, const CBigNum& id, const std::string& addr)
     : KadRoutable(id, KAD_ROUTABLE_NODE)
 {
     this->conf = conf;
@@ -23,7 +23,7 @@ KadNode::KadNode(KadConf* conf, CBigNum id, std::string addr)
     }
 }
 
-KadNode::KadNode(KadConf* conf, CBigNum id) : KadNode(conf, id, "") {}
+KadNode::KadNode(KadConf* conf, const CBigNum& id) : KadNode(conf, id, "") {}
 
 KadNode::~KadNode() {}
 
@@ -93,7 +93,7 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
 }
 
 std::list<KadNode*>
-KadNode::find_nearest_nodes(KadRoutable routable, int amount)
+KadNode::find_nearest_nodes(const KadRoutable& routable, int amount)
 {
     if (!this->addr.empty()) {
         Json::Value params;
@@ -115,7 +115,7 @@ KadNode::find_nearest_nodes(KadRoutable routable, int amount)
  * @return the list
  */
 std::list<KadNode*>
-KadNode::find_nearest_nodes_local(KadRoutable routable, int amount)
+KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
 {
     CBigNum distance = distance_to(routable);
     int bit_length = distance.bit_length();
@@ -198,9 +198,9 @@ KadNode::find_nearest_nodes_local(KadRoutable routable, int amount)
  * @param routable
  */
 static void print_list(
-    std::string comment,
+    const std::string& comment,
     std::list<KadNode*> list,
-    KadRoutable routable,
+    const KadRoutable& routable,
     std::map<KadNode*, bool>* queried)
 {
     std::cout << "---" << comment << " size " << list.size() << "\n";
@@ -219,7 +219,7 @@ static void print_list(
  *
  * @return the node
  */
-std::list<KadNode*> KadNode::lookup(KadRoutable routable)
+std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
 {
     // Pick our alpha starting nodes.
     std::list<KadNode*> starting_nodes;

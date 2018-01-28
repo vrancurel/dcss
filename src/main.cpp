@@ -9,7 +9,7 @@ KadConf::KadConf(
     int alpha,
     int n_nodes,
     const std::string& geth_addr,
-    const std::vector<std::string> bstraplist)
+    const std::vector<std::string>& bstraplist)
     : httpclient(geth_addr), geth(httpclient), bstraplist(bstraplist)
 {
     this->n_bits = n_bits;

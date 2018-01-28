@@ -43,7 +43,7 @@ void cb_display_node(KadNode* node, void* cb_arg)
     std::cout << node->get_id().ToString(16) << "\n";
 }
 
-void cb_display_routable(KadRoutable routable, void* cb_arg)
+void cb_display_routable(const KadRoutable& routable, void* cb_arg)
 {
     std::cout << routable.get_id().ToString(16) << "\n";
 }

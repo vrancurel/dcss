@@ -184,7 +184,7 @@ void KadNetwork::rand_routable(troutable_callback_func cb_func, void* cb_arg)
  *
  * @return the node identified by `id`
  */
-KadNode* KadNetwork::lookup_cheat(std::string id)
+KadNode* KadNetwork::lookup_cheat(const std::string& id)
 {
     return nodes_map[id];
 }
@@ -195,7 +195,7 @@ KadNode* KadNetwork::lookup_cheat(std::string id)
  *
  * @return
  */
-KadNode* KadNetwork::find_nearest_cheat(KadRoutable routable)
+KadNode* KadNetwork::find_nearest_cheat(const KadRoutable& routable)
 {
     KadNode* nearest = NULL;
 

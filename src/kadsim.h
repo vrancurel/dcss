@@ -38,7 +38,7 @@ class KadConf {
         int alpha,
         int n_nodes,
         const std::string& geth_addr,
-        const std::vector<std::string> bstraplist);
+        const std::vector<std::string>& bstraplist);
     void save(std::ostream& fout);
     int n_bits;
     u_int k;
@@ -57,13 +57,13 @@ enum KadRoutableType {
 
 class KadRoutable {
   public:
-    KadRoutable(CBigNum id, enum KadRoutableType);
+    KadRoutable(const CBigNum& id, enum KadRoutableType);
     ~KadRoutable();
 
     CBigNum get_id() const;
     bool is_remote();
     KadRoutableType get_type();
-    CBigNum distance_to(KadRoutable other) const;
+    CBigNum distance_to(const KadRoutable& other) const;
     bool operator()(const KadRoutable* first, const KadRoutable* second) const;
 
   protected:
@@ -78,7 +78,7 @@ class KadNode;
 
 class KadFile : public KadRoutable {
   public:
-    KadFile(CBigNum id, KadNode* referencer);
+    KadFile(const CBigNum& id, KadNode* referencer);
     ~KadFile();
     KadNode* get_referencer();
 
@@ -90,17 +90,18 @@ class KadFile : public KadRoutable {
 
 class KadNode : public KadRoutable {
   public:
-    KadNode(KadConf* conf, CBigNum id);
-    KadNode(KadConf* conf, CBigNum id, std::string addr);
+    KadNode(KadConf* conf, const CBigNum& id);
+    KadNode(KadConf* conf, const CBigNum& id, const std::string& addr);
     ~KadNode();
 
     int get_n_conns();
     const std::string& get_eth_account() const;
     bool add_conn(KadNode* node, bool contacted_us);
-    std::list<KadNode*> find_nearest_nodes(KadRoutable routable, int amount);
     std::list<KadNode*>
-    find_nearest_nodes_local(KadRoutable routable, int amount);
-    std::list<KadNode*> lookup(KadRoutable routable);
+    find_nearest_nodes(const KadRoutable& routable, int amount);
+    std::list<KadNode*>
+    find_nearest_nodes_local(const KadRoutable& routable, int amount);
+    std::list<KadNode*> lookup(const KadRoutable& routable);
     void show();
     void set_verbose(int level);
     void save(std::ostream& fout);
@@ -127,7 +128,8 @@ class KadNode : public KadRoutable {
 };
 
 typedef void (*tnode_callback_func)(KadNode* node, void* cb_arg);
-typedef void (*troutable_callback_func)(KadRoutable routable, void* cb_arg);
+typedef void (
+    *troutable_callback_func)(const KadRoutable& routable, void* cb_arg);
 
 class KadNetwork {
   public:
@@ -139,8 +141,8 @@ class KadNetwork {
     void initialize_files(int n_files);
     void rand_node(tnode_callback_func cb_func, void* cb_arg);
     void rand_routable(troutable_callback_func cb_func, void* cb_arg);
-    KadNode* lookup_cheat(std::string id);
-    KadNode* find_nearest_cheat(KadRoutable routable);
+    KadNode* lookup_cheat(const std::string& id);
+    KadNode* find_nearest_cheat(const KadRoutable& routable);
     void save(std::ostream& fout);
     void graphviz(std::ostream& fout);
     void check_files();
