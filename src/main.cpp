@@ -54,7 +54,7 @@ void call_contract(
                           << '\n';
             }
             return;
-        } catch (jsonrpc::JsonRpcException exn) {
+        } catch (jsonrpc::JsonRpcException& exn) {
             if (exn.GetCode() == -32000) {
                 continue; // Transaction is pending…
             } else {
@@ -125,19 +125,19 @@ int main(int argc, char** argv)
     while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:N:")) != -1) {
         switch (c) {
         case 'b':
-            n_bits = atoi(optarg);
+            n_bits = std::stoi(optarg);
             break;
         case 'k':
-            k = atoi(optarg);
+            k = std::stoi(optarg);
             break;
         case 'a':
-            alpha = atoi(optarg);
+            alpha = std::stoi(optarg);
             break;
         case 'n':
-            n_nodes = atoi(optarg);
+            n_nodes = std::stoi(optarg);
             break;
         case 'c':
-            n_init_conn = atoi(optarg);
+            n_init_conn = std::stoi(optarg);
             break;
         case 'g':
             geth_addr = optarg;
@@ -151,13 +151,13 @@ int main(int argc, char** argv)
             break;
         }
         case 'S':
-            rand_seed = atoi(optarg);
+            rand_seed = std::stoi(optarg);
             break;
         case 'f':
             fname = optarg;
             break;
         case 'N':
-            n_files = atoi(optarg);
+            n_files = std::stoi(optarg);
             break;
         case '?':
         default:
@@ -179,13 +179,13 @@ int main(int argc, char** argv)
         parse_error();                                                         \
     p++;
         GETLINE();
-        n_bits = atoi(p);
+        n_bits = std::stoi(p);
         GETLINE();
-        k = atoi(p);
+        k = std::stoi(p);
         GETLINE();
-        alpha = atoi(p);
+        alpha = std::stoi(p);
         GETLINE();
-        n_nodes = atoi(p);
+        n_nodes = std::stoi(p);
     }
 
     KadConf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
     KadNetwork network(&conf);
     Shell shell;
 
-    srand(rand_seed);
+    prng().seed(rand_seed);
 
     network.initialize_nodes(n_init_conn, bstraplist);
     network.initialize_files(n_files);

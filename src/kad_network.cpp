@@ -52,6 +52,7 @@ void KadNetwork::initialize_nodes(
 
     // Continue creating conns for the nodes that dont meet the initial number
     // required.
+    std::uniform_int_distribution<> dis(0, nodes.size() - 1);
     for (u_int i = 0; i < conf->n_nodes; i++) {
         KadNode* node = nodes[i];
 
@@ -71,8 +72,7 @@ void KadNetwork::initialize_nodes(
             }
 
             // Pick a random node.
-            int x = rand() % nodes.size();
-            other = nodes[x];
+            other = nodes[dis(prng())];
 
             // Connect them 2-way.
             node->add_conn(other, false);
@@ -87,6 +87,8 @@ void KadNetwork::initialize_nodes(
 
 void KadNetwork::initialize_files(int n_files)
 {
+    std::uniform_int_distribution<> dis(0, nodes.size() - 1);
+
     std::cout << "initialize files\n";
 
     for (int i = 0; i < n_files; i++) {
@@ -95,8 +97,7 @@ void KadNetwork::initialize_files(int n_files)
                       << "                   \r";
 
         // Take a random node.
-        int x = rand() % nodes.size();
-        KadNode* node = nodes[x];
+        KadNode* node = nodes[dis(prng())];
 
         // Gen a random identifier for the file.
         CBigNum bn;
@@ -116,6 +117,8 @@ void KadNetwork::initialize_files(int n_files)
 /** Check that files are accessible from random nodes. */
 void KadNetwork::check_files()
 {
+    std::uniform_int_distribution<> dis(0, nodes.size() - 1);
+
     std::cout << "checking files\n";
 
     int n_wrong = 0;
@@ -127,8 +130,7 @@ void KadNetwork::check_files()
         KadFile* file = files[i];
 
         // Take a random node.
-        int x = rand() % nodes.size();
-        KadNode* node = nodes[x];
+        KadNode* node = nodes[dis(prng())];
 
         // Get results.
         std::list<KadNode*> result = node->lookup(*file);
@@ -161,7 +163,8 @@ void KadNetwork::check_files()
 
 void KadNetwork::rand_node(tnode_callback_func cb_func, void* cb_arg)
 {
-    int x = rand() % nodes.size();
+    std::uniform_int_distribution<> dis(0, nodes.size() - 1);
+    int x = dis(prng());
     if (NULL != cb_func)
         cb_func(nodes[x], cb_arg);
 }

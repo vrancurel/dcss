@@ -1,6 +1,8 @@
 #ifndef __BITMAP_H__
 #define __BITMAP_H__ 1
 
+#include <vector>
+
 #include "kadsim.h"
 
 class BitMap {
@@ -18,13 +20,11 @@ class BitMap {
 
     int n_bits;
     char* b;
-    int* reservoir;
+    std::vector<int> reservoir;
     int pos;
 
     void set_bit(int i);
     void clear_bit(int i);
-
-    void shuffle();
 };
 
 #endif

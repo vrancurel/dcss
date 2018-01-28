@@ -17,6 +17,7 @@
 #include <iostream>
 #include <list>
 #include <map>
+#include <random>
 #include <vector>
 
 #include <getopt.h>
@@ -167,5 +168,13 @@ void call_contract(
     const std::string& node_addr,
     const std::string& contract_addr,
     const std::string& payload);
+
+// Return a reference to the global PRNG.
+static inline std::mt19937& prng()
+{
+    static std::mt19937 PRNG;
+
+    return PRNG;
+}
 
 #endif

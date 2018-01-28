@@ -18,7 +18,7 @@ KadNode::KadNode(KadConf* conf, CBigNum id, std::string addr)
     try {
         this->eth_account = conf->geth.personal_newAccount(eth_passphrase);
         conf->geth.personal_unlockAccount(eth_account, eth_passphrase, 0);
-    } catch (jsonrpc::JsonRpcException) {
+    } catch (jsonrpc::JsonRpcException&) {
         this->eth_account = "";
     }
 }
@@ -446,7 +446,7 @@ void KadNode::buy_storage(const std::string& seller, uint64_t nb_bytes)
 
     try {
         call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
-    } catch (jsonrpc::JsonRpcException exn) {
+    } catch (jsonrpc::JsonRpcException& exn) {
         std::cerr << "cannot buy " << nb_bytes << "bytes from " << seller
                   << ": " << exn.what() << '\n';
     }
@@ -463,7 +463,7 @@ void KadNode::put_bytes(const std::string& seller, uint64_t nb_bytes)
 
     try {
         call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
-    } catch (jsonrpc::JsonRpcException exn) {
+    } catch (jsonrpc::JsonRpcException& exn) {
         std::cerr << "cannot put " << nb_bytes << "bytes on storage of "
                   << seller << ": " << exn.what() << '\n';
     }
@@ -480,7 +480,7 @@ void KadNode::get_bytes(const std::string& seller, uint64_t nb_bytes)
 
     try {
         call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
-    } catch (jsonrpc::JsonRpcException exn) {
+    } catch (jsonrpc::JsonRpcException& exn) {
         std::cerr << "cannot get " << nb_bytes << "bytes from storage of "
                   << seller << ": " << exn.what() << '\n';
     }

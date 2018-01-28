@@ -133,7 +133,7 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
 
     std::list<KadNode*> result =
-        node->find_nearest_nodes(routable, atoi(argv[2]));
+        node->find_nearest_nodes(routable, std::stoi(argv[2]));
 
     std::list<KadNode*>::iterator it;
     for (it = result.begin(); it != result.end(); ++it)
@@ -176,7 +176,7 @@ int cmd_verbose(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    node->set_verbose(atoi(argv[1]));
+    node->set_verbose(std::stoi(argv[1]));
 
     return SHELL_CONT;
 }
@@ -283,8 +283,7 @@ int cmd_buy_storage(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    // FIXME: atoi is so dirty…
-    node->buy_storage(argv[1], atoi(argv[2]));
+    node->buy_storage(argv[1], std::stoi(argv[2]));
 
     return SHELL_CONT;
 }
@@ -302,8 +301,7 @@ int cmd_put_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    // FIXME: atoi is so dirty…
-    node->put_bytes(argv[1], atoi(argv[2]));
+    node->put_bytes(argv[1], std::stoi(argv[2]));
 
     return SHELL_CONT;
 }
@@ -321,8 +319,7 @@ int cmd_get_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    // FIXME: atoi is so dirty…
-    node->get_bytes(argv[1], atoi(argv[2]));
+    node->get_bytes(argv[1], std::stoi(argv[2]));
 
     return SHELL_CONT;
 }
