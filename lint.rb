@@ -4,6 +4,7 @@
 COMPIL_OPTS = '-x c++ --std=c++11'.freeze
 CHECKS = %w[
   cert-*
+  modernize-*
   performance-*
   readability-*
 ].freeze

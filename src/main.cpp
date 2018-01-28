@@ -1,5 +1,6 @@
 #include <iomanip>
 #include <sstream>
+#include <utility>
 
 #include "kadsim.h"
 
@@ -9,8 +10,8 @@ KadConf::KadConf(
     int alpha,
     int n_nodes,
     const std::string& geth_addr,
-    const std::vector<std::string>& bstraplist)
-    : httpclient(geth_addr), geth(httpclient), bstraplist(bstraplist)
+    std::vector<std::string> bstraplist)
+    : httpclient(geth_addr), geth(httpclient), bstraplist(std::move(bstraplist))
 {
     this->n_bits = n_bits;
     this->k = k;

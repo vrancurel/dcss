@@ -11,8 +11,8 @@
 
 #include <openssl/bn.h>
 
-typedef long long int64;
-typedef unsigned long long uint64;
+using int64 = long long;
+using uint64 = unsigned long long;
 
 /** Errors thrown by the bignum class. */
 class bignum_error : public std::runtime_error {
@@ -34,14 +34,14 @@ class CAutoBN_CTX {
     CAutoBN_CTX()
     {
         pctx = BN_CTX_new();
-        if (pctx == NULL) {
+        if (pctx == nullptr) {
             throw bignum_error("CAutoBN_CTX : BN_CTX_new() returned NULL");
         }
     }
 
     ~CAutoBN_CTX()
     {
-        if (pctx != NULL) {
+        if (pctx != nullptr) {
             BN_CTX_free(pctx);
         }
     }
@@ -63,7 +63,7 @@ class CAutoBN_CTX {
 
     bool operator!()
     {
-        return (pctx == NULL);
+        return (pctx == nullptr);
     }
 };
 
@@ -276,7 +276,7 @@ class CBigNum {
 
     std::vector<unsigned char> getvch() const
     {
-        unsigned int nSize = BN_bn2mpi(bn, NULL);
+        unsigned int nSize = BN_bn2mpi(bn, nullptr);
         if (nSize <= 4) {
             return std::vector<unsigned char>();
         }
@@ -611,7 +611,7 @@ inline const CBigNum operator/(const CBigNum& a, const CBigNum& b)
 {
     CAutoBN_CTX pctx;
     CBigNum r;
-    if (BN_div(r.bn, NULL, a.bn, b.bn, pctx) == 0) {
+    if (BN_div(r.bn, nullptr, a.bn, b.bn, pctx) == 0) {
         throw bignum_error("CBigNum::operator/ : BN_div failed");
     }
     return r;

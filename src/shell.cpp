@@ -11,7 +11,7 @@ const char* shell_err_strings[] = {
     "too many args",
     "argument is too long",
     "double quote error",
-    NULL,
+    nullptr,
 };
 
 const char* shell_error_str(enum shell_error err)
@@ -19,7 +19,7 @@ const char* shell_error_str(enum shell_error err)
     return (shell_err_strings[err]);
 }
 
-static struct cmd_def** g_cmd_defs = NULL;
+static struct cmd_def** g_cmd_defs = nullptr;
 
 /** For completion.
  *
@@ -49,24 +49,24 @@ static char* command_generator(const char* text, int state)
 
         if (strncmp(name, text, len) == 0) {
             char* nptr = strdup(name);
-            assert(NULL != nptr);
+            assert(nullptr != nptr);
             return nptr;
         }
     }
 
     /* If no names matched, then return NULL. */
-    return ((char*)NULL);
+    return ((char*)nullptr);
 }
 
 char** shell_completion(const char* text, int start, int end)
 {
     char** matches;
 
-    if (NULL == g_cmd_defs) {
-        return NULL;
+    if (nullptr == g_cmd_defs) {
+        return nullptr;
     }
 
-    matches = (char**)NULL;
+    matches = (char**)nullptr;
 
     if (start == 0) {
         matches = rl_completion_matches(text, command_generator);
@@ -84,10 +84,10 @@ Shell::Shell()
         Shell::class_initialized = true;
     }
 
-    defs = NULL;
-    handle = NULL;
-    handle2 = NULL;
-    prompt = NULL;
+    defs = nullptr;
+    handle = nullptr;
+    handle2 = nullptr;
+    prompt = nullptr;
 }
 
 int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
@@ -119,7 +119,7 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
             }
         } else {
         retry:
-            ret = wait(0);
+            ret = wait(nullptr);
             if (-1 == ret) {
                 if (EINTR == errno) {
                     goto retry;
@@ -131,13 +131,13 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
         }
         return SHELL_CONT;
     }
-    if (NULL != (p = index(argv[0], '='))) {
+    if (nullptr != (p = index(argv[0], '='))) {
         *p++ = 0;
         return SHELL_CONT;
     }
     len = strlen(argv[0]);
 
-    def = NULL;
+    def = nullptr;
     found = 0;
     for (i = 0; defs[i] != nullptr; i++) {
         tmp = defs[i];
@@ -224,7 +224,7 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
                 sargc++;
             }
 
-            sargv[sargc] = NULL;
+            sargv[sargc] = nullptr;
 
             if (dblquote) {
                 if (errp != nullptr) {
@@ -266,7 +266,7 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
                 if ((sargc + 1) < SHELL_MAX_ARGV) {
                     sargv[sargc] = &sargmem[sargc][0];
                     sargc++;
-                    sargv[sargc] = NULL;
+                    sargv[sargc] = nullptr;
                     pos = 0;
                 } else {
                     if (errp != nullptr) {
@@ -330,7 +330,7 @@ void* Shell::get_handle2()
 void Shell::set_prompt(const char* prompt)
 {
     char* nprompt = strdup(prompt);
-    if (NULL == nprompt) {
+    if (nullptr == nprompt) {
         perror("strdup");
         exit(1);
     }
@@ -343,7 +343,7 @@ void Shell::loop()
     using_history();
 
     while (true) {
-        char* line = NULL;
+        char* line = nullptr;
 
         if ((line = readline(prompt)) != nullptr) {
             enum shell_error shell_err = SHELL_ERROR_NONE;

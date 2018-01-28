@@ -6,8 +6,6 @@ KadRoutable::KadRoutable(const CBigNum& id, enum KadRoutableType type)
     this->type = type;
 }
 
-KadRoutable::~KadRoutable() {}
-
 CBigNum KadRoutable::get_id() const
 {
     return id;

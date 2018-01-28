@@ -50,18 +50,18 @@ void cb_display_routable(const KadRoutable& routable, void* cb_arg)
 
 int cmd_rand_node(Shell* shell, int argc, char** argv)
 {
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = (KadNetwork*)shell->get_handle();
 
-    network->rand_node(cb_display_node, NULL);
+    network->rand_node(cb_display_node, nullptr);
 
     return SHELL_CONT;
 }
 
 int cmd_rand_key(Shell* shell, int argc, char** argv)
 {
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = (KadNetwork*)shell->get_handle();
 
-    network->rand_routable(cb_display_routable, NULL);
+    network->rand_routable(cb_display_routable, nullptr);
 
     return SHELL_CONT;
 }
@@ -73,10 +73,10 @@ int cmd_jump(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = (KadNetwork*)shell->get_handle();
 
     KadNode* node = network->lookup_cheat(argv[1]);
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "not found\n");
         return SHELL_CONT;
     }
@@ -93,9 +93,9 @@ int cmd_lookup(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = (KadNode*)shell->get_handle2();
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -122,9 +122,9 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = (KadNode*)shell->get_handle2();
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -152,9 +152,9 @@ int cmd_show(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = (KadNode*)shell->get_handle2();
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -171,9 +171,9 @@ int cmd_verbose(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = (KadNode*)shell->get_handle2();
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -190,19 +190,19 @@ int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = (KadNetwork*)shell->get_handle();
 
     CBigNum bn;
     bn.SetHex(argv[1]);
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
 
     KadNode* node = network->find_nearest_cheat(routable);
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "not found\n");
         return SHELL_CONT;
     }
 
-    cb_display_node(node, NULL);
+    cb_display_node(node, nullptr);
 
     return SHELL_CONT;
 }
@@ -214,7 +214,7 @@ int cmd_save(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = (KadNetwork*)shell->get_handle();
 
     std::ofstream fout(argv[1]);
     network->save(fout);
@@ -264,7 +264,7 @@ int cmd_graphviz(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = (KadNetwork*)shell->get_handle();
 
     std::ofstream fout(argv[1]);
     network->graphviz(fout);
@@ -279,8 +279,8 @@ int cmd_buy_storage(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
-    if (NULL == node) {
+    auto* node = (KadNode*)shell->get_handle2();
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -297,8 +297,8 @@ int cmd_put_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
-    if (NULL == node) {
+    auto* node = (KadNode*)shell->get_handle2();
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -315,8 +315,8 @@ int cmd_get_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
-    if (NULL == node) {
+    auto* node = (KadNode*)shell->get_handle2();
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -379,5 +379,5 @@ struct cmd_def* cmd_defs[] = {
     &show_cmd,
     &verbose_cmd,
     &xor_cmd,
-    NULL,
+    nullptr,
 };

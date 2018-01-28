@@ -38,7 +38,7 @@ class KadConf {
         int alpha,
         int n_nodes,
         const std::string& geth_addr,
-        const std::vector<std::string>& bstraplist);
+        std::vector<std::string> bstraplist);
     void save(std::ostream& fout);
     int n_bits;
     u_int k;
@@ -58,7 +58,6 @@ enum KadRoutableType {
 class KadRoutable {
   public:
     KadRoutable(const CBigNum& id, enum KadRoutableType);
-    ~KadRoutable();
 
     CBigNum get_id() const;
     bool is_remote();
@@ -79,7 +78,6 @@ class KadNode;
 class KadFile : public KadRoutable {
   public:
     KadFile(const CBigNum& id, KadNode* referencer);
-    ~KadFile();
     KadNode* get_referencer();
 
   private:
@@ -92,7 +90,6 @@ class KadNode : public KadRoutable {
   public:
     KadNode(KadConf* conf, const CBigNum& id);
     KadNode(KadConf* conf, const CBigNum& id, const std::string& addr);
-    ~KadNode();
 
     int get_n_conns();
     const std::string& get_eth_account() const;
@@ -118,7 +115,7 @@ class KadNode : public KadRoutable {
 
     KadConf* conf;
 
-    typedef std::map<int, std::list<KadNode*>> tbucket;
+    using tbucket = std::map<int, std::list<KadNode*>>;
     tbucket buckets;
     bool verbose;
 
@@ -127,14 +124,12 @@ class KadNode : public KadRoutable {
     std::string eth_account;
 };
 
-typedef void (*tnode_callback_func)(KadNode* node, void* cb_arg);
-typedef void (
-    *troutable_callback_func)(const KadRoutable& routable, void* cb_arg);
+using tnode_callback_func = void (*)(KadNode*, void*);
+using troutable_callback_func = void (*)(const KadRoutable&, void*);
 
 class KadNetwork {
   public:
     KadNetwork(KadConf* conf);
-    ~KadNetwork();
 
     void
     initialize_nodes(int n_initial_conn, std::vector<std::string> bstraplist);

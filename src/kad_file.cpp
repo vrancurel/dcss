@@ -6,8 +6,6 @@ KadFile::KadFile(const CBigNum& id, KadNode* referencer)
     this->referencer = referencer;
 }
 
-KadFile::~KadFile() {}
-
 KadNode* KadFile::get_referencer()
 {
     return referencer;
