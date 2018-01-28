@@ -12,7 +12,7 @@ int cmd_help(Shell* shell, int argc, char** argv)
         int i, j;
 
         j = 0;
-        for (i = 0; cmd_defs[i]; i++) {
+        for (i = 0; cmd_defs[i] != nullptr; i++) {
             cmdp = cmd_defs[i];
             printf("%16s", cmdp->name);
             j++;
@@ -26,9 +26,9 @@ int cmd_help(Shell* shell, int argc, char** argv)
         struct cmd_def* cmdp;
         int i;
 
-        for (i = 0; cmd_defs[i]; i++) {
+        for (i = 0; cmd_defs[i] != nullptr; i++) {
             cmdp = cmd_defs[i];
-            if (!strcmp(argv[1], cmdp->name)) {
+            if (strcmp(argv[1], cmdp->name) == 0) {
                 printf("%s\n", cmdp->purpose);
                 break;
             }
@@ -107,9 +107,10 @@ int cmd_lookup(Shell* shell, int argc, char** argv)
     std::list<KadNode*> result = node->lookup(routable);
 
     std::list<KadNode*>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it)
+    for (it = result.begin(); it != result.end(); ++it) {
         std::cout << "id " << (*it)->get_id().ToString(16) << " dist "
                   << (*it)->distance_to(routable).ToString(16) << "\n";
+    }
 
     return SHELL_CONT;
 }
@@ -136,9 +137,10 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
         node->find_nearest_nodes(routable, std::stoi(argv[2]));
 
     std::list<KadNode*>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it)
+    for (it = result.begin(); it != result.end(); ++it) {
         std::cout << "id " << (*it)->get_id().ToString(16) << " dist "
                   << (*it)->distance_to(routable).ToString(16) << "\n";
+    }
 
     return SHELL_CONT;
 }
@@ -176,7 +178,7 @@ int cmd_verbose(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    node->set_verbose(std::stoi(argv[1]));
+    node->set_verbose(std::stoi(argv[1]) != 0);
 
     return SHELL_CONT;
 }

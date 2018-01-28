@@ -103,7 +103,7 @@ class KadNode : public KadRoutable {
     find_nearest_nodes_local(const KadRoutable& routable, int amount);
     std::list<KadNode*> lookup(const KadRoutable& routable);
     void show();
-    void set_verbose(int level);
+    void set_verbose(bool enable);
     void save(std::ostream& fout);
     void store(KadFile* file);
     std::vector<KadFile*> get_files();
@@ -120,7 +120,7 @@ class KadNode : public KadRoutable {
 
     typedef std::map<int, std::list<KadNode*>> tbucket;
     tbucket buckets;
-    int verbose;
+    bool verbose;
 
     std::vector<KadFile*> files;
     std::string eth_passphrase;

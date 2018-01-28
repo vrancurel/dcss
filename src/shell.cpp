@@ -36,12 +36,12 @@ static char* command_generator(const char* text, int state)
     const char* name;
     struct cmd_def* def;
 
-    if (!state) {
+    if (state == 0) {
         list_index = 0;
         len = strlen(text);
     }
 
-    while (g_cmd_defs[list_index]) {
+    while (g_cmd_defs[list_index] != nullptr) {
         def = g_cmd_defs[list_index];
         name = def->name;
 
@@ -62,13 +62,15 @@ char** shell_completion(const char* text, int start, int end)
 {
     char** matches;
 
-    if (NULL == g_cmd_defs)
+    if (NULL == g_cmd_defs) {
         return NULL;
+    }
 
     matches = (char**)NULL;
 
-    if (start == 0)
+    if (start == 0) {
         matches = rl_completion_matches(text, command_generator);
+    }
 
     return (matches);
 }
@@ -95,8 +97,9 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
     char* p;
     int i;
 
-    if (argc == 0)
+    if (argc == 0) {
         return SHELL_CONT;
+    }
 
     if ('!' == argv[0][0]) {
         pid_t pid;
@@ -118,16 +121,17 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
         retry:
             ret = wait(0);
             if (-1 == ret) {
-                if (EINTR == errno)
+                if (EINTR == errno) {
                     goto retry;
-                else {
+                } else {
                     perror("wait");
                     exit(1);
                 }
             }
         }
         return SHELL_CONT;
-    } else if (NULL != (p = index(argv[0], '='))) {
+    }
+    if (NULL != (p = index(argv[0], '='))) {
         *p++ = 0;
         return SHELL_CONT;
     }
@@ -135,13 +139,14 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
 
     def = NULL;
     found = 0;
-    for (i = 0; defs[i]; i++) {
+    for (i = 0; defs[i] != nullptr; i++) {
         tmp = defs[i];
-        if (!strcmp(argv[0], tmp->name)) {
+        if (strcmp(argv[0], tmp->name) == 0) {
             found = 1;
             def = tmp;
             break;
-        } else if (!strncmp(argv[0], tmp->name, len)) {
+        }
+        if (strncmp(argv[0], tmp->name, len) == 0) {
             if (1 == found) {
                 fprintf(stderr, "ambiguous command: %s\n", argv[0]);
                 return SHELL_CONT;
@@ -175,77 +180,85 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
  */
 int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
 {
-    int pos, skip_ws, comment, dblquote, ret;
+    int pos, ret;
+    bool comment = false;
+    bool dblquote = false;
+    bool skip_ws = true;
     char c;
 
     sargc = pos = 0;
-    comment = dblquote = 0;
-    skip_ws = 1;
 
-    while (1) {
+    while (true) {
         c = *str;
 
         switch (c) {
         case '"':
             if (dblquote) {
-                dblquote = 0;
+                dblquote = false;
                 if (0 == pos) {
-                    skip_ws = 0;
+                    skip_ws = false;
                     c = 0;
                     goto store_it;
                 }
-            } else
-                dblquote = 1;
+            } else {
+                dblquote = true;
+            }
             break;
 
         case '#':
-            comment = 1;
+            comment = true;
             break;
 
         case '\0':
         case ';':
         case '\n':
 
-            if (c == ';' && 1 == dblquote) {
-                skip_ws = 0;
+            if (c == ';' && dblquote) {
+                skip_ws = false;
                 goto store_it;
             }
 
             sargv[sargc] = &sargmem[sargc][0];
 
-            if (!skip_ws)
+            if (!skip_ws) {
                 sargc++;
+            }
 
             sargv[sargc] = NULL;
 
             if (dblquote) {
-                if (errp)
+                if (errp != nullptr) {
                     *errp = SHELL_ERROR_DBL_QUOTE;
+                }
                 return -1;
             }
 
-            if ((ret = do_cmd(defs, sargc, sargv)) != SHELL_CONT)
+            if ((ret = do_cmd(defs, sargc, sargv)) != SHELL_CONT) {
                 return ret;
+            }
 
             memset(sargmem, 0, sizeof(sargmem));
 
             sargc = pos = 0;
-            comment = dblquote = 0;
-            skip_ws = 1;
+            comment = false;
+            dblquote = false;
+            skip_ws = true;
 
-            if (c == '\0')
+            if (c == '\0') {
                 return 0;
+            }
 
             break;
 
         case ' ':
         case '\t':
 
-            if (comment)
+            if (comment) {
                 break;
+            }
 
             if (dblquote) {
-                skip_ws = 0;
+                skip_ws = false;
                 goto store_it;
             }
 
@@ -256,27 +269,30 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
                     sargv[sargc] = NULL;
                     pos = 0;
                 } else {
-                    if (errp)
+                    if (errp != nullptr) {
                         *errp = SHELL_ERROR_TOO_MANY_ARGS;
+                    }
                     return -1;
                 }
-                skip_ws = 1;
+                skip_ws = true;
             }
             break;
 
         default:
 
-            if (comment)
+            if (comment) {
                 break;
-            skip_ws = 0;
+            }
+            skip_ws = false;
 
         store_it:
             if ((pos + 1) < SHELL_MAX_ARG_LEN) {
                 sargmem[sargc][pos++] = c;
                 sargmem[sargc][pos] = 0;
             } else {
-                if (errp)
+                if (errp != nullptr) {
                     *errp = SHELL_ERROR_ARG_TOO_LONG;
+                }
                 return -1;
             }
         }
@@ -326,10 +342,10 @@ void Shell::loop()
 {
     using_history();
 
-    while (1) {
+    while (true) {
         char* line = NULL;
 
-        if ((line = readline(prompt))) {
+        if ((line = readline(prompt)) != nullptr) {
             enum shell_error shell_err = SHELL_ERROR_NONE;
             int ret;
 
@@ -339,8 +355,9 @@ void Shell::loop()
             } else if (ret == SHELL_RETURN) {
                 return;
             }
-            if (strcmp(line, ""))
+            if (strcmp(line, "") != 0) {
                 add_history(line);
+            }
             free(line);
         } else {
             fprintf(stderr, "quit\n");

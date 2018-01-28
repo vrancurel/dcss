@@ -42,8 +42,8 @@ class Shell {
     Shell();
 
     void set_cmds(struct cmd_def** defs);
-    void set_handle(void* hande);
-    void set_handle2(void* hande);
+    void set_handle(void* handle);
+    void set_handle2(void* handle);
     void set_prompt(const char* prompt);
     void* get_handle();
     void* get_handle2();

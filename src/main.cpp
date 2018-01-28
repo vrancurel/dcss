@@ -57,10 +57,9 @@ void call_contract(
         } catch (jsonrpc::JsonRpcException& exn) {
             if (exn.GetCode() == -32000) {
                 continue; // Transaction is pending…
-            } else {
-                fprintf(stderr, "error: %s\n", exn.what());
-                throw;
             }
+            fprintf(stderr, "error: %s\n", exn.what());
+            throw;
         }
     }
 }

@@ -14,10 +14,10 @@ KadNetwork::~KadNetwork() {}
 /**
  * initialize nodes
  *
- * @param n_init_conn
+ * @param n_initial_conn
  */
 void KadNetwork::initialize_nodes(
-    int n_init_conn,
+    int n_initial_conn,
     std::vector<std::string> bstraplist)
 {
     std::cout << "initialize nodes\n";
@@ -56,12 +56,13 @@ void KadNetwork::initialize_nodes(
     for (u_int i = 0; i < conf->n_nodes; i++) {
         KadNode* node = nodes[i];
 
-        if ((i % 1000) == 0)
+        if ((i % 1000) == 0) {
             std::cerr << "node " << i << "/" << conf->n_nodes
                       << "                   \r";
+        }
 
         u_int guard = 0;
-        while (node->get_n_conns() < n_init_conn) {
+        while (node->get_n_conns() < n_initial_conn) {
             KadNode* other;
 
             if (guard >= (2 * conf->n_nodes)) {
@@ -92,9 +93,10 @@ void KadNetwork::initialize_files(int n_files)
     std::cout << "initialize files\n";
 
     for (int i = 0; i < n_files; i++) {
-        if ((i % 1000) == 0)
+        if ((i % 1000) == 0) {
             std::cerr << "file " << i << "/" << n_files
                       << "                   \r";
+        }
 
         // Take a random node.
         KadNode* node = nodes[dis(prng())];
@@ -109,8 +111,9 @@ void KadNetwork::initialize_files(int n_files)
         std::list<KadNode*> result = node->lookup(*file);
         for (std::list<KadNode*>::iterator it = result.begin();
              it != result.end();
-             ++it)
+             ++it) {
             (*it)->store(file);
+        }
     }
 }
 
@@ -123,9 +126,10 @@ void KadNetwork::check_files()
 
     int n_wrong = 0;
     for (u_int i = 0; i < files.size(); i++) {
-        if ((i % 1000) == 0)
+        if ((i % 1000) == 0) {
             std::cerr << "file " << i << "/" << files.size()
                       << "                   \r";
+        }
 
         KadFile* file = files[i];
 
@@ -165,8 +169,9 @@ void KadNetwork::rand_node(tnode_callback_func cb_func, void* cb_arg)
 {
     std::uniform_int_distribution<> dis(0, nodes.size() - 1);
     int x = dis(prng());
-    if (NULL != cb_func)
+    if (NULL != cb_func) {
         cb_func(nodes[x], cb_arg);
+    }
 }
 
 void KadNetwork::rand_routable(troutable_callback_func cb_func, void* cb_arg)
@@ -174,8 +179,9 @@ void KadNetwork::rand_routable(troutable_callback_func cb_func, void* cb_arg)
     CBigNum bn;
     bn.Rand(conf->n_bits);
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
-    if (NULL != cb_func)
+    if (NULL != cb_func) {
         cb_func(routable, cb_arg);
+    }
 }
 
 /** Lookup a node by its id
@@ -200,14 +206,15 @@ KadNode* KadNetwork::find_nearest_cheat(const KadRoutable& routable)
     KadNode* nearest = NULL;
 
     for (u_int i = 0; i < nodes.size(); i++) {
-        if (NULL == nearest)
+        if (NULL == nearest) {
             nearest = nodes[i];
-        else {
+        } else {
             CBigNum d1 = nodes[i]->distance_to(routable);
             CBigNum d2 = nearest->distance_to(routable);
 
-            if (d1 < d2)
+            if (d1 < d2) {
                 nearest = nodes[i];
+            }
         }
     }
 
