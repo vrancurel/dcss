@@ -65,6 +65,11 @@ class CAutoBN_CTX {
     {
         return (pctx == nullptr);
     }
+
+    CAutoBN_CTX(CAutoBN_CTX const&) = delete;
+    CAutoBN_CTX& operator=(CAutoBN_CTX const& x) = delete;
+    CAutoBN_CTX(CAutoBN_CTX&&) = delete;
+    CAutoBN_CTX& operator=(CAutoBN_CTX&& x) = delete;
 };
 
 /** C++ wrapper for BIGNUM (OpenSSL bignum). */
@@ -83,12 +88,23 @@ class CBigNum {
         }
     }
 
+    CBigNum(CBigNum&& b) : bn(b.bn)
+    {
+        b.bn = nullptr;
+    }
+
     CBigNum& operator=(const CBigNum& b)
     {
         if (BN_copy(bn, b.bn) == nullptr) {
             throw bignum_error("CBigNum::operator= : BN_copy failed");
         }
-        return (*this);
+        return *this;
+    }
+
+    CBigNum& operator=(CBigNum&& b)
+    {
+        std::swap(bn, b.bn);
+        return *this;
     }
 
     ~CBigNum()
@@ -400,8 +416,8 @@ class CBigNum {
     std::string ToString(int nBase = 10) const
     {
         CAutoBN_CTX pctx;
-        CBigNum bnBase = nBase;
-        CBigNum bn0 = 0;
+        CBigNum bnBase(nBase);
+        CBigNum bn0(0);
         std::string str;
         CBigNum bn = *this;
         BN_set_negative(bn.bn, 0);
@@ -455,7 +471,7 @@ class CBigNum {
 
     inline void Rand(int n_bits)
     {
-        CBigNum range = 0;
+        CBigNum range(0);
         BN_set_bit(range.bn, n_bits);
         BN_rand_range(bn, range.bn);
     }
@@ -514,7 +530,7 @@ class CBigNum {
         // number
         //   if built on ubuntu 9.04 or 9.10, probably depends on version of
         //   OpenSSL
-        CBigNum a = 1;
+        CBigNum a(1);
         a <<= shift;
         if (BN_cmp(a.bn, bn) > 0) {
             *this = 0;

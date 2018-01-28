@@ -10,6 +10,15 @@ CHECKS = %w[
   google-readability-casting
   google-runtime-member-string-references
   google-runtime-int
+  hicpp-avoid-goto
+  hicpp-exception-baseclass
+  hicpp-member-init
+  hicpp-no-array-decay
+  hicpp-no-assembler
+  hicpp-no-malloc
+  hicpp-signed-bitwise
+  hicpp-special-member-functions
+  hicpp-vararg
   modernize-*
   performance-*
   readability-*

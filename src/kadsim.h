@@ -1,12 +1,6 @@
 #ifndef __KADSIM_H__
 #define __KADSIM_H__
 
-// Most classes do not need copy or assignment constructors and should use this
-// macro to disable them.
-#define DISALLOW_COPY_AND_ASSIGN(TypeName)                                     \
-    TypeName(const TypeName&);                                                 \
-    void operator=(const TypeName&)
-
 // Address of the QuadIron contract on the blockchain.
 #define QUADIRON_CONTRACT_ADDR "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
 
@@ -69,8 +63,6 @@ class KadRoutable {
     CBigNum id;
     KadRoutableType type;
     std::string addr; // Remote peer IP address, or "" if local.
-    jsonrpc::HttpClient* httpclient;
-    KadClient* kadc;
 };
 
 class KadNode;
@@ -80,16 +72,26 @@ class KadFile : public KadRoutable {
     KadFile(const CBigNum& id, KadNode* referencer);
     KadNode* get_referencer();
 
+    ~KadFile() = default;
+    KadFile(KadFile const&) = delete;
+    KadFile& operator=(KadFile const& x) = delete;
+    KadFile(KadFile&&) = delete;
+    KadFile& operator=(KadFile&& x) = delete;
+
   private:
     KadNode* referencer;
-
-    // DISALLOW_COPY_AND_ASSIGN(KadFile);
 };
 
 class KadNode : public KadRoutable {
   public:
     KadNode(KadConf* conf, const CBigNum& id);
     KadNode(KadConf* conf, const CBigNum& id, const std::string& addr);
+
+    ~KadNode() = default;
+    KadNode(KadNode const&) = delete;
+    KadNode& operator=(KadNode const& x) = delete;
+    KadNode(KadNode&&) = delete;
+    KadNode& operator=(KadNode&& x) = delete;
 
     int get_n_conns();
     const std::string& get_eth_account() const;
@@ -111,8 +113,6 @@ class KadNode : public KadRoutable {
     void get_bytes(const std::string& seller, uint64_t nb_bytes);
 
   private:
-    // DISALLOW_COPY_AND_ASSIGN(KadNode);
-
     KadConf* conf;
 
     using tbucket = std::map<int, std::list<KadNode*>>;
@@ -122,6 +122,8 @@ class KadNode : public KadRoutable {
     std::vector<KadFile*> files;
     std::string eth_passphrase;
     std::string eth_account;
+    jsonrpc::HttpClient* httpclient;
+    KadClient* kadc;
 };
 
 using tnode_callback_func = void (*)(KadNode*, void*);
@@ -130,6 +132,12 @@ using troutable_callback_func = void (*)(const KadRoutable&, void*);
 class KadNetwork {
   public:
     explicit KadNetwork(KadConf* conf);
+
+    ~KadNetwork() = default;
+    KadNetwork(KadNetwork const&) = delete;
+    KadNetwork& operator=(KadNetwork const& x) = delete;
+    KadNetwork(KadNetwork&&) = delete;
+    KadNetwork& operator=(KadNetwork&& x) = delete;
 
     void
     initialize_nodes(int n_initial_conn, std::vector<std::string> bstraplist);
@@ -143,8 +151,6 @@ class KadNetwork {
     void check_files();
 
   private:
-    // DISALLOW_COPY_AND_ASSIGN(KadNetwork);
-
     KadConf* conf;
 
     std::vector<KadNode*> nodes;

@@ -20,7 +20,7 @@ void KadNetwork::initialize_nodes(
 {
     std::cout << "initialize nodes\n";
 
-    BitMap bitmap = BitMap(conf->n_nodes);
+    BitMap bitmap(conf->n_nodes);
 
     // Split the total keyspace equally among nodes.
     CBigNum keyspace = CBigNum(1);
