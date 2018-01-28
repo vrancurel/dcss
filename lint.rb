@@ -4,6 +4,12 @@
 COMPIL_OPTS = '-x c++ --std=c++11'.freeze
 CHECKS = %w[
   cert-*
+  google-build-explicit-make-pair
+  google-default-arguments
+  google-explicit-constructor
+  google-readability-casting
+  google-runtime-member-string-references
+  google-runtime-int
   modernize-*
   performance-*
   readability-*

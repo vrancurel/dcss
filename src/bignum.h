@@ -11,8 +11,8 @@
 
 #include <openssl/bn.h>
 
-using int64 = long long;
-using uint64 = unsigned long long;
+using int64 = long long;           // NOLINT(google-runtime-int)
+using uint64 = unsigned long long; // NOLINT(google-runtime-int)
 
 /** Errors thrown by the bignum class. */
 class bignum_error : public std::runtime_error {
@@ -46,7 +46,7 @@ class CAutoBN_CTX {
         }
     }
 
-    operator BN_CTX*()
+    operator BN_CTX*() // NOLINT(google-explicit-constructor)
     {
         return pctx;
     }
@@ -97,6 +97,7 @@ class CBigNum {
     }
 
     // CBigNum(char n) is not portable.  Use 'signed char' or 'unsigned char'.
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(signed char n) : CBigNum()
     {
         if (n >= 0) {
@@ -106,6 +107,7 @@ class CBigNum {
         }
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(short n) : CBigNum()
     {
         if (n >= 0) {
@@ -115,6 +117,7 @@ class CBigNum {
         }
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(int n) : CBigNum()
     {
         if (n >= 0) {
@@ -124,6 +127,7 @@ class CBigNum {
         }
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(long n) : CBigNum()
     {
         if (n >= 0) {
@@ -133,31 +137,37 @@ class CBigNum {
         }
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(int64 n) : CBigNum()
     {
         setint64(n);
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(unsigned char n) : CBigNum()
     {
         setulong(n);
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(unsigned short n) : CBigNum()
     {
         setulong(n);
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(unsigned int n) : CBigNum()
     {
         setulong(n);
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(unsigned long n) : CBigNum()
     {
         setulong(n);
     }
 
+    // NOLINTNEXTLINE(google-explicit-constructor)
     CBigNum(uint64 n) : CBigNum()
     {
         setuint64(n);
@@ -168,7 +178,7 @@ class CBigNum {
         setvch(vch);
     }
 
-    void setulong(unsigned long n)
+    void setulong(unsigned long n) // NOLINT(google-runtime-int)
     {
         if (BN_set_word(bn, n) == 0) {
             throw bignum_error(
@@ -176,7 +186,7 @@ class CBigNum {
         }
     }
 
-    unsigned long getulong() const
+    unsigned long getulong() const // NOLINT(google-runtime-int)
     {
         return BN_get_word(bn);
     }
@@ -193,7 +203,7 @@ class CBigNum {
         bool fNegative;
         uint64 n;
 
-        if (sn < (int64)0) {
+        if (sn < static_cast<int64>(0)) {
             // Since the minimum signed integer cannot be represented as
             // positive so long as its type is signed, and it's not well-defined
             // what happens if you make it unsigned before negating it, we
@@ -379,7 +389,7 @@ class CBigNum {
         *this = 0;
         while (isxdigit(*psz) != 0) {
             *this <<= 4;
-            int n = phexdigit[(unsigned char)*psz++];
+            int n = phexdigit[static_cast<unsigned char>(*psz++)];
             *this += n;
         }
         if (fNegative) {

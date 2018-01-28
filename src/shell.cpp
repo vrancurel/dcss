@@ -55,7 +55,7 @@ static char* command_generator(const char* text, int state)
     }
 
     /* If no names matched, then return NULL. */
-    return ((char*)nullptr);
+    return nullptr;
 }
 
 char** shell_completion(const char* text, int start, int end)
@@ -66,7 +66,7 @@ char** shell_completion(const char* text, int start, int end)
         return nullptr;
     }
 
-    matches = (char**)nullptr;
+    matches = nullptr;
 
     if (start == 0) {
         matches = rl_completion_matches(text, command_generator);

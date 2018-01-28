@@ -129,7 +129,7 @@ using troutable_callback_func = void (*)(const KadRoutable&, void*);
 
 class KadNetwork {
   public:
-    KadNetwork(KadConf* conf);
+    explicit KadNetwork(KadConf* conf);
 
     void
     initialize_nodes(int n_initial_conn, std::vector<std::string> bstraplist);

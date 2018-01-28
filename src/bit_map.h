@@ -7,7 +7,7 @@
 
 class BitMap {
   public:
-    BitMap(int n_bits);
+    explicit BitMap(int n_bits);
     ~BitMap();
 
     int get_bit(int i);
