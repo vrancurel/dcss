@@ -1,3 +1,7 @@
+machine:
+  environment:
+    CXX: /usr/bin/clang++
+
 dependencies:
   post:
     - wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
@@ -7,6 +11,8 @@ dependencies:
     - sudo apt-get -y --no-install-recommends install clang-5.0 clang-tidy-5.0 libargtable2-dev libjsoncpp-dev doxygen libmicrohttpd-dev libedit-dev
     - sudo ln -s /usr/bin/clang-tidy-5.0 /usr/bin/clang-tidy
     - sudo ln -s /usr/bin/clang++-5.0 /usr/bin/clang++
+    - wget https://cmake.org/files/v3.5/cmake-3.5.0-Linux-x86_64.sh
+    - sudo sh cmake-3.5.0-Linux-x86_64.sh --prefix=/usr/local --exclude-subdir
     - git clone git://github.com/cinemast/libjson-rpc-cpp.git
     - cd libjson-rpc-cpp && git checkout v0.6.0
     - mkdir libjson-rpc-cpp/build
@@ -15,7 +21,7 @@ dependencies:
 
 compile:
   override:
-    - cd src ; make
+    - mkdir build && cd build && cmake -G 'Unix Makefiles' .. && make
 
 test:
   override:

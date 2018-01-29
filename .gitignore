@@ -1,5 +1,3 @@
-*.o
 *.swp
-kadsim
-gethclient.h
-kadclient.h
+bin
+build

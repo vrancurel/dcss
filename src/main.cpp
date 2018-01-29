@@ -87,7 +87,7 @@ std::string encode_address(const std::string& addr)
 
 [[noreturn]] static void usage()
 {
-    std::cerr << "usage: kadsim\n";
+    std::cerr << "usage: " << PACKAGE << " (" << VERSION << ")\n";
     std::cerr << "\t-b\tn_bits\n";
     std::cerr << "\t-k\tKademlia K parameter\n";
     std::cerr << "\t-a\tKademlia alpha parameter\n";
@@ -201,7 +201,9 @@ int main(int argc, char** argv)
 
     shell.set_cmds(cmd_defs);
     shell.set_handle(&network);
-    shell.set_prompt("kadsim> ");
+    std::ostringstream prompt;
+    prompt << PACKAGE << "> ";
+    shell.set_prompt(prompt.str());
     shell.loop();
 
     return EXIT_SUCCESS;

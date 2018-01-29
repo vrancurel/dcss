@@ -9,6 +9,23 @@ implementation of Petar Maymounkov and David Mazières
 
 The goal of this simulator is to test the inherent nature of the routing protocol and to make experiments.
 
+# Build from source
+
+## Install the dependencies
+
+- OpenSSL
+- readline
+- [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)
+
+## Build
+
+```sh
+mkdir build
+cd build
+cmake -G 'Unix Makefiles' ..
+make
+```
+
 # How to use it:
 
     $ make
@@ -32,7 +49,3 @@ In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
 
 ![Graphical Output of Simulator](graphviz.png )
-
-# Dependencies
-
-- [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)
