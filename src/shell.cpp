@@ -81,7 +81,7 @@ Shell::Shell()
     handle2 = nullptr;
 }
 
-int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
+int Shell::do_cmd(struct cmd_def** definitions, int argc, char** argv)
 {
     struct cmd_def *def, *tmp;
     size_t len;
@@ -131,8 +131,8 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
 
     def = nullptr;
     found = 0;
-    for (i = 0; defs[i] != nullptr; i++) {
-        tmp = defs[i];
+    for (i = 0; definitions[i] != nullptr; i++) {
+        tmp = definitions[i];
         if (strcmp(argv[0], tmp->name) == 0) {
             found = 1;
             def = tmp;
@@ -164,13 +164,16 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
  * Understands comments (sharp sign), double quotes, semicolon. ignore
  * whitspaces
  *
- * @param defs the callback
+ * @param definitions the callback
  * @param str the input string
  * @param errp the error code
  *
  * @return 0 if OK, -1 on failure
  */
-int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
+int Shell::parse(
+    struct cmd_def** definitions,
+    char* str,
+    enum shell_error* errp)
 {
     int pos, ret;
     bool comment = false;
@@ -225,7 +228,7 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
                 return -1;
             }
 
-            if ((ret = do_cmd(defs, sargc, sargv)) != SHELL_CONT) {
+            if ((ret = do_cmd(definitions, sargc, sargv)) != SHELL_CONT) {
                 return ret;
             }
 
@@ -292,19 +295,19 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
     }
 }
 
-void Shell::set_cmds(struct cmd_def** defs)
+void Shell::set_cmds(struct cmd_def** definitions)
 {
-    g_cmd_defs = this->defs = defs;
+    g_cmd_defs = this->defs = definitions;
 }
 
-void Shell::set_handle(void* handle)
+void Shell::set_handle(void* hdl)
 {
-    this->handle = handle;
+    this->handle = hdl;
 }
 
-void Shell::set_handle2(void* handle)
+void Shell::set_handle2(void* hdl)
 {
-    this->handle2 = handle;
+    this->handle2 = hdl;
 }
 
 void* Shell::get_handle()
@@ -317,9 +320,9 @@ void* Shell::get_handle2()
     return handle2;
 }
 
-void Shell::set_prompt(const std::string& prompt)
+void Shell::set_prompt(const std::string& ps1)
 {
-    this->prompt = prompt;
+    this->prompt = ps1;
 }
 
 void Shell::loop()

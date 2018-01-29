@@ -19,6 +19,7 @@ CFLAGS = \
 -Wnon-virtual-dtor \
 -Wold-style-cast \
 -Woverlength-strings \
+-Wshadow \
 -Wshift-sign-overflow \
 -Wstring-compare -Wstring-conversion -Wstring-plus-char \
 -Wsometimes-uninitialized \
