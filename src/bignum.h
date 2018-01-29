@@ -208,11 +208,6 @@ class CBigNum {
         return BN_get_word(bn);
     }
 
-    unsigned int getuint() const
-    {
-        return BN_get_word(bn);
-    }
-
     void setint64(int64 sn)
     {
         unsigned char pch[sizeof(sn) + 6];
@@ -251,12 +246,12 @@ class CBigNum {
             }
             *p++ = c;
         }
-        unsigned int nSize = p - (pch + 4);
+        uint64 nSize = p - (pch + 4);
         pch[0] = (nSize >> 24) & 0xff;
         pch[1] = (nSize >> 16) & 0xff;
         pch[2] = (nSize >> 8) & 0xff;
         pch[3] = (nSize)&0xff;
-        BN_mpi2bn(pch, p - pch, bn);
+        BN_mpi2bn(pch, static_cast<int>(p - pch), bn);
     }
 
     void setuint64(uint64 n)
@@ -278,18 +273,18 @@ class CBigNum {
             }
             *p++ = c;
         }
-        unsigned int nSize = p - (pch + 4);
+        uint64 nSize = p - (pch + 4);
         pch[0] = (nSize >> 24) & 0xff;
         pch[1] = (nSize >> 16) & 0xff;
         pch[2] = (nSize >> 8) & 0xff;
         pch[3] = (nSize)&0xff;
-        BN_mpi2bn(pch, p - pch, bn);
+        BN_mpi2bn(pch, static_cast<int>(p - pch), bn);
     }
 
     void setvch(const std::vector<unsigned char>& vch)
     {
         std::vector<unsigned char> vch2(vch.size() + 4);
-        unsigned int nSize = vch.size();
+        uint64 nSize = vch.size();
         // BIGNUM's byte stream format expects 4 bytes of
         // big endian size data info at the front
         vch2[0] = (nSize >> 24) & 0xff;
@@ -298,7 +293,7 @@ class CBigNum {
         vch2[3] = (nSize >> 0) & 0xff;
         // swap data to big endian
         reverse_copy(vch.begin(), vch.end(), vch2.begin() + 4);
-        BN_mpi2bn(&vch2[0], vch2.size(), bn);
+        BN_mpi2bn(&vch2[0], static_cast<int>(vch2.size()), bn);
     }
 
     std::vector<unsigned char> getvch() const
@@ -352,15 +347,15 @@ class CBigNum {
         return *this;
     }
 
-    unsigned int GetCompact() const
+    uint64 GetCompact() const
     {
-        unsigned int nSize = BN_num_bytes(bn);
-        unsigned int nCompact = 0;
+        uint64 nSize = BN_num_bytes(bn);
+        uint64 nCompact = 0;
         if (nSize <= 3) {
             nCompact = BN_get_word(bn) << 8 * (3 - nSize);
         } else {
             CBigNum b;
-            BN_rshift(b.bn, bn, 8 * (nSize - 3));
+            BN_rshift(b.bn, bn, 8 * (static_cast<int>(nSize) - 3));
             nCompact = BN_get_word(b.bn);
         }
         // The 0x00800000 bit denotes the sign.
@@ -432,7 +427,7 @@ class CBigNum {
                 throw bignum_error("CBigNum::ToString() : BN_div failed");
             }
             bn = dv;
-            unsigned int c = rem.getulong();
+            uint64 c = rem.getulong();
             str += "0123456789abcdef"[c];
         }
         if (BN_is_negative(this->bn) != 0) {

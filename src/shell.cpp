@@ -14,25 +14,17 @@ const char* shell_err_strings[] = {
     nullptr,
 };
 
-const char* shell_error_str(enum shell_error err)
+static const char* shell_error_str(enum shell_error err)
 {
     return (shell_err_strings[err]);
 }
 
 static struct cmd_def** g_cmd_defs = nullptr;
 
-/** For completion.
- *
- * @param defs
- */
-void shell_install_cmd_defs(struct cmd_def** defs)
-{
-    g_cmd_defs = defs;
-}
-
 static char* command_generator(const char* text, int state)
 {
-    static int list_index, len;
+    static int list_index;
+    static size_t len;
     const char* name;
     struct cmd_def* def;
 
@@ -58,7 +50,7 @@ static char* command_generator(const char* text, int state)
     return nullptr;
 }
 
-char** shell_completion(const char* text, int start, int /*end*/)
+static char** shell_completion(const char* text, int start, int /*end*/)
 {
     char** matches;
 
@@ -93,7 +85,8 @@ Shell::Shell()
 int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
 {
     struct cmd_def *def, *tmp;
-    int ret, len, found;
+    size_t len;
+    int ret, found;
     char* p;
     int i;
 
@@ -172,8 +165,8 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
  * Understands comments (sharp sign), double quotes, semicolon. ignore
  * whitspaces
  *
+ * @param defs the callback
  * @param str the input string
- * @param cmd the callback
  * @param errp the error code
  *
  * @return 0 if OK, -1 on failure
@@ -298,8 +291,6 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
         }
         str++;
     }
-
-    return 0;
 }
 
 void Shell::set_cmds(struct cmd_def** defs)

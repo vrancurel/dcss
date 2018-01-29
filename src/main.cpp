@@ -85,7 +85,7 @@ std::string encode_address(const std::string& addr)
     return oss.str();
 }
 
-void usage()
+[[noreturn]] static void usage()
 {
     std::cerr << "usage: kadsim\n";
     std::cerr << "\t-b\tn_bits\n";
@@ -100,7 +100,7 @@ void usage()
     exit(1);
 }
 
-void parse_error()
+[[noreturn]] static void parse_error()
 {
     std::cerr << "parse error\n";
     exit(1);

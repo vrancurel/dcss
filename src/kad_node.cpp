@@ -104,13 +104,7 @@ KadNode::find_nearest_nodes(const KadRoutable& routable, int amount)
     return this->find_nearest_nodes_local(routable, amount);
 }
 
-/** * Find nodes closest to the given ID.
- *
- * @param routable
- * @param amount
- *
- * @return the list
- */
+/** * Find nodes closest to the given ID. */
 std::list<KadNode*>
 KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
 {
@@ -190,11 +184,7 @@ KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
     return closest;
 }
 
-/** Print a list of nodes and their distance to target.
- *
- * @param list
- * @param routable
- */
+/** Print a list of nodes and their distance to target. */
 static void print_list(
     const std::string& comment,
     std::list<KadNode*> list,
@@ -212,12 +202,7 @@ static void print_list(
     }
 }
 
-/** * Find the node closest to the given ID.
- *
- * @param routable
- *
- * @return the node
- */
+/** * Find the node closest to the given ID. */
 std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
 {
     // Pick our alpha starting nodes.

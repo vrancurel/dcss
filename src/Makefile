@@ -1,6 +1,31 @@
 CC = clang++
 
-CFLAGS = -std=c++11 -g -Wall -Werror -DHAVE_READLINE
+CFLAGS = \
+-std=c++11 -g -Werror -Wall -Wextra -Wdeprecated -Wpedantic \
+-Wdocumentation -Wdocumentation-pedantic \
+-Wconversion -Wno-sign-conversion \
+-Wunused-exception-parameter -Wunused-macros -Wunused-member-function -Wunused-template \
+-Wgcc-compat -Wgnu \
+-Warray-bounds-pointer-arithmetic \
+-Wassign-enum \
+-Wbad-function-cast \
+-Wconditional-uninitialized \
+-Wduplicate-method-arg -Wduplicate-method-match \
+-Wfloat-equal \
+-Wformat-pedantic \
+-Wlarge-by-value-copy \
+-Wmissing-noreturn -Wmissing-prototypes \
+-Wnested-anon-types \
+-Wnon-virtual-dtor \
+-Wold-style-cast \
+-Woverlength-strings \
+-Wshift-sign-overflow \
+-Wstring-compare -Wstring-conversion -Wstring-plus-char \
+-Wsometimes-uninitialized \
+-Wswitch-enum \
+-Wunreachable-code-aggressive \
+-DHAVE_READLINE
+
 LDFLAGS = \
 -lcrypto \
 -lreadline \

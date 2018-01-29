@@ -1,11 +1,11 @@
 #include "kadsim.h"
 
-int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
+static int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
 {
     return SHELL_RETURN;
 }
 
-int cmd_help(Shell* /*shell*/, int argc, char** argv)
+static int cmd_help(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc == 1) {
         struct cmd_def* cmdp;
@@ -38,17 +38,17 @@ int cmd_help(Shell* /*shell*/, int argc, char** argv)
     return SHELL_CONT;
 }
 
-void cb_display_node(KadNode* node, void* /*cb_arg*/)
+static void cb_display_node(KadNode* node, void* /*cb_arg*/)
 {
     std::cout << node->get_id().ToString(16) << "\n";
 }
 
-void cb_display_routable(const KadRoutable& routable, void* /*cb_arg*/)
+static void cb_display_routable(const KadRoutable& routable, void* /*cb_arg*/)
 {
     std::cout << routable.get_id().ToString(16) << "\n";
 }
 
-int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
+static int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
 {
     auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
@@ -57,7 +57,7 @@ int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
     return SHELL_CONT;
 }
 
-int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
+static int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
 {
     auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
@@ -66,7 +66,7 @@ int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
     return SHELL_CONT;
 }
 
-int cmd_jump(Shell* shell, int argc, char** argv)
+static int cmd_jump(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: jump key\n");
@@ -86,7 +86,7 @@ int cmd_jump(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_lookup(Shell* shell, int argc, char** argv)
+static int cmd_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: lookup key\n");
@@ -115,7 +115,7 @@ int cmd_lookup(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_find_nearest(Shell* shell, int argc, char** argv)
+static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: find_nearest key amount\n");
@@ -145,7 +145,7 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_show(Shell* shell, int argc, char** /*argv*/)
+static int cmd_show(Shell* shell, int argc, char** /*argv*/)
 {
     if (argc != 1) {
         fprintf(stderr, "usage: show\n");
@@ -164,7 +164,7 @@ int cmd_show(Shell* shell, int argc, char** /*argv*/)
     return SHELL_CONT;
 }
 
-int cmd_verbose(Shell* shell, int argc, char** argv)
+static int cmd_verbose(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: verbose 1|0\n");
@@ -183,7 +183,7 @@ int cmd_verbose(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
+static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: jump key\n");
@@ -207,7 +207,7 @@ int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_save(Shell* shell, int argc, char** argv)
+static int cmd_save(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: save file\n");
@@ -222,7 +222,7 @@ int cmd_save(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_xor(Shell* /*shell*/, int argc, char** argv)
+static int cmd_xor(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: xor bn1 bn2\n");
@@ -242,7 +242,7 @@ int cmd_xor(Shell* /*shell*/, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
+static int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: bit_length bn\n");
@@ -257,7 +257,7 @@ int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_graphviz(Shell* shell, int argc, char** argv)
+static int cmd_graphviz(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: graphviz file\n");
@@ -272,7 +272,7 @@ int cmd_graphviz(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_buy_storage(Shell* shell, int argc, char** argv)
+static int cmd_buy_storage(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: buy_storage SELLER N_BYTES\n");
@@ -290,7 +290,7 @@ int cmd_buy_storage(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_put_bytes(Shell* shell, int argc, char** argv)
+static int cmd_put_bytes(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: put_bytes SELLER N_BYTES\n");
@@ -308,7 +308,7 @@ int cmd_put_bytes(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_get_bytes(Shell* shell, int argc, char** argv)
+static int cmd_get_bytes(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: get_bytes SELLER N_BYTES\n");
