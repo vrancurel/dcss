@@ -165,7 +165,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (fname.empty()) {
+    if (!fname.empty()) {
         std::ifstream fin(fname);
         if (!fin.is_open()) {
             std::cerr << "unable to open " << fname << "\n";
