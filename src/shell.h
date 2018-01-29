@@ -5,6 +5,7 @@
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 #include <sys/wait.h>
 #include <unistd.h>
@@ -44,7 +45,7 @@ class Shell {
     void set_cmds(struct cmd_def** defs);
     void set_handle(void* handle);
     void set_handle2(void* handle);
-    void set_prompt(const char* prompt);
+    void set_prompt(const std::string& prompt);
     void* get_handle();
     void* get_handle2();
     void loop();
@@ -53,7 +54,7 @@ class Shell {
     struct cmd_def** defs;
     void* handle;
     void* handle2;
-    char* prompt;
+    std::string prompt;
     static bool class_initialized;
 
     int do_cmd(struct cmd_def** defs, int argc, char** argv);

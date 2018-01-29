@@ -79,7 +79,6 @@ Shell::Shell()
     defs = nullptr;
     handle = nullptr;
     handle2 = nullptr;
-    prompt = nullptr;
 }
 
 int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
@@ -318,15 +317,9 @@ void* Shell::get_handle2()
     return handle2;
 }
 
-void Shell::set_prompt(const char* prompt)
+void Shell::set_prompt(const std::string& prompt)
 {
-    char* nprompt = strdup(prompt);
-    if (nullptr == nprompt) {
-        perror("strdup");
-        exit(1);
-    }
-    free(this->prompt);
-    this->prompt = nprompt;
+    this->prompt = prompt;
 }
 
 void Shell::loop()
@@ -336,7 +329,7 @@ void Shell::loop()
     while (true) {
         char* line = nullptr;
 
-        if ((line = readline(prompt)) != nullptr) {
+        if ((line = readline(prompt.c_str())) != nullptr) {
             enum shell_error shell_err = SHELL_ERROR_NONE;
             int ret;
 
