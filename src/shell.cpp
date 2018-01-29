@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "shell.h"
 
 static char sargmem[SHELL_MAX_ARGV][SHELL_MAX_ARG_LEN];
@@ -9,37 +11,29 @@ const char* shell_err_strings[] = {
     "too many args",
     "argument is too long",
     "double quote error",
-    NULL,
+    nullptr,
 };
 
-const char* shell_error_str(enum shell_error err)
+static const char* shell_error_str(enum shell_error err)
 {
     return (shell_err_strings[err]);
 }
 
-static struct cmd_def** g_cmd_defs = NULL;
-
-/** For completion.
- *
- * @param defs
- */
-void shell_install_cmd_defs(struct cmd_def** defs)
-{
-    g_cmd_defs = defs;
-}
+static struct cmd_def** g_cmd_defs = nullptr;
 
 static char* command_generator(const char* text, int state)
 {
-    static int list_index, len;
+    static int list_index;
+    static size_t len;
     const char* name;
     struct cmd_def* def;
 
-    if (!state) {
+    if (state == 0) {
         list_index = 0;
         len = strlen(text);
     }
 
-    while (g_cmd_defs[list_index]) {
+    while (g_cmd_defs[list_index] != nullptr) {
         def = g_cmd_defs[list_index];
         name = def->name;
 
@@ -47,26 +41,28 @@ static char* command_generator(const char* text, int state)
 
         if (strncmp(name, text, len) == 0) {
             char* nptr = strdup(name);
-            assert(NULL != nptr);
+            assert(nullptr != nptr);
             return nptr;
         }
     }
 
     /* If no names matched, then return NULL. */
-    return ((char*)NULL);
+    return nullptr;
 }
 
-char** shell_completion(const char* text, int start, int end)
+static char** shell_completion(const char* text, int start, int /*end*/)
 {
     char** matches;
 
-    if (NULL == g_cmd_defs)
-        return NULL;
+    if (nullptr == g_cmd_defs) {
+        return nullptr;
+    }
 
-    matches = (char**)NULL;
+    matches = nullptr;
 
-    if (start == 0)
+    if (start == 0) {
         matches = rl_completion_matches(text, command_generator);
+    }
 
     return (matches);
 }
@@ -80,21 +76,23 @@ Shell::Shell()
         Shell::class_initialized = true;
     }
 
-    defs = NULL;
-    handle = NULL;
-    handle2 = NULL;
-    prompt = NULL;
+    defs = nullptr;
+    handle = nullptr;
+    handle2 = nullptr;
+    prompt = nullptr;
 }
 
 int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
 {
     struct cmd_def *def, *tmp;
-    int ret, len, found;
+    size_t len;
+    int ret, found;
     char* p;
     int i;
 
-    if (argc == 0)
+    if (argc == 0) {
         return SHELL_CONT;
+    }
 
     if ('!' == argv[0][0]) {
         pid_t pid;
@@ -114,32 +112,34 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
             }
         } else {
         retry:
-            ret = wait(0);
+            ret = wait(nullptr);
             if (-1 == ret) {
-                if (EINTR == errno)
+                if (EINTR == errno) {
                     goto retry;
-                else {
+                } else {
                     perror("wait");
                     exit(1);
                 }
             }
         }
         return SHELL_CONT;
-    } else if (NULL != (p = index(argv[0], '='))) {
+    }
+    if (nullptr != (p = index(argv[0], '='))) {
         *p++ = 0;
         return SHELL_CONT;
     }
     len = strlen(argv[0]);
 
-    def = NULL;
+    def = nullptr;
     found = 0;
-    for (i = 0; defs[i]; i++) {
+    for (i = 0; defs[i] != nullptr; i++) {
         tmp = defs[i];
-        if (!strcmp(argv[0], tmp->name)) {
+        if (strcmp(argv[0], tmp->name) == 0) {
             found = 1;
             def = tmp;
             break;
-        } else if (!strncmp(argv[0], tmp->name, len)) {
+        }
+        if (strncmp(argv[0], tmp->name, len) == 0) {
             if (1 == found) {
                 fprintf(stderr, "ambiguous command: %s\n", argv[0]);
                 return SHELL_CONT;
@@ -165,85 +165,93 @@ int Shell::do_cmd(struct cmd_def** defs, int argc, char** argv)
  * Understands comments (sharp sign), double quotes, semicolon. ignore
  * whitspaces
  *
+ * @param defs the callback
  * @param str the input string
- * @param cmd the callback
  * @param errp the error code
  *
  * @return 0 if OK, -1 on failure
  */
 int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
 {
-    int pos, skip_ws, comment, dblquote, ret;
+    int pos, ret;
+    bool comment = false;
+    bool dblquote = false;
+    bool skip_ws = true;
     char c;
 
     sargc = pos = 0;
-    comment = dblquote = 0;
-    skip_ws = 1;
 
-    while (1) {
+    while (true) {
         c = *str;
 
         switch (c) {
         case '"':
             if (dblquote) {
-                dblquote = 0;
+                dblquote = false;
                 if (0 == pos) {
-                    skip_ws = 0;
+                    skip_ws = false;
                     c = 0;
                     goto store_it;
                 }
-            } else
-                dblquote = 1;
+            } else {
+                dblquote = true;
+            }
             break;
 
         case '#':
-            comment = 1;
+            comment = true;
             break;
 
         case '\0':
         case ';':
         case '\n':
 
-            if (c == ';' && 1 == dblquote) {
-                skip_ws = 0;
+            if (c == ';' && dblquote) {
+                skip_ws = false;
                 goto store_it;
             }
 
             sargv[sargc] = &sargmem[sargc][0];
 
-            if (!skip_ws)
+            if (!skip_ws) {
                 sargc++;
+            }
 
-            sargv[sargc] = NULL;
+            sargv[sargc] = nullptr;
 
             if (dblquote) {
-                if (errp)
+                if (errp != nullptr) {
                     *errp = SHELL_ERROR_DBL_QUOTE;
+                }
                 return -1;
             }
 
-            if ((ret = do_cmd(defs, sargc, sargv)) != SHELL_CONT)
+            if ((ret = do_cmd(defs, sargc, sargv)) != SHELL_CONT) {
                 return ret;
+            }
 
             memset(sargmem, 0, sizeof(sargmem));
 
             sargc = pos = 0;
-            comment = dblquote = 0;
-            skip_ws = 1;
+            comment = false;
+            dblquote = false;
+            skip_ws = true;
 
-            if (c == '\0')
+            if (c == '\0') {
                 return 0;
+            }
 
             break;
 
         case ' ':
         case '\t':
 
-            if (comment)
+            if (comment) {
                 break;
+            }
 
             if (dblquote) {
-                skip_ws = 0;
+                skip_ws = false;
                 goto store_it;
             }
 
@@ -251,37 +259,38 @@ int Shell::parse(struct cmd_def** defs, char* str, enum shell_error* errp)
                 if ((sargc + 1) < SHELL_MAX_ARGV) {
                     sargv[sargc] = &sargmem[sargc][0];
                     sargc++;
-                    sargv[sargc] = NULL;
+                    sargv[sargc] = nullptr;
                     pos = 0;
                 } else {
-                    if (errp)
+                    if (errp != nullptr) {
                         *errp = SHELL_ERROR_TOO_MANY_ARGS;
+                    }
                     return -1;
                 }
-                skip_ws = 1;
+                skip_ws = true;
             }
             break;
 
         default:
 
-            if (comment)
+            if (comment) {
                 break;
-            skip_ws = 0;
+            }
+            skip_ws = false;
 
         store_it:
             if ((pos + 1) < SHELL_MAX_ARG_LEN) {
                 sargmem[sargc][pos++] = c;
                 sargmem[sargc][pos] = 0;
             } else {
-                if (errp)
+                if (errp != nullptr) {
                     *errp = SHELL_ERROR_ARG_TOO_LONG;
+                }
                 return -1;
             }
         }
         str++;
     }
-
-    return 0;
 }
 
 void Shell::set_cmds(struct cmd_def** defs)
@@ -312,7 +321,7 @@ void* Shell::get_handle2()
 void Shell::set_prompt(const char* prompt)
 {
     char* nprompt = strdup(prompt);
-    if (NULL == nprompt) {
+    if (nullptr == nprompt) {
         perror("strdup");
         exit(1);
     }
@@ -324,11 +333,11 @@ void Shell::loop()
 {
     using_history();
 
-    while (1) {
-        char* line = NULL;
+    while (true) {
+        char* line = nullptr;
 
-        if ((line = readline(prompt))) {
-            enum shell_error shell_err;
+        if ((line = readline(prompt)) != nullptr) {
+            enum shell_error shell_err = SHELL_ERROR_NONE;
             int ret;
 
             ret = parse(defs, line, &shell_err);
@@ -337,8 +346,9 @@ void Shell::loop()
             } else if (ret == SHELL_RETURN) {
                 return;
             }
-            if (strcmp(line, ""))
+            if (strcmp(line, "") != 0) {
                 add_history(line);
+            }
             free(line);
         } else {
             fprintf(stderr, "quit\n");

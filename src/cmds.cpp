@@ -1,18 +1,18 @@
 #include "kadsim.h"
 
-int cmd_quit(Shell* shell, int argc, char** argv)
+static int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
 {
     return SHELL_RETURN;
 }
 
-int cmd_help(Shell* shell, int argc, char** argv)
+static int cmd_help(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc == 1) {
         struct cmd_def* cmdp;
         int i, j;
 
         j = 0;
-        for (i = 0; cmd_defs[i]; i++) {
+        for (i = 0; cmd_defs[i] != nullptr; i++) {
             cmdp = cmd_defs[i];
             printf("%16s", cmdp->name);
             j++;
@@ -26,9 +26,9 @@ int cmd_help(Shell* shell, int argc, char** argv)
         struct cmd_def* cmdp;
         int i;
 
-        for (i = 0; cmd_defs[i]; i++) {
+        for (i = 0; cmd_defs[i] != nullptr; i++) {
             cmdp = cmd_defs[i];
-            if (!strcmp(argv[1], cmdp->name)) {
+            if (strcmp(argv[1], cmdp->name) == 0) {
                 printf("%s\n", cmdp->purpose);
                 break;
             }
@@ -38,45 +38,45 @@ int cmd_help(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-void cb_display_node(KadNode* node, void* cb_arg)
+static void cb_display_node(KadNode* node, void* /*cb_arg*/)
 {
     std::cout << node->get_id().ToString(16) << "\n";
 }
 
-void cb_display_routable(KadRoutable routable, void* cb_arg)
+static void cb_display_routable(const KadRoutable& routable, void* /*cb_arg*/)
 {
     std::cout << routable.get_id().ToString(16) << "\n";
 }
 
-int cmd_rand_node(Shell* shell, int argc, char** argv)
+static int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
 {
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
-    network->rand_node(cb_display_node, NULL);
+    network->rand_node(cb_display_node, nullptr);
 
     return SHELL_CONT;
 }
 
-int cmd_rand_key(Shell* shell, int argc, char** argv)
+static int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
 {
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
-    network->rand_routable(cb_display_routable, NULL);
+    network->rand_routable(cb_display_routable, nullptr);
 
     return SHELL_CONT;
 }
 
-int cmd_jump(Shell* shell, int argc, char** argv)
+static int cmd_jump(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: jump key\n");
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
     KadNode* node = network->lookup_cheat(argv[1]);
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "not found\n");
         return SHELL_CONT;
     }
@@ -86,16 +86,16 @@ int cmd_jump(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_lookup(Shell* shell, int argc, char** argv)
+static int cmd_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: lookup key\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -107,23 +107,24 @@ int cmd_lookup(Shell* shell, int argc, char** argv)
     std::list<KadNode*> result = node->lookup(routable);
 
     std::list<KadNode*>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it)
+    for (it = result.begin(); it != result.end(); ++it) {
         std::cout << "id " << (*it)->get_id().ToString(16) << " dist "
                   << (*it)->distance_to(routable).ToString(16) << "\n";
+    }
 
     return SHELL_CONT;
 }
 
-int cmd_find_nearest(Shell* shell, int argc, char** argv)
+static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: find_nearest key amount\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -133,26 +134,27 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
 
     std::list<KadNode*> result =
-        node->find_nearest_nodes(routable, atoi(argv[2]));
+        node->find_nearest_nodes(routable, std::stoi(argv[2]));
 
     std::list<KadNode*>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it)
+    for (it = result.begin(); it != result.end(); ++it) {
         std::cout << "id " << (*it)->get_id().ToString(16) << " dist "
                   << (*it)->distance_to(routable).ToString(16) << "\n";
+    }
 
     return SHELL_CONT;
 }
 
-int cmd_show(Shell* shell, int argc, char** argv)
+static int cmd_show(Shell* shell, int argc, char** /*argv*/)
 {
     if (argc != 1) {
         fprintf(stderr, "usage: show\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
@@ -162,57 +164,57 @@ int cmd_show(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_verbose(Shell* shell, int argc, char** argv)
+static int cmd_verbose(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: verbose 1|0\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
 
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
 
-    node->set_verbose(atoi(argv[1]));
+    node->set_verbose(std::stoi(argv[1]) != 0);
 
     return SHELL_CONT;
 }
 
-int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
+static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: jump key\n");
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
     CBigNum bn;
     bn.SetHex(argv[1]);
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
 
     KadNode* node = network->find_nearest_cheat(routable);
-    if (NULL == node) {
+    if (nullptr == node) {
         fprintf(stderr, "not found\n");
         return SHELL_CONT;
     }
 
-    cb_display_node(node, NULL);
+    cb_display_node(node, nullptr);
 
     return SHELL_CONT;
 }
 
-int cmd_save(Shell* shell, int argc, char** argv)
+static int cmd_save(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: save file\n");
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
     std::ofstream fout(argv[1]);
     network->save(fout);
@@ -220,7 +222,7 @@ int cmd_save(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_xor(Shell* shell, int argc, char** argv)
+static int cmd_xor(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: xor bn1 bn2\n");
@@ -240,7 +242,7 @@ int cmd_xor(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_bit_length(Shell* shell, int argc, char** argv)
+static int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: bit_length bn\n");
@@ -255,14 +257,14 @@ int cmd_bit_length(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_graphviz(Shell* shell, int argc, char** argv)
+static int cmd_graphviz(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: graphviz file\n");
         return SHELL_CONT;
     }
 
-    KadNetwork* network = (KadNetwork*)shell->get_handle();
+    auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
     std::ofstream fout(argv[1]);
     network->graphviz(fout);
@@ -270,59 +272,56 @@ int cmd_graphviz(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_buy_storage(Shell* shell, int argc, char** argv)
+static int cmd_buy_storage(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: buy_storage SELLER N_BYTES\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
-    if (NULL == node) {
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
 
-    // FIXME: atoi is so dirty…
-    node->buy_storage(argv[1], atoi(argv[2]));
+    node->buy_storage(argv[1], std::stoi(argv[2]));
 
     return SHELL_CONT;
 }
 
-int cmd_put_bytes(Shell* shell, int argc, char** argv)
+static int cmd_put_bytes(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: put_bytes SELLER N_BYTES\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
-    if (NULL == node) {
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
 
-    // FIXME: atoi is so dirty…
-    node->put_bytes(argv[1], atoi(argv[2]));
+    node->put_bytes(argv[1], std::stoi(argv[2]));
 
     return SHELL_CONT;
 }
 
-int cmd_get_bytes(Shell* shell, int argc, char** argv)
+static int cmd_get_bytes(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: get_bytes SELLER N_BYTES\n");
         return SHELL_CONT;
     }
 
-    KadNode* node = (KadNode*)shell->get_handle2();
-    if (NULL == node) {
+    auto* node = static_cast<KadNode*>(shell->get_handle2());
+    if (nullptr == node) {
         fprintf(stderr, "shall jump to a node first\n");
         return SHELL_CONT;
     }
 
-    // FIXME: atoi is so dirty…
-    node->get_bytes(argv[1], atoi(argv[2]));
+    node->get_bytes(argv[1], std::stoi(argv[2]));
 
     return SHELL_CONT;
 }
@@ -380,5 +379,5 @@ struct cmd_def* cmd_defs[] = {
     &show_cmd,
     &verbose_cmd,
     &xor_cmd,
-    NULL,
+    nullptr,
 };

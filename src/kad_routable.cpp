@@ -1,19 +1,17 @@
 #include "kadsim.h"
 
-KadRoutable::KadRoutable(CBigNum id, enum KadRoutableType type)
+KadRoutable::KadRoutable(const CBigNum& id, enum KadRoutableType type)
 {
     this->id = id;
     this->type = type;
 }
-
-KadRoutable::~KadRoutable() {}
 
 CBigNum KadRoutable::get_id() const
 {
     return id;
 }
 
-CBigNum KadRoutable::distance_to(KadRoutable other) const
+CBigNum KadRoutable::distance_to(const KadRoutable& other) const
 {
     return id ^ other.get_id();
 }

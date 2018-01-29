@@ -26,8 +26,8 @@ enum shell_error {
 };
 
 #define SHELL_CONT 0
-#define SHELL_EPARSE -1
-#define SHELL_RETURN -2
+#define SHELL_EPARSE (-1)
+#define SHELL_RETURN (-2)
 
 class Shell;
 
@@ -42,8 +42,8 @@ class Shell {
     Shell();
 
     void set_cmds(struct cmd_def** defs);
-    void set_handle(void* hande);
-    void set_handle2(void* hande);
+    void set_handle(void* handle);
+    void set_handle2(void* handle);
     void set_prompt(const char* prompt);
     void* get_handle();
     void* get_handle2();

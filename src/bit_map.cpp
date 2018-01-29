@@ -1,24 +1,15 @@
+#include <algorithm>
+
 #include "kadsim.h"
-
-void BitMap::shuffle()
-{
-    for (int i = 0; i < n_bits; i++)
-        reservoir[i] = i;
-
-    for (int i = n_bits - 1; i > 0; --i) {
-        int j = rand() % i;
-        int tmp = reservoir[j];
-        reservoir[j] = reservoir[i];
-        reservoir[i] = tmp;
-    }
-}
 
 /** Check that all bits are taken. */
 bool BitMap::check()
 {
-    for (int i = 0; i < n_bits; i++)
-        if (get_bit(i))
+    for (int i = 0; i < n_bits; i++) {
+        if (get_bit(i) != 0) {
             return false;
+        }
+    }
 
     return true;
 }
@@ -29,8 +20,11 @@ BitMap::BitMap(int n_bits)
 
     b = new char[(n_bits + 7) / 8]();
 
-    reservoir = new int[n_bits];
-    shuffle();
+    reservoir.reserve(n_bits);
+    for (int n = 0; n < n_bits; ++n) {
+        reservoir.push_back(n);
+    }
+    shuffle(reservoir.begin(), reservoir.end(), prng());
     pos = 0;
 }
 
@@ -51,7 +45,7 @@ void BitMap::clear_bit(int i)
 
 int BitMap::get_bit(int i)
 {
-    return b[i / 8] & (1 << (i & 7)) ? 1 : 0;
+    return (b[i / 8] & (1 << (i & 7))) != 0 ? 1 : 0;
 }
 
 int BitMap::get_rand_bit()
@@ -69,8 +63,7 @@ int BitMap::get_rand_bit()
         set_bit(bit);
         pos++;
         return bit;
-    } else {
-        std::cout << "error pos=" << pos << " nbits=" << n_bits << std::endl;
-        exit(EXIT_FAILURE);
     }
+    std::cout << "error pos=" << pos << " nbits=" << n_bits << std::endl;
+    exit(EXIT_FAILURE);
 }

@@ -1,12 +1,19 @@
 #ifndef __BITMAP_H__
 #define __BITMAP_H__ 1
 
+#include <vector>
+
 #include "kadsim.h"
 
 class BitMap {
   public:
-    BitMap(int n_bits);
+    explicit BitMap(int n_bits);
     ~BitMap();
+
+    BitMap(BitMap const&) = delete;
+    BitMap& operator=(BitMap const& x) = delete;
+    BitMap(BitMap&&) = delete;
+    BitMap& operator=(BitMap&& x) = delete;
 
     int get_bit(int i);
     int
@@ -14,17 +21,13 @@ class BitMap {
     bool check();
 
   private:
-    // DISALLOW_COPY_AND_ASSIGN(BitMap);
-
     int n_bits;
     char* b;
-    int* reservoir;
+    std::vector<int> reservoir;
     int pos;
 
     void set_bit(int i);
     void clear_bit(int i);
-
-    void shuffle();
 };
 
 #endif
