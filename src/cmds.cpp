@@ -1,11 +1,11 @@
 #include "kadsim.h"
 
-int cmd_quit(Shell* shell, int argc, char** argv)
+int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
 {
     return SHELL_RETURN;
 }
 
-int cmd_help(Shell* shell, int argc, char** argv)
+int cmd_help(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc == 1) {
         struct cmd_def* cmdp;
@@ -38,17 +38,17 @@ int cmd_help(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-void cb_display_node(KadNode* node, void* cb_arg)
+void cb_display_node(KadNode* node, void* /*cb_arg*/)
 {
     std::cout << node->get_id().ToString(16) << "\n";
 }
 
-void cb_display_routable(const KadRoutable& routable, void* cb_arg)
+void cb_display_routable(const KadRoutable& routable, void* /*cb_arg*/)
 {
     std::cout << routable.get_id().ToString(16) << "\n";
 }
 
-int cmd_rand_node(Shell* shell, int argc, char** argv)
+int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
 {
     auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
@@ -57,7 +57,7 @@ int cmd_rand_node(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_rand_key(Shell* shell, int argc, char** argv)
+int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
 {
     auto* network = static_cast<KadNetwork*>(shell->get_handle());
 
@@ -145,7 +145,7 @@ int cmd_find_nearest(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_show(Shell* shell, int argc, char** argv)
+int cmd_show(Shell* shell, int argc, char** /*argv*/)
 {
     if (argc != 1) {
         fprintf(stderr, "usage: show\n");
@@ -222,7 +222,7 @@ int cmd_save(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_xor(Shell* shell, int argc, char** argv)
+int cmd_xor(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 3) {
         fprintf(stderr, "usage: xor bn1 bn2\n");
@@ -242,7 +242,7 @@ int cmd_xor(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int cmd_bit_length(Shell* shell, int argc, char** argv)
+int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 2) {
         fprintf(stderr, "usage: bit_length bn\n");

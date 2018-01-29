@@ -3,7 +3,11 @@
 
 COMPIL_OPTS = '-x c++ --std=c++11'.freeze
 CHECKS = %w[
+  android-*
+  boost-*
+  bugprone-*
   cert-*
+  clang-analyzer-*
   google-build-explicit-make-pair
   google-default-arguments
   google-explicit-constructor
@@ -19,7 +23,9 @@ CHECKS = %w[
   hicpp-signed-bitwise
   hicpp-special-member-functions
   hicpp-vararg
+  misc-*
   modernize-*
+  mpi-*
   performance-*
   readability-*
 ].freeze

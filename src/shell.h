@@ -26,8 +26,8 @@ enum shell_error {
 };
 
 #define SHELL_CONT 0
-#define SHELL_EPARSE -1
-#define SHELL_RETURN -2
+#define SHELL_EPARSE (-1)
+#define SHELL_RETURN (-2)
 
 class Shell;
 

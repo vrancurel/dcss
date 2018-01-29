@@ -25,6 +25,7 @@ class CAutoBN_CTX {
   protected:
     BN_CTX* pctx;
 
+    // NOLINTNEXTLINE(misc-unconventional-assign-operator)
     BN_CTX* operator=(BN_CTX* pnew)
     {
         return pctx = pnew;
@@ -88,7 +89,7 @@ class CBigNum {
         }
     }
 
-    CBigNum(CBigNum&& b) : bn(b.bn)
+    CBigNum(CBigNum&& b) noexcept : bn(b.bn)
     {
         b.bn = nullptr;
     }
@@ -101,7 +102,7 @@ class CBigNum {
         return *this;
     }
 
-    CBigNum& operator=(CBigNum&& b)
+    CBigNum& operator=(CBigNum&& b) noexcept
     {
         std::swap(bn, b.bn);
         return *this;

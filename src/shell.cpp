@@ -58,7 +58,7 @@ static char* command_generator(const char* text, int state)
     return nullptr;
 }
 
-char** shell_completion(const char* text, int start, int end)
+char** shell_completion(const char* text, int start, int /*end*/)
 {
     char** matches;
 
