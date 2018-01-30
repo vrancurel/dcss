@@ -145,7 +145,7 @@ int main(int argc, char** argv)
         case 'B': {
             std::istringstream input(optarg);
             std::string bstrap;
-            while (std::getline(input, bstrap, ',')) {
+            while (!std::getline(input, bstrap, ',').fail()) {
                 bstraplist.push_back(bstrap);
             }
             break;
