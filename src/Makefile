@@ -1,10 +1,10 @@
 CC = clang++
 
 CFLAGS = \
--std=c++11 -g -Werror -Wall -Wextra -Wdeprecated -Wpedantic \
+-std=c++11 -g -Werror -Wall -Wextra -Wpedantic \
 -Wdocumentation -Wdocumentation-pedantic \
 -Wconversion -Wno-sign-conversion \
--Wunused-exception-parameter -Wunused-macros -Wunused-member-function -Wunused-template \
+-Wunused-exception-parameter -Wunused-macros -Wunused-member-function \
 -Wgcc-compat -Wgnu \
 -Warray-bounds-pointer-arithmetic \
 -Wassign-enum \

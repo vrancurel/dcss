@@ -36,5 +36,8 @@ BLACKLIST = %w[
 ].freeze
 TO_CHECK = Dir.glob('src/*.{cpp,h}') - BLACKLIST
 
-exec("clang-tidy #{TO_CHECK.join(' ')} "\
-     "-checks='#{CHECKS.join(',')}' -- #{COMPIL_OPTS}")
+output = `clang-tidy #{TO_CHECK.join(' ')} -checks='#{CHECKS.join(',')}' -- #{COMPIL_OPTS}`
+if output =~ /(error|warning):/
+  puts output
+  exit(1)
+end

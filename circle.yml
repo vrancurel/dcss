@@ -1,3 +1,20 @@
+dependencies:
+  post:
+    - sudo apt-get update
+    - sudo apt-get -y install clang-3.9 libargtable2-dev libjsoncpp-dev doxygen libmicrohttpd-dev libedit-dev
+    - git clone git://github.com/cinemast/libjson-rpc-cpp.git
+    - cd libjson-rpc-cpp && git checkout v0.6.0
+    - mkdir libjson-rpc-cpp/build
+    - cd libjson-rpc-cpp/build && cmake -DCOMPILE_TESTS=No .. && make && sudo make install
+    - sudo ldconfig
+    - sudo apt-get -y install clang-tidy-3.9
+    - sudo ln -s /usr/bin/clang-tidy-3.9 /usr/bin/clang-tidy
+    - sudo ln -s /usr/bin/clang++-3.9 /usr/bin/clang++
+
+compile:
+  override:
+    - cd src ; make
+
 test:
   override:
     - ./lint.rb
