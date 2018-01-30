@@ -150,8 +150,8 @@ KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
         // Find remaining nearest nodes.
         for (int i = 1; i < (conf->n_bits + 1); i++) {
             if (bit_length != i) {
-                std::list<KadNode*>& list = buckets[i];
-                for (auto& it : list) {
+                std::list<KadNode*>& nodes = buckets[i];
+                for (auto& it : nodes) {
                     if (verbose) {
                         std::cout << "kbucket " << i << " "
                                   << it->get_id().ToString(16) << " distance="
@@ -218,11 +218,11 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
 
     // Send find_nodes.
     for (auto& starting_node : starting_nodes) {
-        std::list<KadNode*> answers =
+        std::list<KadNode*> nodes =
             starting_node->find_nearest_nodes(routable, conf->k);
 
         // Add to answers.
-        for (auto& answer : answers) {
+        for (auto& answer : nodes) {
             // Remove oneself from the list.
             if (get_id() != answer->get_id()) {
                 answers.push_back(answer);
@@ -280,11 +280,11 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
                 break;
             }
 
-            std::list<KadNode*> answers =
+            std::list<KadNode*> nodes =
                 (*it)->find_nearest_nodes(routable, conf->k);
 
             // Add to round_answers.
-            for (auto& answer : answers) {
+            for (auto& answer : nodes) {
                 // Remove oneself from the list.
                 if (get_id() != answer->get_id()) {
                     round_answers.push_back(answer);
@@ -340,11 +340,11 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
                     continue;
                 }
 
-                std::list<KadNode*> answers =
+                std::list<KadNode*> nodes =
                     (*it)->find_nearest_nodes(routable, conf->k);
 
                 // Add to answers.
-                for (auto& answer : answers) {
+                for (auto& answer : nodes) {
                     // Remove oneself from the list.
                     if (get_id() != answer->get_id()) {
                         answers.push_back(answer);

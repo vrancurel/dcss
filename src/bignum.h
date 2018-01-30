@@ -415,18 +415,18 @@ class CBigNum {
         CBigNum bnBase(nBase);
         CBigNum bn0(0);
         std::string str;
-        CBigNum bn = *this;
-        BN_set_negative(bn.bn, 0);
+        CBigNum tmp = *this;
+        BN_set_negative(tmp.bn, 0);
         CBigNum dv;
         CBigNum rem;
-        if (BN_cmp(bn.bn, bn0.bn) == 0) {
+        if (BN_cmp(tmp.bn, bn0.bn) == 0) {
             return "0";
         }
-        while (BN_cmp(bn.bn, bn0.bn) > 0) {
-            if (BN_div(dv.bn, rem.bn, bn.bn, bnBase.bn, pctx) == 0) {
+        while (BN_cmp(tmp.bn, bn0.bn) > 0) {
+            if (BN_div(dv.bn, rem.bn, tmp.bn, bnBase.bn, pctx) == 0) {
                 throw bignum_error("CBigNum::ToString() : BN_div failed");
             }
-            bn = dv;
+            tmp = dv;
             uint64 c = rem.getulong();
             str += "0123456789abcdef"[c];
         }
