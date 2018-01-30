@@ -189,3 +189,67 @@ target_link_libraries(${EXECUTABLE_NAME}
 
 # JSON-RPC stubs
 add_subdirectory(jsonrpc_spec)
+
+#####################
+# Formatting & Linter
+#####################
+
+set(ALL_SRCS
+  ${SRCS}
+  ${SOURCE_DIR}/bignum.h
+  ${SOURCE_DIR}/bit_map.h
+  ${SOURCE_DIR}/kadsim.h
+  ${SOURCE_DIR}/shell.h
+)
+
+add_custom_target(format
+  COMMAND clang-format -i ${ALL_SRCS}
+  COMMENT "fix code formatting"
+)
+add_dependencies(format ${PROJECT_NAME})
+
+# We still need these ones for the headers files (not in compile_commands.json).
+set(CLANG_LINT_OPTS
+  -x c++ --std=c++11
+  -isystem ${GENERATE_DIR}
+)
+set(CLANG_LINTS_LIST
+  android-*
+  boost-*
+  bugprone-*
+  cert-*
+  clang-analyzer-*
+  google-build-explicit-make-pair
+  google-default-arguments
+  google-explicit-constructor
+  google-readability-casting
+  google-runtime-member-string-references
+  google-runtime-int
+  hicpp-avoid-goto
+  hicpp-exception-baseclass
+  hicpp-member-init
+  hicpp-no-array-decay
+  hicpp-no-assembler
+  hicpp-no-malloc
+  hicpp-signed-bitwise
+  hicpp-special-member-functions
+  hicpp-vararg
+  misc-*
+  modernize-*
+  mpi-*
+  performance-*
+  readability-*
+)
+string(REPLACE ";" "," CLANG_LINTS "${CLANG_LINTS_LIST}")
+
+add_custom_target(lint
+  COMMAND clang-tidy ${ALL_SRCS} -checks=${CLANG_LINTS} -p ${CMAKE_BINARY_DIR} -- ${CLANG_LINT_OPTS}
+  COMMENT "run the linter"
+)
+add_dependencies(lint ${PROJECT_NAME})
+
+add_custom_target(fix-lint
+  COMMAND clang-tidy -fix ${ALL_SRCS} -checks=${CLANG_LINTS} -p ${CMAKE_BINARY_DIR} -- ${CLANG_LINT_OPTS}
+  COMMENT "run the linter and apply proposed fixes"
+)
+add_dependencies(fix-lint ${PROJECT_NAME})

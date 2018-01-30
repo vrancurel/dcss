@@ -26,6 +26,14 @@ cmake -G 'Unix Makefiles' ..
 make
 ```
 
+### Targets
+
+The following targets are available:
+
+- `format`: fix code source formatting
+- `lint`: run the linter
+- `fix-lint`: run the linter and try to apply the proposed fixes
+
 # How to use it:
 
     $ make
