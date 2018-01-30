@@ -253,3 +253,22 @@ add_custom_target(fix-lint
   COMMENT "run the linter and apply proposed fixes"
 )
 add_dependencies(fix-lint ${PROJECT_NAME})
+
+####################
+# Targets for the CI
+####################
+
+# clang-tidy returns 0, even if there are lint errors, so we have to be hackish.
+# Should be no longer needed when https://reviews.llvm.org/D39105 is merged…
+set(LINT_ERROR_PATTERN "'(error|warning):'")
+add_custom_target(check-lint
+  COMMAND test `clang-tidy ${ALL_SRCS} -checks=${CLANG_LINTS} -p ${CMAKE_BINARY_DIR} -- ${CLANG_LINT_OPTS} | grep -Pc ${LINT_ERROR_PATTERN}` -eq 0
+  COMMENT "check for lint errors"
+)
+add_dependencies(check-lint ${PROJECT_NAME})
+
+add_custom_target(check-format
+  COMMAND test `clang-format -output-replacements-xml ${ALL_SRCS} | grep -c offset` -eq 0
+  COMMENT "check code formatting"
+)
+add_dependencies(check-format ${PROJECT_NAME})
