@@ -189,6 +189,8 @@ target_link_libraries(${EXECUTABLE_NAME}
 
 # JSON-RPC stubs
 add_subdirectory(jsonrpc_spec)
+# Documentation
+add_subdirectory(documentation)
 
 #####################
 # Formatting & Linter

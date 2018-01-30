@@ -30,6 +30,7 @@ make
 
 The following targets are available:
 
+- `doc`: build the documentation using Doxygen
 - `format`: fix code source formatting
 - `lint`: run the linter
 - `fix-lint`: run the linter and try to apply the proposed fixes
