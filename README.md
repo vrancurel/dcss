@@ -22,7 +22,7 @@ The goal of this simulator is to test the inherent nature of the routing protoco
 ```sh
 mkdir build
 cd build
-cmake -G 'Unix Makefiles' ..
+CXX=/usr/bin/clang++ cmake -G 'Unix Makefiles' ..
 make
 ```
 
@@ -37,6 +37,8 @@ The following targets are available:
 - `quadiron`: build the QuadIron binary
 - `quadiron_shared`: build the QuadIron shared library
 - `quadiron_static`: build the QuadIron static library
+- `quadiron_test`: build the test driver
+- `check`: run the test suite
 
 # How to use it:
 

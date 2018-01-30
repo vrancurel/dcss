@@ -5,6 +5,9 @@ cmake_minimum_required(VERSION 3.5)
 ######################
 
 project(quadiron CXX)
+
+enable_testing()
+
 set(CMAKE_CXX_STANDARD          11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS        OFF)
@@ -157,6 +160,8 @@ endforeach(flag)
 add_subdirectory(jsonrpc_spec)
 # QuadIron
 add_subdirectory(src)
+# Tests
+add_subdirectory(test)
 # Documentation
 add_subdirectory(documentation)
 
@@ -166,6 +171,7 @@ add_subdirectory(documentation)
 
 set(ALL_SRCS
   ${LIB_SRC}
+  ${TEST_SRC}
   ${SOURCE_DIR}/main.cpp
   ${SOURCE_DIR}/bignum.h
   ${SOURCE_DIR}/bit_map.h
@@ -183,6 +189,7 @@ add_dependencies(format ${PROJECT_NAME})
 set(CLANG_LINT_OPTS
   -x c++ --std=c++11
   -isystem ${GENERATE_DIR}
+  ${GTEST_INCLUDE_PATHS}
 )
 set(CLANG_LINTS_LIST
   android-*

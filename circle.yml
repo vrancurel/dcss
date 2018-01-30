@@ -28,3 +28,4 @@ test:
   override:
     - cd build && make check-format
     - cd build && make check-lint
+    - cd build && make check
