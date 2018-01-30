@@ -39,7 +39,11 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(GENERATE_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin/${CMAKE_BUILD_TYPE})
 
-include_directories("src")
+# Targets
+set(JSON_RPC_STUB jsonrpcstup)
+set(OBJECT_LIB ${CMAKE_PROJECT_NAME}_object)
+set(SHARED_LIB ${CMAKE_PROJECT_NAME}_shared)
+set(STATIC_LIB ${CMAKE_PROJECT_NAME}_static)
 
 file(MAKE_DIRECTORY ${GENERATE_DIR})
 # Use SYSTEM so that our strict compilers settings are not applied to generated
@@ -149,46 +153,10 @@ endforeach(flag)
 # QuadIron build
 ################
 
-set(EXECUTABLE_NAME ${CMAKE_PROJECT_NAME})
-
-# Dependencies.
-find_package(OpenSSL      REQUIRED)
-find_package(Readline     REQUIRED)
-find_package(CURL         REQUIRED)
-find_package(Jsoncpp      REQUIRED)
-find_package(json_rpc_cpp REQUIRED)
-
-add_definitions(-DHAVE_READLINE)
-
-# Source files.
-set(SRCS
-  ${SOURCE_DIR}/bit_map.cpp
-  ${SOURCE_DIR}/cmds.cpp
-  ${SOURCE_DIR}/kad_file.cpp
-  ${SOURCE_DIR}/kad_network.cpp
-  ${SOURCE_DIR}/kad_node.cpp
-  ${SOURCE_DIR}/kad_routable.cpp
-  ${SOURCE_DIR}/main.cpp
-  ${SOURCE_DIR}/shell.cpp
-)
-
-configure_file(${SOURCE_DIR}/config.in ${GENERATE_DIR}/config.h @ONLY)
-
-add_executable(${EXECUTABLE_NAME}
-  ${SRCS}
-)
-
-# Link librairies.
-target_link_libraries(${EXECUTABLE_NAME}
-  ${OPENSSL_CRYPTO_LIBRARY}
-  ${Readline_LIBRARY}
-  ${JSONCPP_LIBRARY}
-  ${CURL_LIBRARIES}
-  ${JSON_RPC_CPP_CLIENT_LIBRARIES}
-)
-
 # JSON-RPC stubs
 add_subdirectory(jsonrpc_spec)
+# QuadIron
+add_subdirectory(src)
 # Documentation
 add_subdirectory(documentation)
 
@@ -197,7 +165,8 @@ add_subdirectory(documentation)
 #####################
 
 set(ALL_SRCS
-  ${SRCS}
+  ${LIB_SRC}
+  ${SOURCE_DIR}/main.cpp
   ${SOURCE_DIR}/bignum.h
   ${SOURCE_DIR}/bit_map.h
   ${SOURCE_DIR}/kadsim.h

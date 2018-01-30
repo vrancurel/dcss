@@ -34,6 +34,9 @@ The following targets are available:
 - `format`: fix code source formatting
 - `lint`: run the linter
 - `fix-lint`: run the linter and try to apply the proposed fixes
+- `quadiron`: build the QuadIron binary
+- `quadiron_shared`: build the QuadIron shared library
+- `quadiron_static`: build the QuadIron static library
 
 # How to use it:
 

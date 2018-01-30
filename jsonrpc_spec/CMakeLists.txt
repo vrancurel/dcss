@@ -1,5 +1,3 @@
-set(JSON_RPC_STUB jsonrpcstup)
-
 add_custom_target(${JSON_RPC_STUB}
   DEPENDS ${GENERATE_DIR}/gethclient.h
   DEPENDS ${GENERATE_DIR}/kadclient.h
@@ -17,8 +15,4 @@ add_custom_command(
   COMMAND jsonrpcstub ${CMAKE_CURRENT_SOURCE_DIR}/kad.json --cpp-client=KadClient --cpp-client-file=${GENERATE_DIR}/kadclient.h
   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/kad.json
   COMMENT "Generating JSON-RPC client for Node-to-Node communication"
-)
-
-add_dependencies(${PROJECT_NAME}
-  ${JSON_RPC_STUB}
 )
