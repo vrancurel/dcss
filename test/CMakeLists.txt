@@ -43,14 +43,6 @@ include_directories(SYSTEM
     "${source_dir}/googlemock/include"
 )
 
-# Export GoogleTest include paths for the linter.
-set(GTEST_INCLUDE_PATHS
-  -isystem ${source_dir}/googletest/include
-  -isystem ${source_dir}/googlemock/include
-
-  PARENT_SCOPE
-)
-
 ###########################################################################
 # GTEST_ADD_TESTS
 # From https://github.com/Kitware/CMake/blob/v3.5.0/Modules/FindGTest.cmake

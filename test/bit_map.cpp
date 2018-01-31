@@ -7,7 +7,6 @@
 
 #include "bit_map.h"
 
-// NOLINTNEXTLINE(modernize-use-equals-*)
 TEST(BitMapTest, TestCheck)
 {
     const uint32_t nb_bits = 16;
@@ -23,7 +22,6 @@ TEST(BitMapTest, TestCheck)
         << "can't call get_rand_uint on an exhausted BitMap";
 }
 
-// NOLINTNEXTLINE(modernize-use-equals-*)
 TEST(BitMapTest, TestOutput)
 {
     const uint32_t nb_bits = 16;

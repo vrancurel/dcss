@@ -171,7 +171,6 @@ add_subdirectory(documentation)
 
 set(ALL_SRCS
   ${LIB_SRC}
-  ${TEST_SRC}
   ${SOURCE_DIR}/main.cpp
   ${SOURCE_DIR}/cmds.h
   ${SOURCE_DIR}/bignum.h
@@ -187,7 +186,7 @@ set(ALL_SRCS
 )
 
 add_custom_target(format
-  COMMAND clang-format -i ${ALL_SRCS}
+  COMMAND clang-format -i ${ALL_SRCS} ${TEST_SRC}
   COMMENT "fix code formatting"
 )
 add_dependencies(format ${PROJECT_NAME})
@@ -196,7 +195,6 @@ add_dependencies(format ${PROJECT_NAME})
 set(CLANG_LINT_OPTS
   -x c++ --std=c++11
   -isystem ${GENERATE_DIR}
-  ${GTEST_INCLUDE_PATHS}
 )
 set(CLANG_LINTS_LIST
   android-*
@@ -253,7 +251,7 @@ add_custom_target(check-lint
 add_dependencies(check-lint ${PROJECT_NAME})
 
 add_custom_target(check-format
-  COMMAND test `clang-format -output-replacements-xml ${ALL_SRCS} | grep -c offset` -eq 0
+  COMMAND test `clang-format -output-replacements-xml ${ALL_SRCS} ${TEST_SRC} | grep -c offset` -eq 0
   COMMENT "check code formatting"
 )
 add_dependencies(check-format ${PROJECT_NAME})
