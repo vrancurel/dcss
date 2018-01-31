@@ -1,7 +1,7 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef __KAD_CONFIG_H__
+#define __KAD_CONFIG_H__
 
 #cmakedefine PACKAGE "@PACKAGE@"
 #cmakedefine VERSION "@VERSION@"
 
-#endif // CONFIG_H
+#endif // __KAD_CONFIG_H__

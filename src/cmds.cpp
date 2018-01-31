@@ -1,4 +1,13 @@
-#include "kadsim.h"
+#include <fstream>
+#include <iostream>
+#include <list>
+
+#include "bignum.h"
+#include "cmds.h"
+#include "kad_network.h"
+#include "kad_node.h"
+#include "kad_routable.h"
+#include "shell.h"
 
 static int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
 {

@@ -1,8 +1,6 @@
-#ifndef __SHELL_H__
-#define __SHELL_H__ 1
+#ifndef __KAD_SHELL_H__
+#define __KAD_SHELL_H__
 
-#include <cassert>
-#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <string>

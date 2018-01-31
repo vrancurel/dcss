@@ -173,10 +173,17 @@ set(ALL_SRCS
   ${LIB_SRC}
   ${TEST_SRC}
   ${SOURCE_DIR}/main.cpp
+  ${SOURCE_DIR}/cmds.h
   ${SOURCE_DIR}/bignum.h
   ${SOURCE_DIR}/bit_map.h
+  ${SOURCE_DIR}/kad_conf.h
+  ${SOURCE_DIR}/kad_file.h
+  ${SOURCE_DIR}/kad_network.h
+  ${SOURCE_DIR}/kad_node.h
+  ${SOURCE_DIR}/kad_routable.h
   ${SOURCE_DIR}/kadsim.h
   ${SOURCE_DIR}/shell.h
+  ${SOURCE_DIR}/utils.h
 )
 
 add_custom_target(format
