@@ -37,10 +37,10 @@ void KadNetwork::initialize_nodes(
             bstraplist.pop_back();
             std::cout << "create remote node (" << bstrap << ")\n";
             // Create remote node from a bootstrap.
-            node = new KadNode(conf, bitmap.get_rand_bit() * keyspace, bstrap);
+            node = new KadNode(conf, bitmap.get_rand_uint() * keyspace, bstrap);
         } else {
             // Simulate node.
-            node = new KadNode(conf, bitmap.get_rand_bit() * keyspace);
+            node = new KadNode(conf, bitmap.get_rand_uint() * keyspace);
         }
         nodes.push_back(node);
         nodes_map[node->get_id().ToString(16)] = node;

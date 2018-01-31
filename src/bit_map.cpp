@@ -1,68 +1,28 @@
 #include <algorithm>
-#include <iostream>
+#include <stdexcept>
 
 #include "bit_map.h"
 #include "utils.h"
 
 bool BitMap::is_exhausted() const
 {
-    for (uint32_t i = 0; i < n_bits; i++) {
-        if (get_bit(i) == 0) {
-            return false;
-        }
-    }
-
-    return true;
+    return pos == pool.size();
 }
 
-BitMap::BitMap(uint32_t n_bits)
+BitMap::BitMap(uint32_t n_bits) : pos(0)
 {
-    this->n_bits = n_bits;
-
-    b = new char[(n_bits + 7) / 8]();
-
-    reservoir.reserve(n_bits);
+    pool.reserve(n_bits);
     for (uint32_t n = 0; n < n_bits; ++n) {
-        reservoir.push_back(n);
+        pool.push_back(n);
     }
-    shuffle(reservoir.begin(), reservoir.end(), prng());
-    pos = 0;
+    shuffle(pool.begin(), pool.end(), prng());
 }
 
-BitMap::~BitMap()
+uint32_t BitMap::get_rand_uint()
 {
-    delete[] b;
-}
-
-void BitMap::set_bit(uint32_t i)
-{
-    b[i / 8] |= 1 << (i & 7);
-}
-
-void BitMap::clear_bit(uint32_t i)
-{
-    b[i / 8] &= ~(1 << (i & 7));
-}
-
-uint32_t BitMap::get_bit(uint32_t i) const
-{
-    return (b[i / 8] & (1 << (i & 7))) != 0 ? 1 : 0;
-}
-
-uint32_t BitMap::get_rand_bit()
-{
-    if (pos < n_bits) {
-        uint32_t bit = reservoir[pos];
-
-        if (get_bit(bit) != 0) {
-            std::cout << "error pos " << pos << " bit " << bit
-                      << " is already set" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-        set_bit(bit);
-        pos++;
-        return bit;
+    if (is_exhausted()) {
+        // std::logic_error IS nothrow copy constructible.
+        throw std::logic_error("entropy exhausted"); // NOLINT(cert-err60-cpp)
     }
-    std::cout << "error pos=" << pos << " nbits=" << n_bits << std::endl;
-    exit(EXIT_FAILURE);
+    return pool[pos++];
 }

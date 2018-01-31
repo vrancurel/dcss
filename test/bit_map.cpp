@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
 
@@ -15,11 +16,11 @@ TEST(BitMapTest, TestCheck)
     for (uint32_t i = 0; i < nb_bits; ++i) {
         ASSERT_FALSE(bitmap.is_exhausted())
             << "expected " << nb_bits - i << " free bits";
-        bitmap.get_rand_bit();
+        bitmap.get_rand_uint();
     }
     ASSERT_TRUE(bitmap.is_exhausted()) << "all bits must be used";
-    ASSERT_EXIT(bitmap.get_rand_bit(), ::testing::ExitedWithCode(EXIT_FAILURE),
-            "") << "can't call get_rand_bit on an exhausted BitMap";
+    ASSERT_THROW(bitmap.get_rand_uint(), std::logic_error)
+        << "can't call get_rand_uint on an exhausted BitMap";
 }
 
 // NOLINTNEXTLINE(modernize-use-equals-*)
@@ -34,7 +35,7 @@ TEST(BitMapTest, TestOutput)
     for (uint32_t i = 0; i < nb_bits; ++i) {
         expected.insert(i);
 
-        const uint32_t n = bitmap.get_rand_bit();
+        const uint32_t n = bitmap.get_rand_uint();
         all_values.push_back(n);
         unique_values.insert(n);
     }
