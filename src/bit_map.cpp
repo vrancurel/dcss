@@ -4,10 +4,9 @@
 #include "bit_map.h"
 #include "utils.h"
 
-/** Check that all bits are taken. */
-bool BitMap::check()
+bool BitMap::is_exhausted() const
 {
-    for (int i = 0; i < n_bits; i++) {
+    for (uint32_t i = 0; i < n_bits; i++) {
         if (get_bit(i) != 0) {
             return false;
         }
@@ -16,14 +15,14 @@ bool BitMap::check()
     return true;
 }
 
-BitMap::BitMap(int n_bits)
+BitMap::BitMap(uint32_t n_bits)
 {
     this->n_bits = n_bits;
 
     b = new char[(n_bits + 7) / 8]();
 
     reservoir.reserve(n_bits);
-    for (int n = 0; n < n_bits; ++n) {
+    for (uint32_t n = 0; n < n_bits; ++n) {
         reservoir.push_back(n);
     }
     shuffle(reservoir.begin(), reservoir.end(), prng());
@@ -35,27 +34,25 @@ BitMap::~BitMap()
     delete[] b;
 }
 
-void BitMap::set_bit(int i)
+void BitMap::set_bit(uint32_t i)
 {
     b[i / 8] |= 1 << (i & 7);
 }
 
-void BitMap::clear_bit(int i)
+void BitMap::clear_bit(uint32_t i)
 {
     b[i / 8] &= ~(1 << (i & 7));
 }
 
-int BitMap::get_bit(int i)
+uint32_t BitMap::get_bit(uint32_t i) const
 {
     return (b[i / 8] & (1 << (i & 7))) != 0 ? 1 : 0;
 }
 
-int BitMap::get_rand_bit()
+uint32_t BitMap::get_rand_bit()
 {
     if (pos < n_bits) {
-        int bit = reservoir[pos];
-
-        // std::cout << "pos " << pos << " bit " << bit << std::endl;
+        uint32_t bit = reservoir[pos];
 
         if (get_bit(bit) != 0) {
             std::cout << "error pos " << pos << " bit " << bit

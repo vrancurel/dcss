@@ -1,11 +1,12 @@
 #ifndef __KAD_BITMAP_H__
 #define __KAD_BITMAP_H__
 
+#include <cstdint>
 #include <vector>
 
 class BitMap {
   public:
-    explicit BitMap(int n_bits);
+    explicit BitMap(uint32_t n_bits);
     ~BitMap();
 
     BitMap(BitMap const&) = delete;
@@ -13,19 +14,20 @@ class BitMap {
     BitMap(BitMap&&) = delete;
     BitMap& operator=(BitMap&& x) = delete;
 
-    int get_bit(int i);
-    int
-    get_rand_bit(); /* Get a random bit that has never been generated before. */
-    bool check();
+    uint32_t get_bit(uint32_t i) const;
+    /** Get a random bit that has never been generated before. */
+    uint32_t get_rand_bit();
+    /** Check that all bits are taken. */
+    bool is_exhausted() const;
 
   private:
-    int n_bits;
+    uint32_t n_bits;
     char* b;
-    std::vector<int> reservoir;
-    int pos;
+    std::vector<uint32_t> reservoir;
+    uint32_t pos;
 
-    void set_bit(int i);
-    void clear_bit(int i);
+    void set_bit(uint32_t i);
+    void clear_bit(uint32_t i);
 };
 
 #endif
