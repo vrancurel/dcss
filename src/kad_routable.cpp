@@ -13,6 +13,11 @@ CBigNum Routable::get_id() const
     return id;
 }
 
+RoutableType Routable::get_type() const
+{
+    return type;
+}
+
 CBigNum Routable::distance_to(const Routable& other) const
 {
     return id ^ other.get_id();
