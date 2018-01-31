@@ -7,7 +7,7 @@
 bool BitMap::is_exhausted() const
 {
     for (uint32_t i = 0; i < n_bits; i++) {
-        if (get_bit(i) != 0) {
+        if (get_bit(i) == 0) {
             return false;
         }
     }

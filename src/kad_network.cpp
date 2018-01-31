@@ -47,7 +47,7 @@ void KadNetwork::initialize_nodes(
     }
 
     // There shall be a responsable for every portion of the keyspace.
-    assert(!bitmap.is_exhausted());
+    assert(bitmap.is_exhausted());
 
     // Continue creating conns for the nodes that dont meet the initial number
     // required.
