@@ -98,7 +98,7 @@ endfunction()
 
 # Source files.
 set(TEST_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/dummy.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/bit_map.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 
   CACHE
@@ -111,6 +111,8 @@ set(TEST_DRIVER ${CMAKE_PROJECT_NAME}_test)
 add_executable(${TEST_DRIVER}
   ${TEST_SRC}
 )
+
+include_directories(${SOURCE_DIR})
 
 target_link_libraries(${TEST_DRIVER}
   libgtest
