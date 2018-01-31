@@ -9,6 +9,37 @@ implementation of Petar Maymounkov and David Mazières
 
 The goal of this simulator is to test the inherent nature of the routing protocol and to make experiments.
 
+# Build from source
+
+## Install the dependencies
+
+- OpenSSL
+- readline
+- [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)
+
+## Build
+
+```sh
+mkdir build
+cd build
+CXX=/usr/bin/clang++ cmake -G 'Unix Makefiles' ..
+make
+```
+
+### Targets
+
+The following targets are available:
+
+- `doc`: build the documentation using Doxygen
+- `format`: fix code source formatting
+- `lint`: run the linter
+- `fix-lint`: run the linter and try to apply the proposed fixes
+- `quadiron`: build the QuadIron binary
+- `quadiron_shared`: build the QuadIron shared library
+- `quadiron_static`: build the QuadIron static library
+- `quadiron_test`: build the test driver
+- `check`: run the test suite
+
 # How to use it:
 
     $ make
@@ -32,7 +63,3 @@ In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
 
 ![Graphical Output of Simulator](graphviz.png )
-
-# Dependencies
-
-- [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)

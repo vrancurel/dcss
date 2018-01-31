@@ -20,6 +20,7 @@
 
 #include "bignum.h"
 #include "bit_map.h"
+#include "config.h"
 #include "gethclient.h"
 #include "kadclient.h"
 #include "shell.h"
