@@ -2,6 +2,7 @@
 set(LIB_SRC
   ${SOURCE_DIR}/bit_map.cpp
   ${SOURCE_DIR}/cmds.cpp
+  ${SOURCE_DIR}/kad_conf.cpp
   ${SOURCE_DIR}/kad_file.cpp
   ${SOURCE_DIR}/kad_network.cpp
   ${SOURCE_DIR}/kad_node.cpp

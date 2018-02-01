@@ -1,4 +1,5 @@
-#include "kadsim.h"
+#include "bignum.h"
+#include "kad_file.h"
 
 KadFile::KadFile(const CBigNum& id, KadNode* referencer)
     : KadRoutable(id, KAD_ROUTABLE_FILE)

@@ -1,4 +1,4 @@
-#include "kadsim.h"
+#include "kad_routable.h"
 
 KadRoutable::KadRoutable(const CBigNum& id, enum KadRoutableType type)
 {

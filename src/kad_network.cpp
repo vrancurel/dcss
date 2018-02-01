@@ -1,8 +1,13 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
+#include <cassert>
+#include <cstdint>
+#include <iostream>
 
-#include "kadsim.h"
+#include "bit_map.h"
+#include "kad_conf.h"
+#include "kad_file.h"
+#include "kad_network.h"
+#include "kad_node.h"
+#include "utils.h"
 
 KadNetwork::KadNetwork(KadConf* conf)
 {

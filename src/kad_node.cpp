@@ -1,4 +1,77 @@
-#include "kadsim.h"
+#include <cassert>
+#include <cstdint>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
+#include "bignum.h"
+#include "kad_conf.h"
+#include "kad_file.h"
+#include "kad_node.h"
+#include "kadclient.h"
+
+// Address of the QuadIron contract on the blockchain.
+#define QUADIRON_CONTRACT_ADDR "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
+
+static void call_contract(
+    GethClient& geth,
+    const std::string& node_addr,
+    const std::string& contract_addr,
+    const std::string& payload)
+{
+    Json::Value params;
+
+    params["from"] = node_addr;
+    params["to"] = contract_addr;
+    params["data"] = payload;
+
+    const std::string tx_hash = geth.eth_sendTransaction(params);
+    std::cout << "tx_hash: " << tx_hash << '\n';
+
+    // FIXME: busy way is ugly.
+    while (true) {
+        try {
+            const Json::Value receipt = geth.eth_getTransactionReceipt(tx_hash);
+            std::cout << "result: " << receipt.toStyledString() << '\n';
+            // TODO: we should probably return a bool to the caller, or raise…
+            if (receipt["status"] == "0x0") {
+                std::cout << "transaction failed\n";
+            } else {
+                std::cout << "transaction successed: " << receipt["status"]
+                          << '\n';
+            }
+            return;
+        } catch (jsonrpc::JsonRpcException& exn) {
+            if (exn.GetCode() == -32000) {
+                continue; // Transaction is pending…
+            }
+            fprintf(stderr, "error: %s\n", exn.what());
+            throw;
+        }
+    }
+}
+
+// Encode an integer as an uint256 according to the Ethereum Contract ABI.
+// See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI:
+//
+// > uint<M>: enc(X) is the big-endian encoding of X, padded on the
+// > higher-order (left) side with zero-bytes such that the length is a
+// > multiple of 32 bytes.
+static inline std::string encode_uint256(uint64_t v)
+{
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(64) << std::hex << v;
+    return oss.str();
+}
+
+// Address are encoded as uint160.
+static inline std::string encode_address(const std::string& addr)
+{
+    std::ostringstream oss;
+    // Skip the leading 0x, pad for 160 bytes.
+    oss << std::setfill('0') << std::setw(40) << addr.substr(2);
+    return oss.str();
+}
 
 KadNode::KadNode(KadConf* conf, const CBigNum& id, const std::string& addr)
     : KadRoutable(id, KAD_ROUTABLE_NODE)

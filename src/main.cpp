@@ -1,89 +1,12 @@
-#include <iomanip>
-#include <sstream>
-#include <utility>
+#include <cstdint>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <getopt.h>
 
 #include "kadsim.h"
-
-KadConf::KadConf(
-    int n_bits,
-    int k,
-    int alpha,
-    int n_nodes,
-    const std::string& geth_addr,
-    std::vector<std::string> bstraplist)
-    : httpclient(geth_addr), geth(httpclient), bstraplist(std::move(bstraplist))
-{
-    this->n_bits = n_bits;
-    this->k = k;
-    this->alpha = alpha;
-    this->n_nodes = n_nodes;
-}
-
-void KadConf::save(std::ostream& fout)
-{
-    fout << "n_bits " << n_bits << "\n";
-    fout << "k " << k << "\n";
-    fout << "alpha " << alpha << "\n";
-    fout << "n_nodes " << n_nodes << "\n";
-}
-
-void call_contract(
-    GethClient& geth,
-    const std::string& node_addr,
-    const std::string& contract_addr,
-    const std::string& payload)
-{
-    Json::Value params;
-
-    params["from"] = node_addr;
-    params["to"] = contract_addr;
-    params["data"] = payload;
-
-    const std::string tx_hash = geth.eth_sendTransaction(params);
-    std::cout << "tx_hash: " << tx_hash << '\n';
-
-    // FIXME: busy way is ugly.
-    while (true) {
-        try {
-            const Json::Value receipt = geth.eth_getTransactionReceipt(tx_hash);
-            std::cout << "result: " << receipt.toStyledString() << '\n';
-            // TODO: we should probably return a bool to the caller, or raise…
-            if (receipt["status"] == "0x0") {
-                std::cout << "transaction failed\n";
-            } else {
-                std::cout << "transaction successed: " << receipt["status"]
-                          << '\n';
-            }
-            return;
-        } catch (jsonrpc::JsonRpcException& exn) {
-            if (exn.GetCode() == -32000) {
-                continue; // Transaction is pending…
-            }
-            fprintf(stderr, "error: %s\n", exn.what());
-            throw;
-        }
-    }
-}
-
-// From https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI:
-//
-// > uint<M>: enc(X) is the big-endian encoding of X, padded on the
-// > higher-order (left) side with zero-bytes such that the length is a
-// > multiple of 32 bytes.
-std::string encode_uint256(uint64_t v)
-{
-    std::ostringstream oss;
-    oss << std::setfill('0') << std::setw(64) << std::hex << v;
-    return oss.str();
-}
-
-std::string encode_address(const std::string& addr)
-{
-    std::ostringstream oss;
-    // Skip the leading 0x, pad for 160 bytes.
-    oss << std::setfill('0') << std::setw(40) << addr.substr(2);
-    return oss.str();
-}
 
 [[noreturn]] static void usage()
 {

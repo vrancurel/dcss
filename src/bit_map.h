@@ -1,9 +1,7 @@
-#ifndef __BITMAP_H__
-#define __BITMAP_H__ 1
+#ifndef __KAD_BITMAP_H__
+#define __KAD_BITMAP_H__
 
 #include <vector>
-
-#include "kadsim.h"
 
 class BitMap {
   public:

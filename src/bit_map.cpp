@@ -1,6 +1,8 @@
 #include <algorithm>
+#include <iostream>
 
-#include "kadsim.h"
+#include "bit_map.h"
+#include "utils.h"
 
 /** Check that all bits are taken. */
 bool BitMap::check()
