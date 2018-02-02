@@ -132,10 +132,9 @@ endforeach(flag)
 
 # Debug flags
 set(DEBUG_CXX_FLAGS
-  -g3 -ggdb3 -fno-limit-debug-info
+  -O0 -g3 -ggdb3 -fno-limit-debug-info
   -ftrapv
 )
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS}")
 foreach(flag ${DEBUG_CXX_FLAGS})
   check_cxx_compiler_flag(${flag} has_flag_${flag})
   if(has_flag_${flag})
@@ -144,7 +143,6 @@ foreach(flag ${DEBUG_CXX_FLAGS})
 endforeach(flag)
 
 # Release flags
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS}")
 foreach(flag -O3 -flto -DNDEBUG)
   check_cxx_compiler_flag(${flag} has_flag_${flag})
   if(has_flag_${flag})
