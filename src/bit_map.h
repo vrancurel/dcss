@@ -1,31 +1,23 @@
 #ifndef __KAD_BITMAP_H__
 #define __KAD_BITMAP_H__
 
+#include <cstdint>
 #include <vector>
 
+// If the performance/space usage ever becomes an issue, we may want to consider
+// an approach based on the quadratic residues (O(1) in time and space).
 class BitMap {
   public:
-    explicit BitMap(int n_bits);
-    ~BitMap();
+    explicit BitMap(uint32_t n_bits);
 
-    BitMap(BitMap const&) = delete;
-    BitMap& operator=(BitMap const& x) = delete;
-    BitMap(BitMap&&) = delete;
-    BitMap& operator=(BitMap&& x) = delete;
-
-    int get_bit(int i);
-    int
-    get_rand_bit(); /* Get a random bit that has never been generated before. */
-    bool check();
+    /** Get a random value that has never been generated before. */
+    uint32_t get_rand_uint();
+    /** Check if the entropy is exhausted. */
+    bool is_exhausted() const;
 
   private:
-    int n_bits;
-    char* b;
-    std::vector<int> reservoir;
-    int pos;
-
-    void set_bit(int i);
-    void clear_bit(int i);
+    std::vector<uint32_t> pool;
+    uint32_t pos;
 };
 
 #endif

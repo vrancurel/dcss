@@ -43,14 +43,6 @@ include_directories(SYSTEM
     "${source_dir}/googlemock/include"
 )
 
-# Export GoogleTest include paths for the linter.
-set(GTEST_INCLUDE_PATHS
-  -isystem ${source_dir}/googletest/include
-  -isystem ${source_dir}/googlemock/include
-
-  PARENT_SCOPE
-)
-
 ###########################################################################
 # GTEST_ADD_TESTS
 # From https://github.com/Kitware/CMake/blob/v3.5.0/Modules/FindGTest.cmake
@@ -98,7 +90,7 @@ endfunction()
 
 # Source files.
 set(TEST_SRC
-  ${CMAKE_CURRENT_SOURCE_DIR}/dummy.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/bit_map.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 
   CACHE
@@ -111,6 +103,8 @@ set(TEST_DRIVER ${CMAKE_PROJECT_NAME}_test)
 add_executable(${TEST_DRIVER}
   ${TEST_SRC}
 )
+
+include_directories(${SOURCE_DIR})
 
 target_link_libraries(${TEST_DRIVER}
   libgtest
