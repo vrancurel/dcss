@@ -154,6 +154,8 @@ endforeach(flag)
 # QuadIron build
 ################
 
+find_package(codecov)
+
 # JSON-RPC stubs
 add_subdirectory(jsonrpc_spec)
 # QuadIron
@@ -162,6 +164,8 @@ add_subdirectory(src)
 add_subdirectory(test)
 # Documentation
 add_subdirectory(documentation)
+
+coverage_evaluate()
 
 #####################
 # Formatting & Linter

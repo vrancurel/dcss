@@ -24,6 +24,7 @@ configure_file(${SOURCE_DIR}/config.in ${GENERATE_DIR}/config.h @ONLY)
 
 # Build an Object Library (can be reused for both static and dynamic libs).
 add_library(${OBJECT_LIB} OBJECT ${LIB_SRC})
+add_coverage(${OBJECT_LIB})
 set_property(TARGET ${OBJECT_LIB} PROPERTY POSITION_INDEPENDENT_CODE 1)
 add_dependencies(${OBJECT_LIB}
   ${JSON_RPC_STUB}
@@ -54,6 +55,7 @@ add_definitions(-DHAVE_READLINE)
 add_executable(${EXECUTABLE_NAME}
   ${SOURCE_DIR}/main.cpp
 )
+add_coverage(${EXECUTABLE_NAME})
 
 # Link librairies.
 target_link_libraries(${EXECUTABLE_NAME}
