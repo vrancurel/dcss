@@ -16,8 +16,11 @@ class KadFile;
 
 class KadNode : public KadRoutable {
   public:
-    KadNode(KadConf* conf, const CBigNum& id);
-    KadNode(KadConf* conf, const CBigNum& id, const std::string& addr);
+    KadNode(KadConf* configuration, const CBigNum& node_id);
+    KadNode(
+        KadConf* configuration,
+        const CBigNum& node_id,
+        const std::string& rpc_addr);
 
     ~KadNode() = default;
     KadNode(KadNode const&) = delete;

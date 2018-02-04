@@ -12,7 +12,7 @@ enum KadRoutableType {
 
 class KadRoutable {
   public:
-    KadRoutable(const CBigNum& id, enum KadRoutableType);
+    KadRoutable(const CBigNum& entity_id, enum KadRoutableType);
 
     CBigNum get_id() const;
     bool is_remote();

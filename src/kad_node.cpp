@@ -73,13 +73,15 @@ static inline std::string encode_address(const std::string& addr)
     return oss.str();
 }
 
-KadNode::KadNode(KadConf* conf, const CBigNum& id, const std::string& addr)
-    : KadRoutable(id, KAD_ROUTABLE_NODE)
+KadNode::KadNode(
+    KadConf* configuration,
+    const CBigNum& node_id,
+    const std::string& rpc_addr)
+    : KadRoutable(node_id, KAD_ROUTABLE_NODE)
 {
-    this->conf = conf;
-    this->id = id;
+    this->conf = configuration;
     this->verbose = false;
-    this->addr = addr;
+    this->addr = rpc_addr;
     if (!addr.empty()) {
         // FIXME use port
         this->httpclient = new jsonrpc::HttpClient(addr);
@@ -96,7 +98,10 @@ KadNode::KadNode(KadConf* conf, const CBigNum& id, const std::string& addr)
     }
 }
 
-KadNode::KadNode(KadConf* conf, const CBigNum& id) : KadNode(conf, id, "") {}
+KadNode::KadNode(KadConf* configuration, const CBigNum& node_id)
+    : KadNode(configuration, node_id, "")
+{
+}
 
 const std::string& KadNode::get_eth_account() const
 {
@@ -110,7 +115,7 @@ uint32_t KadNode::get_n_conns()
 
     total = 0;
     for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
-        total += buckets[i].size();
+        total += static_cast<uint32_t>(buckets[i].size());
     }
 
     return total;

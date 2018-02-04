@@ -8,7 +8,7 @@ class KadNode;
 
 class KadFile : public KadRoutable {
   public:
-    KadFile(const CBigNum& id, KadNode* referencer);
+    KadFile(const CBigNum& file_id, KadNode* ref);
     KadNode* get_referencer();
 
     ~KadFile() = default;

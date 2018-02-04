@@ -17,7 +17,7 @@ using troutable_callback_func = void (*)(const KadRoutable&, void*);
 
 class KadNetwork {
   public:
-    explicit KadNetwork(KadConf* conf);
+    explicit KadNetwork(KadConf* configuration);
 
     ~KadNetwork() = default;
     KadNetwork(KadNetwork const&) = delete;

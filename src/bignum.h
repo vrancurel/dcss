@@ -231,7 +231,7 @@ class CBigNum {
 
         bool fLeadingZeroes = true;
         for (int i = 0; i < 8; i++) {
-            unsigned char c = (n >> 56) & 0xff;
+            auto c = static_cast<unsigned char>(n >> 56);
             n <<= 8;
             if (fLeadingZeroes) {
                 if (c == 0) {
@@ -260,7 +260,7 @@ class CBigNum {
         unsigned char* p = pch + 4;
         bool fLeadingZeroes = true;
         for (int i = 0; i < 8; i++) {
-            unsigned char c = (n >> 56) & 0xff;
+            auto c = static_cast<unsigned char>(n >> 56);
             n <<= 8;
             if (fLeadingZeroes) {
                 if (c == 0) {

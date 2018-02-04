@@ -1,9 +1,11 @@
 #include "kad_routable.h"
 
-KadRoutable::KadRoutable(const CBigNum& id, enum KadRoutableType type)
+KadRoutable::KadRoutable(
+    const CBigNum& entity_id,
+    enum KadRoutableType entity_type)
 {
-    this->id = id;
-    this->type = type;
+    this->id = entity_id;
+    this->type = entity_type;
 }
 
 CBigNum KadRoutable::get_id() const

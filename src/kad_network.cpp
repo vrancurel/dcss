@@ -9,9 +9,9 @@
 #include "kad_node.h"
 #include "utils.h"
 
-KadNetwork::KadNetwork(KadConf* conf)
+KadNetwork::KadNetwork(KadConf* configuration)
 {
-    this->conf = conf;
+    this->conf = configuration;
 }
 
 /** Initialize nodes. */

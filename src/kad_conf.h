@@ -13,12 +13,12 @@
 class KadConf {
   public:
     KadConf(
-        uint32_t n_bits,
-        uint32_t k,
-        uint32_t alpha,
-        uint32_t n_nodes,
+        uint32_t nb_bits,
+        uint32_t k_param,
+        uint32_t alpha_param,
+        uint32_t nb_nodes,
         const std::string& geth_addr,
-        std::vector<std::string> bstraplist);
+        std::vector<std::string> bootstrap_list);
 
     void save(std::ostream& fout);
 
