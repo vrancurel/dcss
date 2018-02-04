@@ -32,13 +32,13 @@
 int main(int argc, char** argv)
 {
     int c;
-    int n_bits = 64;
-    int k = 20;
-    int alpha = 3;
-    int n_nodes = 1500;
-    int n_init_conn = 100;
-    int n_files = 5000;
-    int rand_seed = 0;
+    uint32_t n_bits = 64;
+    uint32_t k = 20;
+    uint32_t alpha = 3;
+    uint32_t n_nodes = 1500;
+    uint32_t n_init_conn = 100;
+    uint32_t n_files = 5000;
+    uint32_t rand_seed = 0;
     std::string fname;
     std::string geth_addr = "localhost:8545";
     std::vector<std::string> bstraplist;
@@ -48,19 +48,19 @@ int main(int argc, char** argv)
     while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:N:")) != -1) {
         switch (c) {
         case 'b':
-            n_bits = std::stoi(optarg);
+            n_bits = stou32(optarg);
             break;
         case 'k':
-            k = std::stoi(optarg);
+            k = stou32(optarg);
             break;
         case 'a':
-            alpha = std::stoi(optarg);
+            alpha = stou32(optarg);
             break;
         case 'n':
-            n_nodes = std::stoi(optarg);
+            n_nodes = stou32(optarg);
             break;
         case 'c':
-            n_init_conn = std::stoi(optarg);
+            n_init_conn = stou32(optarg);
             break;
         case 'g':
             geth_addr = optarg;
@@ -74,13 +74,13 @@ int main(int argc, char** argv)
             break;
         }
         case 'S':
-            rand_seed = std::stoi(optarg);
+            rand_seed = stou32(optarg);
             break;
         case 'f':
             fname = optarg;
             break;
         case 'N':
-            n_files = std::stoi(optarg);
+            n_files = stou32(optarg);
             break;
         case '?':
         default:
@@ -102,13 +102,13 @@ int main(int argc, char** argv)
         parse_error();                                                         \
     p++;
         GETLINE();
-        n_bits = std::stoi(p);
+        n_bits = stou32(p);
         GETLINE();
-        k = std::stoi(p);
+        k = stou32(p);
         GETLINE();
-        alpha = std::stoi(p);
+        alpha = stou32(p);
         GETLINE();
-        n_nodes = std::stoi(p);
+        n_nodes = stou32(p);
     }
 
     KadConf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);

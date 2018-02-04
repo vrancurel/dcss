@@ -1,6 +1,7 @@
 #ifndef __KAD_NODE_H__
 #define __KAD_NODE_H__
 
+#include <cstdint>
 #include <list>
 #include <string>
 
@@ -24,13 +25,13 @@ class KadNode : public KadRoutable {
     KadNode(KadNode&&) = delete;
     KadNode& operator=(KadNode&& x) = delete;
 
-    int get_n_conns();
+    uint32_t get_n_conns();
     const std::string& get_eth_account() const;
     bool add_conn(KadNode* node, bool contacted_us);
     std::list<KadNode*>
-    find_nearest_nodes(const KadRoutable& routable, int amount);
+    find_nearest_nodes(const KadRoutable& routable, uint32_t amount);
     std::list<KadNode*>
-    find_nearest_nodes_local(const KadRoutable& routable, int amount);
+    find_nearest_nodes_local(const KadRoutable& routable, uint32_t amount);
     std::list<KadNode*> lookup(const KadRoutable& routable);
     void show();
     void set_verbose(bool enable);
@@ -46,7 +47,7 @@ class KadNode : public KadRoutable {
   private:
     KadConf* conf;
 
-    using tbucket = std::map<int, std::list<KadNode*>>;
+    using tbucket = std::map<uint32_t, std::list<KadNode*>>;
     tbucket buckets;
     bool verbose;
 

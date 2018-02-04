@@ -86,9 +86,9 @@ int Shell::do_cmd(struct cmd_def** definitions, int argc, char** argv)
 {
     struct cmd_def *def, *tmp;
     size_t len;
-    int ret, found;
+    int ret;
+    bool found;
     char* p;
-    int i;
 
     if (argc == 0) {
         return SHELL_CONT;
@@ -131,25 +131,25 @@ int Shell::do_cmd(struct cmd_def** definitions, int argc, char** argv)
     len = strlen(argv[0]);
 
     def = nullptr;
-    found = 0;
-    for (i = 0; definitions[i] != nullptr; i++) {
+    found = false;
+    for (int i = 0; definitions[i] != nullptr; i++) {
         tmp = definitions[i];
         if (strcmp(argv[0], tmp->name) == 0) {
-            found = 1;
+            found = true;
             def = tmp;
             break;
         }
         if (strncmp(argv[0], tmp->name, len) == 0) {
-            if (1 == found) {
+            if (found) {
                 fprintf(stderr, "ambiguous command: %s\n", argv[0]);
                 return SHELL_CONT;
             }
-            found = 1;
+            found = true;
             def = tmp;
         }
     }
 
-    if (0 == found) {
+    if (!found) {
         fprintf(stderr, "cmd %s: not found\n", argv[0]);
         return SHELL_CONT;
     }

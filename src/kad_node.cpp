@@ -104,12 +104,12 @@ const std::string& KadNode::get_eth_account() const
 }
 
 /** Get the number of conns. */
-int KadNode::get_n_conns()
+uint32_t KadNode::get_n_conns()
 {
-    int i, total;
+    uint32_t total;
 
     total = 0;
-    for (i = 1; i < (conf->n_bits + 1); i++) {
+    for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
         total += buckets[i].size();
     }
 
@@ -132,7 +132,7 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
     }
 
     CBigNum distance = distance_to(*node);
-    int bit_length = distance.bit_length();
+    uint32_t bit_length = distance.bit_length();
 
     std::list<KadNode*>& list = buckets[bit_length];
     std::list<KadNode*>::iterator it;
@@ -164,7 +164,7 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
 }
 
 std::list<KadNode*>
-KadNode::find_nearest_nodes(const KadRoutable& routable, int amount)
+KadNode::find_nearest_nodes(const KadRoutable& routable, uint32_t amount)
 {
     if (!this->addr.empty()) {
         Json::Value params;
@@ -179,12 +179,12 @@ KadNode::find_nearest_nodes(const KadRoutable& routable, int amount)
 
 /** * Find nodes closest to the given ID. */
 std::list<KadNode*>
-KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
+KadNode::find_nearest_nodes_local(const KadRoutable& routable, uint32_t amount)
 {
     CBigNum distance = distance_to(routable);
-    int bit_length = distance.bit_length();
+    uint32_t bit_length = distance.bit_length();
 
-    int count = 0;
+    uint32_t count = 0;
     std::list<KadNode*> closest;
 
     // First look in the corresponding k-bucket.
@@ -221,7 +221,7 @@ KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
         }
 
         // Find remaining nearest nodes.
-        for (int i = 1; i < (conf->n_bits + 1); i++) {
+        for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
             if (bit_length != i) {
                 std::list<KadNode*>& nodes = buckets[i];
                 for (auto& it : nodes) {
@@ -320,7 +320,7 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
 
         // Take only k answers.
         std::list<KadNode*> k_answers;
-        u_int count = 0;
+        uint32_t count = 0;
         for (auto& answer : answers) {
             if (count >= conf->k) {
                 break;
@@ -462,7 +462,7 @@ void KadNode::set_verbose(bool enable)
 
 void KadNode::save(std::ostream& fout)
 {
-    for (int i = 1; i < (conf->n_bits + 1); i++) {
+    for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
         if (!buckets[i].empty()) {
             fout << "bucket " << i << "\n";
             std::list<KadNode*>& list = buckets[i];
@@ -473,7 +473,7 @@ void KadNode::save(std::ostream& fout)
     }
 
     fout << "files\n";
-    for (u_int i = 1; i < files.size(); i++) {
+    for (std::vector<KadFile*>::size_type i = 1; i < files.size(); i++) {
         KadFile* file = files[i];
         fout << file->get_id().ToString(16) << "\n";
     }
@@ -481,7 +481,7 @@ void KadNode::save(std::ostream& fout)
 
 void KadNode::graphviz(std::ostream& fout)
 {
-    for (int i = 1; i < (conf->n_bits + 1); i++) {
+    for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
         if (!buckets[i].empty()) {
             std::list<KadNode*>& list = buckets[i];
             for (auto& it : list) {

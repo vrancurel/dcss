@@ -16,7 +16,7 @@ KadNetwork::KadNetwork(KadConf* conf)
 
 /** Initialize nodes. */
 void KadNetwork::initialize_nodes(
-    int n_initial_conn,
+    uint32_t n_initial_conn,
     std::vector<std::string> bstraplist)
 {
     std::cout << "initialize nodes\n";
@@ -29,7 +29,7 @@ void KadNetwork::initialize_nodes(
     keyspace /= conf->n_nodes;
 
     // Create nodes.
-    for (u_int i = 0; i < conf->n_nodes; i++) {
+    for (uint32_t i = 0; i < conf->n_nodes; i++) {
         std::cerr << "creating node " << i << '\n';
         KadNode* node;
         if (!bstraplist.empty()) {
@@ -52,7 +52,7 @@ void KadNetwork::initialize_nodes(
     // Continue creating conns for the nodes that dont meet the initial number
     // required.
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
-    for (u_int i = 0; i < conf->n_nodes; i++) {
+    for (uint32_t i = 0; i < conf->n_nodes; i++) {
         KadNode* node = nodes[i];
 
         if ((i % 1000) == 0) {
@@ -60,7 +60,7 @@ void KadNetwork::initialize_nodes(
                       << "                   \r";
         }
 
-        u_int guard = 0;
+        uint32_t guard = 0;
         while (node->get_n_conns() < n_initial_conn) {
             KadNode* other;
 
@@ -85,13 +85,13 @@ void KadNetwork::initialize_nodes(
     std::cout << "\n";
 }
 
-void KadNetwork::initialize_files(int n_files)
+void KadNetwork::initialize_files(uint32_t n_files)
 {
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
 
     std::cout << "initialize files\n";
 
-    for (int i = 0; i < n_files; i++) {
+    for (uint32_t i = 0; i < n_files; i++) {
         if ((i % 1000) == 0) {
             std::cerr << "file " << i << "/" << n_files
                       << "                   \r";
@@ -121,14 +121,13 @@ void KadNetwork::check_files()
 
     std::cout << "checking files\n";
 
-    int n_wrong = 0;
-    for (u_int i = 0; i < files.size(); i++) {
-        if ((i % 1000) == 0) {
-            std::cerr << "file " << i << "/" << files.size()
+    uint64_t n_wrong = 0;
+    uint64_t n_files = 0;
+    for (auto& file : files) {
+        if ((n_files % 1000) == 0) {
+            std::cerr << "file " << n_files << "/" << files.size()
                       << "                   \r";
         }
-
-        KadFile* file = files[i];
 
         // Take a random node.
         KadNode* node = nodes[dis(prng())];
@@ -155,6 +154,7 @@ void KadNetwork::check_files()
                       << " was not found\n";
             n_wrong++;
         }
+        ++n_files;
     }
     std::cerr << n_wrong << "/" << files.size() << " files wrongly stored\n";
 }
@@ -213,7 +213,7 @@ KadNode* KadNetwork::find_nearest_cheat(const KadRoutable& routable)
 void KadNetwork::save(std::ostream& fout)
 {
     conf->save(fout);
-    for (u_int i = 0; i < conf->n_nodes; i++) {
+    for (uint32_t i = 0; i < conf->n_nodes; i++) {
         KadNode* node = nodes[i];
 
         fout << "node " << i << " " << node->get_id().ToString(16) << "\n";
@@ -227,7 +227,7 @@ void KadNetwork::graphviz(std::ostream& fout)
     fout << "  node [shape=record];\n";
     fout << "  rankdir=TB;\n";
 
-    for (u_int i = 0; i < conf->n_nodes; i++) {
+    for (uint32_t i = 0; i < conf->n_nodes; i++) {
         KadNode* node = nodes[i];
 
         fout << "node_" << node->get_id().ToString(16)

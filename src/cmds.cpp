@@ -8,6 +8,7 @@
 #include "kad_node.h"
 #include "kad_routable.h"
 #include "shell.h"
+#include "utils.h"
 
 static int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
 {
@@ -18,10 +19,9 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc == 1) {
         struct cmd_def* cmdp;
-        int i, j;
+        int j = 0;
 
-        j = 0;
-        for (i = 0; cmd_defs[i] != nullptr; i++) {
+        for (int i = 0; cmd_defs[i] != nullptr; ++i) {
             cmdp = cmd_defs[i];
             printf("%16s", cmdp->name);
             j++;
@@ -33,9 +33,8 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
         printf("\n");
     } else if (argc == 2) {
         struct cmd_def* cmdp;
-        int i;
 
-        for (i = 0; cmd_defs[i] != nullptr; i++) {
+        for (int i = 0; cmd_defs[i] != nullptr; ++i) {
             cmdp = cmd_defs[i];
             if (strcmp(argv[1], cmdp->name) == 0) {
                 printf("%s\n", cmdp->purpose);
@@ -143,7 +142,7 @@ static int cmd_find_nearest(Shell* shell, int argc, char** argv)
     KadRoutable routable(bn, KAD_ROUTABLE_FILE);
 
     std::list<KadNode*> result =
-        node->find_nearest_nodes(routable, std::stoi(argv[2]));
+        node->find_nearest_nodes(routable, stou32(argv[2]));
 
     std::list<KadNode*>::iterator it;
     for (it = result.begin(); it != result.end(); ++it) {
@@ -294,7 +293,7 @@ static int cmd_buy_storage(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    node->buy_storage(argv[1], std::stoi(argv[2]));
+    node->buy_storage(argv[1], stou64(argv[2]));
 
     return SHELL_CONT;
 }
@@ -312,7 +311,7 @@ static int cmd_put_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    node->put_bytes(argv[1], std::stoi(argv[2]));
+    node->put_bytes(argv[1], stou64(argv[2]));
 
     return SHELL_CONT;
 }
@@ -330,7 +329,7 @@ static int cmd_get_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    node->get_bytes(argv[1], std::stoi(argv[2]));
+    node->get_bytes(argv[1], stou64(argv[2]));
 
     return SHELL_CONT;
 }
