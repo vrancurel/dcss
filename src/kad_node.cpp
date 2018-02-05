@@ -8,7 +8,7 @@
 #include "kad_conf.h"
 #include "kad_file.h"
 #include "kad_node.h"
-#include "kadclient.h"
+#include "nodeclient.h"
 
 namespace kad {
 
@@ -87,7 +87,7 @@ Node::Node(
     if (!addr.empty()) {
         // FIXME use port
         this->httpclient = new jsonrpc::HttpClient(addr);
-        this->kadc = new KadClient(*this->httpclient);
+        this->nodec = new NodeClient(*this->httpclient);
     }
 
     // The passphrase of the account is the hex of the node ID.
@@ -177,7 +177,7 @@ Node::find_nearest_nodes(const Routable& routable, uint32_t amount)
         Json::Value params;
         params["to"] = routable.get_id().ToString();
         params["amount"] = amount;
-        Json::Value val = this->kadc->find_nearest_nodes(params);
+        Json::Value val = this->nodec->find_nearest_nodes(params);
         std::cout << val << "\n";
         return std::list<Node*>();
     }

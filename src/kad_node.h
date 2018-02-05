@@ -9,7 +9,7 @@
 
 #include "kad_routable.h"
 
-class KadClient;
+class NodeClient;
 
 namespace kad {
 
@@ -61,7 +61,7 @@ class Node : public Routable {
     std::string eth_passphrase;
     std::string eth_account;
     jsonrpc::HttpClient* httpclient;
-    KadClient* kadc;
+    NodeClient* nodec;
 };
 
 } // namespace kad
