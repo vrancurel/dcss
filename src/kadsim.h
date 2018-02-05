@@ -4,6 +4,7 @@
 #include "bignum.h"
 #include "cmds.h"
 #include "config.h"
+#include "exceptions.h"
 #include "kad_conf.h"
 #include "kad_file.h"
 #include "kad_network.h"

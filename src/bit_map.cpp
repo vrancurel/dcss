@@ -1,7 +1,7 @@
 #include <algorithm>
-#include <stdexcept>
 
 #include "bit_map.h"
+#include "exceptions.h"
 #include "utils.h"
 
 bool BitMap::is_exhausted() const
@@ -21,8 +21,7 @@ BitMap::BitMap(uint32_t n_bits) : pos(0)
 uint32_t BitMap::get_rand_uint()
 {
     if (is_exhausted()) {
-        // std::logic_error IS nothrow copy constructible.
-        throw std::logic_error("entropy exhausted"); // NOLINT(cert-err60-cpp)
+        throw KadLogicError("entropy exhausted");
     }
     return pool[pos++];
 }

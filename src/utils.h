@@ -4,8 +4,9 @@
 #include <cstdint>
 #include <limits>
 #include <random>
-#include <stdexcept>
 #include <string>
+
+#include "exceptions.h"
 
 static inline uint32_t
 stou32(std::string const& str, size_t* idx = nullptr, int base = 10)
@@ -14,7 +15,7 @@ stou32(std::string const& str, size_t* idx = nullptr, int base = 10)
     unsigned long result = std::stoul(str, idx, base);
 
     if (result > std::numeric_limits<uint32_t>::max()) {
-        throw std::overflow_error("stou32");
+        throw KadDomainError("stou32");
     }
     return static_cast<uint32_t>(result);
 }
@@ -26,7 +27,7 @@ stou64(std::string const& str, size_t* idx = nullptr, int base = 10)
     unsigned long long result = std::stoull(str, idx, base);
 
     if (result > std::numeric_limits<uint64_t>::max()) {
-        throw std::overflow_error("stou64");
+        throw KadDomainError("stou64");
     }
     return static_cast<uint64_t>(result);
 }

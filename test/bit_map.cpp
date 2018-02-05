@@ -6,6 +6,7 @@
 #include <gtest/gtest.h>
 
 #include "bit_map.h"
+#include "exceptions.h"
 
 TEST(BitMapTest, TestCheck)
 {
@@ -18,7 +19,7 @@ TEST(BitMapTest, TestCheck)
         bitmap.get_rand_uint();
     }
     ASSERT_TRUE(bitmap.is_exhausted()) << "all bits must be used";
-    ASSERT_THROW(bitmap.get_rand_uint(), std::logic_error)
+    ASSERT_THROW(bitmap.get_rand_uint(), KadLogicError)
         << "can't call get_rand_uint on an exhausted BitMap";
 }
 
