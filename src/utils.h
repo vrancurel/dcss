@@ -8,6 +8,8 @@
 
 #include "exceptions.h"
 
+namespace kad {
+
 static inline uint32_t
 stou32(std::string const& str, size_t* idx = nullptr, int base = 10)
 {
@@ -15,7 +17,7 @@ stou32(std::string const& str, size_t* idx = nullptr, int base = 10)
     unsigned long result = std::stoul(str, idx, base);
 
     if (result > std::numeric_limits<uint32_t>::max()) {
-        throw KadDomainError("stou32");
+        throw DomainError("stou32");
     }
     return static_cast<uint32_t>(result);
 }
@@ -27,7 +29,7 @@ stou64(std::string const& str, size_t* idx = nullptr, int base = 10)
     unsigned long long result = std::stoull(str, idx, base);
 
     if (result > std::numeric_limits<uint64_t>::max()) {
-        throw KadDomainError("stou64");
+        throw DomainError("stou64");
     }
     return static_cast<uint64_t>(result);
 }
@@ -39,5 +41,7 @@ static inline std::mt19937& prng()
 
     return PRNG;
 }
+
+} // namespace kad
 
 #endif

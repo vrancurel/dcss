@@ -48,19 +48,19 @@ int main(int argc, char** argv)
     while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:N:")) != -1) {
         switch (c) {
         case 'b':
-            n_bits = stou32(optarg);
+            n_bits = kad::stou32(optarg);
             break;
         case 'k':
-            k = stou32(optarg);
+            k = kad::stou32(optarg);
             break;
         case 'a':
-            alpha = stou32(optarg);
+            alpha = kad::stou32(optarg);
             break;
         case 'n':
-            n_nodes = stou32(optarg);
+            n_nodes = kad::stou32(optarg);
             break;
         case 'c':
-            n_init_conn = stou32(optarg);
+            n_init_conn = kad::stou32(optarg);
             break;
         case 'g':
             geth_addr = optarg;
@@ -74,13 +74,13 @@ int main(int argc, char** argv)
             break;
         }
         case 'S':
-            rand_seed = stou32(optarg);
+            rand_seed = kad::stou32(optarg);
             break;
         case 'f':
             fname = optarg;
             break;
         case 'N':
-            n_files = stou32(optarg);
+            n_files = kad::stou32(optarg);
             break;
         case '?':
         default:
@@ -102,27 +102,27 @@ int main(int argc, char** argv)
         parse_error();                                                         \
     p++;
         GETLINE();
-        n_bits = stou32(p);
+        n_bits = kad::stou32(p);
         GETLINE();
-        k = stou32(p);
+        k = kad::stou32(p);
         GETLINE();
-        alpha = stou32(p);
+        alpha = kad::stou32(p);
         GETLINE();
-        n_nodes = stou32(p);
+        n_nodes = kad::stou32(p);
     }
 
-    KadConf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
+    kad::Conf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
     // conf.save(std::cout);
-    KadNetwork network(&conf);
-    Shell shell;
+    kad::Network network(&conf);
+    kad::Shell shell;
 
-    prng().seed(rand_seed);
+    kad::prng().seed(rand_seed);
 
     network.initialize_nodes(n_init_conn, bstraplist);
     network.initialize_files(n_files);
     network.check_files();
 
-    shell.set_cmds(cmd_defs);
+    shell.set_cmds(kad::cmd_defs);
     shell.set_handle(&network);
     std::ostringstream prompt;
     prompt << PACKAGE << "> ";

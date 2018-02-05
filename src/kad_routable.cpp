@@ -1,19 +1,19 @@
 #include "kad_routable.h"
 
-KadRoutable::KadRoutable(
-    const CBigNum& entity_id,
-    enum KadRoutableType entity_type)
+namespace kad {
+
+Routable::Routable(const CBigNum& entity_id, enum RoutableType entity_type)
 {
     this->id = entity_id;
     this->type = entity_type;
 }
 
-CBigNum KadRoutable::get_id() const
+CBigNum Routable::get_id() const
 {
     return id;
 }
 
-CBigNum KadRoutable::distance_to(const KadRoutable& other) const
+CBigNum Routable::distance_to(const Routable& other) const
 {
     return id ^ other.get_id();
 }
@@ -22,10 +22,11 @@ CBigNum KadRoutable::distance_to(const KadRoutable& other) const
  *
  * @return true if first is smaller than second
  */
-bool KadRoutable::
-operator()(const KadRoutable* first, const KadRoutable* second) const
+bool Routable::operator()(const Routable* first, const Routable* second) const
 {
     CBigNum d1 = first->distance_to(*this);
     CBigNum d2 = second->distance_to(*this);
     return d1 < d2;
 }
+
+} // namespace kad

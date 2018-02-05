@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+namespace kad {
+
 // If the performance/space usage ever becomes an issue, we may want to consider
 // an approach based on the quadratic residues (O(1) in time and space).
 class BitMap {
@@ -19,5 +21,7 @@ class BitMap {
     std::vector<uint32_t> pool;
     uint32_t pos;
 };
+
+} // namespace kad
 
 #endif

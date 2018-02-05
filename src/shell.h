@@ -14,6 +14,8 @@
 #include <editline/readline.h>
 #endif /* HAVE_READLINE */
 
+namespace kad {
+
 #define SHELL_MAX_ARG_LEN 128
 #define SHELL_MAX_ARGV 16
 
@@ -58,5 +60,7 @@ class Shell {
     int do_cmd(struct cmd_def** definitions, int argc, char** argv);
     int parse(struct cmd_def** definitions, char* str, enum shell_error* errp);
 };
+
+} // namespace kad
 
 #endif

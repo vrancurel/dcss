@@ -10,9 +10,11 @@
 
 #include "gethclient.h"
 
-class KadConf {
+namespace kad {
+
+class Conf {
   public:
-    KadConf(
+    Conf(
         uint32_t nb_bits,
         uint32_t k_param,
         uint32_t alpha_param,
@@ -31,5 +33,7 @@ class KadConf {
     GethClient geth;
     std::vector<std::string> bstraplist;
 };
+
+} // namespace kad
 
 #endif

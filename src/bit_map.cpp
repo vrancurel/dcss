@@ -4,6 +4,8 @@
 #include "exceptions.h"
 #include "utils.h"
 
+namespace kad {
+
 bool BitMap::is_exhausted() const
 {
     return pos == pool.size();
@@ -21,7 +23,9 @@ BitMap::BitMap(uint32_t n_bits) : pos(0)
 uint32_t BitMap::get_rand_uint()
 {
     if (is_exhausted()) {
-        throw KadLogicError("entropy exhausted");
+        throw LogicError("entropy exhausted");
     }
     return pool[pos++];
 }
+
+} // namespace kad

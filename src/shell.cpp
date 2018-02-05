@@ -3,6 +3,8 @@
 
 #include "shell.h"
 
+namespace kad {
+
 static char sargmem[SHELL_MAX_ARGV][SHELL_MAX_ARG_LEN];
 static char* sargv[SHELL_MAX_ARGV + 1];
 static int sargc;
@@ -353,3 +355,5 @@ void Shell::loop()
         }
     }
 }
+
+} // namespace kad

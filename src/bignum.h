@@ -11,6 +11,8 @@
 
 #include <openssl/bn.h>
 
+namespace kad {
+
 using int64 = long long;           // NOLINT(google-runtime-int)
 using uint64 = unsigned long long; // NOLINT(google-runtime-int)
 
@@ -698,5 +700,7 @@ inline bool operator>(const CBigNum& a, const CBigNum& b)
 {
     return (BN_cmp(a.bn, b.bn) > 0);
 }
+
+} // namespace kad
 
 #endif

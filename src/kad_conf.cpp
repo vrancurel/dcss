@@ -1,6 +1,8 @@
 #include "kad_conf.h"
 
-KadConf::KadConf(
+namespace kad {
+
+Conf::Conf(
     uint32_t nb_bits,
     uint32_t k_param,
     uint32_t alpha_param,
@@ -16,10 +18,12 @@ KadConf::KadConf(
     this->n_nodes = nb_nodes;
 }
 
-void KadConf::save(std::ostream& fout)
+void Conf::save(std::ostream& fout)
 {
     fout << "n_bits " << n_bits << '\n'
          << "k " << k << '\n'
          << "alpha " << alpha << '\n'
          << "n_nodes " << n_nodes << '\n';
 }
+
+} // namespace kad
