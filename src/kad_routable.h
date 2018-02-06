@@ -5,25 +5,29 @@
 
 #include "bignum.h"
 
-enum KadRoutableType {
+namespace kad {
+
+enum RoutableType {
     KAD_ROUTABLE_NODE,
     KAD_ROUTABLE_FILE,
 };
 
-class KadRoutable {
+class Routable {
   public:
-    KadRoutable(const CBigNum& id, enum KadRoutableType);
+    Routable(const CBigNum& entity_id, enum RoutableType);
 
     CBigNum get_id() const;
     bool is_remote();
-    KadRoutableType get_type();
-    CBigNum distance_to(const KadRoutable& other) const;
-    bool operator()(const KadRoutable* first, const KadRoutable* second) const;
+    RoutableType get_type();
+    CBigNum distance_to(const Routable& other) const;
+    bool operator()(const Routable* first, const Routable* second) const;
 
   protected:
     CBigNum id;
-    KadRoutableType type;
+    RoutableType type;
     std::string addr; // Remote peer IP address, or "" if local.
 };
+
+} // namespace kad
 
 #endif

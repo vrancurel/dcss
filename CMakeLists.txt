@@ -177,6 +177,7 @@ set(ALL_SRCS
   ${SOURCE_DIR}/cmds.h
   ${SOURCE_DIR}/bignum.h
   ${SOURCE_DIR}/bit_map.h
+  ${SOURCE_DIR}/exceptions.h
   ${SOURCE_DIR}/kad_conf.h
   ${SOURCE_DIR}/kad_file.h
   ${SOURCE_DIR}/kad_network.h

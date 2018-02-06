@@ -3,22 +3,26 @@
 
 #include "kad_routable.h"
 
+namespace kad {
+
 class CBigNum;
-class KadNode;
+class Node;
 
-class KadFile : public KadRoutable {
+class File : public Routable {
   public:
-    KadFile(const CBigNum& id, KadNode* referencer);
-    KadNode* get_referencer();
+    File(const CBigNum& file_id, Node* ref);
+    Node* get_referencer();
 
-    ~KadFile() = default;
-    KadFile(KadFile const&) = delete;
-    KadFile& operator=(KadFile const& x) = delete;
-    KadFile(KadFile&&) = delete;
-    KadFile& operator=(KadFile&& x) = delete;
+    ~File() = default;
+    File(File const&) = delete;
+    File& operator=(File const& x) = delete;
+    File(File&&) = delete;
+    File& operator=(File&& x) = delete;
 
   private:
-    KadNode* referencer;
+    Node* referencer;
 };
+
+} // namespace kad
 
 #endif

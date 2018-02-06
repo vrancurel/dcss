@@ -11,6 +11,8 @@
 
 #include <openssl/bn.h>
 
+namespace kad {
+
 using int64 = long long;           // NOLINT(google-runtime-int)
 using uint64 = unsigned long long; // NOLINT(google-runtime-int)
 
@@ -231,7 +233,7 @@ class CBigNum {
 
         bool fLeadingZeroes = true;
         for (int i = 0; i < 8; i++) {
-            unsigned char c = (n >> 56) & 0xff;
+            auto c = static_cast<unsigned char>(n >> 56);
             n <<= 8;
             if (fLeadingZeroes) {
                 if (c == 0) {
@@ -260,7 +262,7 @@ class CBigNum {
         unsigned char* p = pch + 4;
         bool fLeadingZeroes = true;
         for (int i = 0; i < 8; i++) {
-            unsigned char c = (n >> 56) & 0xff;
+            auto c = static_cast<unsigned char>(n >> 56);
             n <<= 8;
             if (fLeadingZeroes) {
                 if (c == 0) {
@@ -698,5 +700,7 @@ inline bool operator>(const CBigNum& a, const CBigNum& b)
 {
     return (BN_cmp(a.bn, b.bn) > 0);
 }
+
+} // namespace kad
 
 #endif

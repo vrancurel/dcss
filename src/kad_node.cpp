@@ -8,7 +8,9 @@
 #include "kad_conf.h"
 #include "kad_file.h"
 #include "kad_node.h"
-#include "kadclient.h"
+#include "nodeclient.h"
+
+namespace kad {
 
 // Address of the QuadIron contract on the blockchain.
 #define QUADIRON_CONTRACT_ADDR "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
@@ -73,17 +75,19 @@ static inline std::string encode_address(const std::string& addr)
     return oss.str();
 }
 
-KadNode::KadNode(KadConf* conf, const CBigNum& id, const std::string& addr)
-    : KadRoutable(id, KAD_ROUTABLE_NODE)
+Node::Node(
+    Conf* configuration,
+    const CBigNum& node_id,
+    const std::string& rpc_addr)
+    : Routable(node_id, KAD_ROUTABLE_NODE)
 {
-    this->conf = conf;
-    this->id = id;
+    this->conf = configuration;
     this->verbose = false;
-    this->addr = addr;
+    this->addr = rpc_addr;
     if (!addr.empty()) {
         // FIXME use port
         this->httpclient = new jsonrpc::HttpClient(addr);
-        this->kadc = new KadClient(*this->httpclient);
+        this->nodec = new NodeClient(*this->httpclient);
     }
 
     // The passphrase of the account is the hex of the node ID.
@@ -96,21 +100,24 @@ KadNode::KadNode(KadConf* conf, const CBigNum& id, const std::string& addr)
     }
 }
 
-KadNode::KadNode(KadConf* conf, const CBigNum& id) : KadNode(conf, id, "") {}
+Node::Node(Conf* configuration, const CBigNum& node_id)
+    : Node(configuration, node_id, "")
+{
+}
 
-const std::string& KadNode::get_eth_account() const
+const std::string& Node::get_eth_account() const
 {
     return eth_account;
 }
 
 /** Get the number of conns. */
-int KadNode::get_n_conns()
+uint32_t Node::get_n_conns()
 {
-    int i, total;
+    uint32_t total;
 
     total = 0;
-    for (i = 1; i < (conf->n_bits + 1); i++) {
-        total += buckets[i].size();
+    for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
+        total += static_cast<uint32_t>(buckets[i].size());
     }
 
     return total;
@@ -124,7 +131,7 @@ int KadNode::get_n_conns()
  * @return true if connection was added
  * @return false if connection was not added (e.g. because already present)
  */
-bool KadNode::add_conn(KadNode* node, bool contacted_us)
+bool Node::add_conn(Node* node, bool contacted_us)
 {
     if (node->get_id() == get_id()) {
         std::cout << "cannot add itself " << get_id().ToString(16) << std::endl;
@@ -132,10 +139,10 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
     }
 
     CBigNum distance = distance_to(*node);
-    int bit_length = distance.bit_length();
+    uint32_t bit_length = distance.bit_length();
 
-    std::list<KadNode*>& list = buckets[bit_length];
-    std::list<KadNode*>::iterator it;
+    std::list<Node*>& list = buckets[bit_length];
+    std::list<Node*>::iterator it;
     bool found = false;
     for (it = list.begin(); it != list.end(); ++it) {
         if ((*it)->get_id() == node->get_id()) {
@@ -163,32 +170,32 @@ bool KadNode::add_conn(KadNode* node, bool contacted_us)
     return false;
 }
 
-std::list<KadNode*>
-KadNode::find_nearest_nodes(const KadRoutable& routable, int amount)
+std::list<Node*>
+Node::find_nearest_nodes(const Routable& routable, uint32_t amount)
 {
     if (!this->addr.empty()) {
         Json::Value params;
         params["to"] = routable.get_id().ToString();
         params["amount"] = amount;
-        Json::Value val = this->kadc->find_nearest_nodes(params);
+        Json::Value val = this->nodec->find_nearest_nodes(params);
         std::cout << val << "\n";
-        return std::list<KadNode*>();
+        return std::list<Node*>();
     }
     return this->find_nearest_nodes_local(routable, amount);
 }
 
 /** * Find nodes closest to the given ID. */
-std::list<KadNode*>
-KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
+std::list<Node*>
+Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
 {
     CBigNum distance = distance_to(routable);
-    int bit_length = distance.bit_length();
+    uint32_t bit_length = distance.bit_length();
 
-    int count = 0;
-    std::list<KadNode*> closest;
+    uint32_t count = 0;
+    std::list<Node*> closest;
 
     // First look in the corresponding k-bucket.
-    std::list<KadNode*> list = buckets[bit_length];
+    std::list<Node*> list = buckets[bit_length];
 
     list.sort(routable);
     list.unique();
@@ -214,16 +221,16 @@ KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
     }
 
     if (count < amount) {
-        std::list<KadNode*> all;
+        std::list<Node*> all;
 
         if (verbose) {
             std::cout << "other k-buckets\n";
         }
 
         // Find remaining nearest nodes.
-        for (int i = 1; i < (conf->n_bits + 1); i++) {
+        for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
             if (bit_length != i) {
-                std::list<KadNode*>& nodes = buckets[i];
+                std::list<Node*>& nodes = buckets[i];
                 for (auto& it : nodes) {
                     if (verbose) {
                         std::cout << "kbucket " << i << " "
@@ -260,13 +267,13 @@ KadNode::find_nearest_nodes_local(const KadRoutable& routable, int amount)
 /** Print a list of nodes and their distance to target. */
 static void print_list(
     const std::string& comment,
-    std::list<KadNode*> list,
-    const KadRoutable& routable,
-    std::map<KadNode*, bool>* queried)
+    std::list<Node*> list,
+    const Routable& routable,
+    std::map<Node*, bool>* queried)
 {
     std::cout << "---" << comment << " size " << list.size() << "\n";
     std::cout << "target " << routable.get_id().ToString(16) << "\n";
-    std::list<KadNode*>::iterator it;
+    std::list<Node*>::iterator it;
     for (it = list.begin(); it != list.end(); ++it) {
         std::cout << "id " << (*it)->get_id().ToString(16) << " eth_account "
                   << (*it)->get_eth_account() << " dist "
@@ -276,12 +283,12 @@ static void print_list(
 }
 
 /** * Find the node closest to the given ID. */
-std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
+std::list<Node*> Node::lookup(const Routable& routable)
 {
     // Pick our alpha starting nodes.
-    std::list<KadNode*> starting_nodes;
-    std::list<KadNode*> answers;
-    std::map<KadNode*, bool> queried;
+    std::list<Node*> starting_nodes;
+    std::list<Node*> answers;
+    std::map<Node*, bool> queried;
 
     starting_nodes = find_nearest_nodes(routable, conf->alpha);
 
@@ -291,7 +298,7 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
 
     // Send find_nodes.
     for (auto& starting_node : starting_nodes) {
-        std::list<KadNode*> nodes =
+        std::list<Node*> nodes =
             starting_node->find_nearest_nodes(routable, conf->k);
 
         // Add to answers.
@@ -319,8 +326,8 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
         }
 
         // Take only k answers.
-        std::list<KadNode*> k_answers;
-        u_int count = 0;
+        std::list<Node*> k_answers;
+        uint32_t count = 0;
         for (auto& answer : answers) {
             if (count >= conf->k) {
                 break;
@@ -335,7 +342,7 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
             print_list("k_answers", k_answers, routable, &queried);
         }
 
-        std::list<KadNode*> round_answers;
+        std::list<Node*> round_answers;
 
         auto it = k_answers.begin();
         count = 0;
@@ -353,7 +360,7 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
                 break;
             }
 
-            std::list<KadNode*> nodes =
+            std::list<Node*> nodes =
                 (*it)->find_nearest_nodes(routable, conf->k);
 
             // Add to round_answers.
@@ -413,7 +420,7 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
                     continue;
                 }
 
-                std::list<KadNode*> nodes =
+                std::list<Node*> nodes =
                     (*it)->find_nearest_nodes(routable, conf->k);
 
                 // Add to answers.
@@ -434,20 +441,20 @@ std::list<KadNode*> KadNode::lookup(const KadRoutable& routable)
     }
 
     assert(0);
-    return std::list<KadNode*>();
+    return std::list<Node*>();
 }
 
-void KadNode::store(KadFile* file)
+void Node::store(File* file)
 {
     files.push_back(file);
 }
 
-std::vector<KadFile*> KadNode::get_files()
+std::vector<File*> Node::get_files()
 {
     return files;
 }
 
-void KadNode::show()
+void Node::show()
 {
     std::cout << "id " << get_id().ToString(16) << "\n";
     std::cout << "eth_account " << get_eth_account() << "\n";
@@ -455,17 +462,17 @@ void KadNode::show()
     save(std::cout);
 }
 
-void KadNode::set_verbose(bool enable)
+void Node::set_verbose(bool enable)
 {
     this->verbose = enable;
 }
 
-void KadNode::save(std::ostream& fout)
+void Node::save(std::ostream& fout)
 {
-    for (int i = 1; i < (conf->n_bits + 1); i++) {
+    for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
         if (!buckets[i].empty()) {
             fout << "bucket " << i << "\n";
-            std::list<KadNode*>& list = buckets[i];
+            std::list<Node*>& list = buckets[i];
             for (auto& it : list) {
                 fout << it->get_id().ToString(16) << "\n";
             }
@@ -473,17 +480,17 @@ void KadNode::save(std::ostream& fout)
     }
 
     fout << "files\n";
-    for (u_int i = 1; i < files.size(); i++) {
-        KadFile* file = files[i];
+    for (std::vector<File*>::size_type i = 1; i < files.size(); i++) {
+        File* file = files[i];
         fout << file->get_id().ToString(16) << "\n";
     }
 }
 
-void KadNode::graphviz(std::ostream& fout)
+void Node::graphviz(std::ostream& fout)
 {
-    for (int i = 1; i < (conf->n_bits + 1); i++) {
+    for (uint32_t i = 1; i < (conf->n_bits + 1); i++) {
         if (!buckets[i].empty()) {
-            std::list<KadNode*>& list = buckets[i];
+            std::list<Node*>& list = buckets[i];
             for (auto& it : list) {
                 fout << "node_" << get_id().ToString(16) << " -> node_"
                      << it->get_id().ToString(16) << ";\n";
@@ -493,7 +500,7 @@ void KadNode::graphviz(std::ostream& fout)
 }
 
 // TODO: factorize all of this
-void KadNode::buy_storage(const std::string& seller, uint64_t nb_bytes)
+void Node::buy_storage(const std::string& seller, uint64_t nb_bytes)
 {
     // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
     // web3.sha3("buyStorage(address,address,uint256)").substr(0, 8)
@@ -510,7 +517,7 @@ void KadNode::buy_storage(const std::string& seller, uint64_t nb_bytes)
     }
 }
 
-void KadNode::put_bytes(const std::string& seller, uint64_t nb_bytes)
+void Node::put_bytes(const std::string& seller, uint64_t nb_bytes)
 {
     // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
     // web3.sha3("buyerPutBytes(address,address,uint256)").substr(0, 8)
@@ -527,7 +534,7 @@ void KadNode::put_bytes(const std::string& seller, uint64_t nb_bytes)
     }
 }
 
-void KadNode::get_bytes(const std::string& seller, uint64_t nb_bytes)
+void Node::get_bytes(const std::string& seller, uint64_t nb_bytes)
 {
     // See https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI
     // web3.sha3("buyerGetBytes(address,address,uint256)").substr(0, 8)
@@ -543,3 +550,5 @@ void KadNode::get_bytes(const std::string& seller, uint64_t nb_bytes)
                   << seller << ": " << exn.what() << '\n';
     }
 }
+
+} // namespace kad

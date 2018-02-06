@@ -1,6 +1,6 @@
 add_custom_target(${JSON_RPC_STUB}
   DEPENDS ${GENERATE_DIR}/gethclient.h
-  DEPENDS ${GENERATE_DIR}/kadclient.h
+  DEPENDS ${GENERATE_DIR}/nodeclient.h
 )
 
 add_custom_command(
@@ -11,8 +11,8 @@ add_custom_command(
 )
 
 add_custom_command(
-  OUTPUT  ${GENERATE_DIR}/kadclient.h
-  COMMAND jsonrpcstub ${CMAKE_CURRENT_SOURCE_DIR}/kad.json --cpp-client=KadClient --cpp-client-file=${GENERATE_DIR}/kadclient.h
-  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/kad.json
+  OUTPUT  ${GENERATE_DIR}/nodeclient.h
+  COMMAND jsonrpcstub ${CMAKE_CURRENT_SOURCE_DIR}/node.json --cpp-client=NodeClient --cpp-client-file=${GENERATE_DIR}/nodeclient.h
+  DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/node.json
   COMMENT "Generating JSON-RPC client for Node-to-Node communication"
 )

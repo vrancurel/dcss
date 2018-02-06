@@ -6,11 +6,12 @@
 #include <gtest/gtest.h>
 
 #include "bit_map.h"
+#include "exceptions.h"
 
 TEST(BitMapTest, TestCheck)
 {
     const uint32_t nb_bits = 16;
-    BitMap bitmap(nb_bits);
+    kad::BitMap bitmap(nb_bits);
 
     for (uint32_t i = 0; i < nb_bits; ++i) {
         ASSERT_FALSE(bitmap.is_exhausted())
@@ -18,14 +19,14 @@ TEST(BitMapTest, TestCheck)
         bitmap.get_rand_uint();
     }
     ASSERT_TRUE(bitmap.is_exhausted()) << "all bits must be used";
-    ASSERT_THROW(bitmap.get_rand_uint(), std::logic_error)
+    ASSERT_THROW(bitmap.get_rand_uint(), kad::LogicError)
         << "can't call get_rand_uint on an exhausted BitMap";
 }
 
 TEST(BitMapTest, TestOutput)
 {
     const uint32_t nb_bits = 16;
-    BitMap bitmap(nb_bits);
+    kad::BitMap bitmap(nb_bits);
     std::vector<uint32_t> all_values;
     std::unordered_set<uint32_t> unique_values;
     std::unordered_set<uint32_t> expected;
