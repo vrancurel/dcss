@@ -7,6 +7,7 @@ set(LIB_SRC
   ${SOURCE_DIR}/kad_network.cpp
   ${SOURCE_DIR}/kad_node.cpp
   ${SOURCE_DIR}/kad_routable.cpp
+  ${SOURCE_DIR}/io.cpp
   ${SOURCE_DIR}/shell.cpp
 
   CACHE
@@ -49,6 +50,7 @@ find_package(Readline     REQUIRED)
 find_package(CURL         REQUIRED)
 find_package(Jsoncpp      REQUIRED)
 find_package(json_rpc_cpp REQUIRED)
+find_package(ntl          REQUIRED)
 
 add_definitions(-DHAVE_READLINE)
 
@@ -59,11 +61,12 @@ add_coverage(${EXECUTABLE_NAME})
 
 # Link librairies.
 target_link_libraries(${EXECUTABLE_NAME}
+  ${STATIC_LIB}
   ${OPENSSL_CRYPTO_LIBRARY}
   ${Readline_LIBRARY}
   ${JSONCPP_LIBRARY}
   ${CURL_LIBRARIES}
   ${JSON_RPC_CPP_CLIENT_LIBRARIES}
-  ${STATIC_LIB}
+  ${NTL_LIBRARY}
 )
 

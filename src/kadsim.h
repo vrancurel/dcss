@@ -10,9 +10,8 @@
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_routable.h"
+#include "io.h"
 #include "shell.h"
 #include "utils.h"
 
-/* io.cpp */
-extern void do_put(const char *filename, int n_data, int n_parities);
 #endif

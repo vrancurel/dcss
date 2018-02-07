@@ -1,5 +1,5 @@
 
-#include "ntl.h"
+#include "../../ntl/src/ntl.h"
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>

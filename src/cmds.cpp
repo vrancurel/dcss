@@ -7,6 +7,7 @@
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_routable.h"
+#include "io.h"
 #include "shell.h"
 #include "utils.h"
 
@@ -336,10 +337,7 @@ static int cmd_get_bytes(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-int
-cmd_put(Shell *shell,
-        int argc,
-        char **argv)
+static int cmd_put(Shell * /* shell */, int argc, char **argv)
 {
   if (argc != 4)
     {
