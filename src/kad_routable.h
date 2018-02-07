@@ -14,7 +14,7 @@ enum RoutableType {
 
 class Routable {
   public:
-    Routable(const CBigNum& entity_id, enum RoutableType);
+    Routable(const CBigNum& entity_id, enum RoutableType entity_type);
 
     CBigNum get_id() const;
     bool is_remote();

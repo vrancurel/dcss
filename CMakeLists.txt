@@ -39,6 +39,7 @@ set(PACKAGE ${CMAKE_PROJECT_NAME})
 # Paths
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(SCRIPT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/scripts)
 set(GENERATE_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin/${CMAKE_BUILD_TYPE})
 
@@ -194,11 +195,6 @@ add_custom_target(format
 )
 add_dependencies(format ${PROJECT_NAME})
 
-# We still need these ones for the headers files (not in compile_commands.json).
-set(CLANG_LINT_OPTS
-  -x c++ --std=c++11
-  -isystem ${GENERATE_DIR}
-)
 set(CLANG_LINTS_LIST
   android-*
   boost-*
@@ -229,13 +225,13 @@ set(CLANG_LINTS_LIST
 string(REPLACE ";" "," CLANG_LINTS "${CLANG_LINTS_LIST}")
 
 add_custom_target(lint
-  COMMAND clang-tidy ${ALL_SRCS} -checks=${CLANG_LINTS} -p ${CMAKE_BINARY_DIR} -- ${CLANG_LINT_OPTS}
+  COMMAND ${SCRIPT_DIR}/run-clang-tidy.py -checks=${CLANG_LINTS} -header-filter=.*
   COMMENT "run the linter"
 )
 add_dependencies(lint ${PROJECT_NAME})
 
 add_custom_target(fix-lint
-  COMMAND clang-tidy -fix ${ALL_SRCS} -checks=${CLANG_LINTS} -p ${CMAKE_BINARY_DIR} -- ${CLANG_LINT_OPTS}
+  COMMAND ${SCRIPT_DIR}/run-clang-tidy.py -fix -checks=${CLANG_LINTS} -header-filter=.*
   COMMENT "run the linter and apply proposed fixes"
 )
 add_dependencies(fix-lint ${PROJECT_NAME})
@@ -248,7 +244,7 @@ add_dependencies(fix-lint ${PROJECT_NAME})
 # Should be no longer needed when https://reviews.llvm.org/D39105 is merged…
 set(LINT_ERROR_PATTERN "'(error|warning):'")
 add_custom_target(check-lint
-  COMMAND test `clang-tidy ${ALL_SRCS} -checks=${CLANG_LINTS} -p ${CMAKE_BINARY_DIR} -- ${CLANG_LINT_OPTS} | grep -Pc ${LINT_ERROR_PATTERN}` -eq 0
+  COMMAND test `${SCRIPT_DIR}/run-clang-tidy.py -checks=${CLANG_LINTS} -header-filter=.* | grep -Pc ${LINT_ERROR_PATTERN}` -eq 0
   COMMENT "check for lint errors"
 )
 add_dependencies(check-lint ${PROJECT_NAME})
