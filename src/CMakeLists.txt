@@ -44,11 +44,9 @@ set_target_properties(${STATIC_LIB} PROPERTIES OUTPUT_NAME ${CMAKE_PROJECT_NAME}
 set(EXECUTABLE_NAME ${CMAKE_PROJECT_NAME})
 
 # Dependencies.
-find_package(OpenSSL      REQUIRED)
-find_package(Readline     REQUIRED)
-find_package(CURL         REQUIRED)
-find_package(Jsoncpp      REQUIRED)
-find_package(json_rpc_cpp REQUIRED)
+find_package(OpenSSL          REQUIRED)
+find_package(Readline         REQUIRED)
+find_package(JsonRpcCppClient REQUIRED)
 
 add_definitions(-DHAVE_READLINE)
 
@@ -60,16 +58,15 @@ add_coverage(${EXECUTABLE_NAME})
 target_include_directories(${EXECUTABLE_NAME}
     SYSTEM
     PUBLIC
+    ${OPENSSL_INCLUDE_DIR}
+    ${JsonRpcCppClient_INCLUDE_DIRS}
     ${Readline_INCLUDE_DIRS}
 )
 
 # Link librairies.
 target_link_libraries(${EXECUTABLE_NAME}
+  ${STATIC_LIB}
   ${OPENSSL_CRYPTO_LIBRARY}
   ${Readline_LIBRARIES}
-  ${JSONCPP_LIBRARY}
-  ${CURL_LIBRARIES}
-  ${JSON_RPC_CPP_CLIENT_LIBRARIES}
-  ${STATIC_LIB}
+  ${JsonRpcCppClient_LIBRARIES}
 )
-
