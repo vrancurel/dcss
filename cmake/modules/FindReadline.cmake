@@ -1,49 +1,26 @@
-# Taken from https://github.com/bro/cmake
+# - Try to find GNU Readline
 #
-# - Try to find readline include dirs and libraries
-#
-# Usage of this module as follows:
-#
-#     find_package(Readline)
-#
-# Variables used by this module, they can change the default behaviour and need
-# to be set before calling find_package:
-#
-#  Readline_ROOT_DIR         Set this variable to the root installation of
-#                            readline if the module has problems finding the
-#                            proper installation path.
-#
-# Variables defined by this module:
-#
-#  READLINE_FOUND            System has readline, include and lib dirs found
-#  Readline_INCLUDE_DIR      The readline include directories.
-#  Readline_LIBRARY          The readline library.
+# Once done this will define
+#  Readline_FOUND        - System has GNU Readline.
+#  Readline_INCLUDE_DIRS - The GNU Readline include directories.
+#  Readline_LIBRARIES    - The libraries needed to use GNU Readline.
 
-find_path(Readline_ROOT_DIR
-    NAMES include/readline/readline.h
-)
+include(LibFindMacros)
 
+# Use pkg-config to get hints about paths.
+libfind_pkg_check_modules(Readline_PKGCONF readline)
+
+# Include directory.
 find_path(Readline_INCLUDE_DIR
-    NAMES readline/readline.h
-    HINTS ${Readline_ROOT_DIR}/include
+  NAMES readline/readline.h
+  PATHS ${Readline_PKGCONF_INCLUDE_DIRS}
 )
 
+# Finally the library itself.
 find_library(Readline_LIBRARY
-    NAMES readline
-    HINTS ${Readline_ROOT_DIR}/lib
+  NAMES readline
+  PATHS ${Readline_PKGCONF_LIBRARY_DIRS}
 )
 
-if(Readline_INCLUDE_DIR AND Readline_LIBRARY AND Ncurses_LIBRARY)
-  set(READLINE_FOUND TRUE)
-else(Readline_INCLUDE_DIR AND Readline_LIBRARY AND Ncurses_LIBRARY)
-  FIND_LIBRARY(Readline_LIBRARY NAMES readline)
-  include(FindPackageHandleStandardArgs)
-  FIND_PACKAGE_HANDLE_STANDARD_ARGS(Readline DEFAULT_MSG Readline_INCLUDE_DIR Readline_LIBRARY )
-  MARK_AS_ADVANCED(Readline_INCLUDE_DIR Readline_LIBRARY)
-endif(Readline_INCLUDE_DIR AND Readline_LIBRARY AND Ncurses_LIBRARY)
-
-mark_as_advanced(
-    Readline_ROOT_DIR
-    Readline_INCLUDE_DIR
-    Readline_LIBRARY
-)
+# Set the include dir/libraries variables and let libfind_process do the rest.
+libfind_process(Readline)

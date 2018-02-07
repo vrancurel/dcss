@@ -57,10 +57,16 @@ add_executable(${EXECUTABLE_NAME}
 )
 add_coverage(${EXECUTABLE_NAME})
 
+target_include_directories(${EXECUTABLE_NAME}
+    SYSTEM
+    PUBLIC
+    ${Readline_INCLUDE_DIRS}
+)
+
 # Link librairies.
 target_link_libraries(${EXECUTABLE_NAME}
   ${OPENSSL_CRYPTO_LIBRARY}
-  ${Readline_LIBRARY}
+  ${Readline_LIBRARIES}
   ${JSONCPP_LIBRARY}
   ${CURL_LIBRARIES}
   ${JSON_RPC_CPP_CLIENT_LIBRARIES}
