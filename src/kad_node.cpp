@@ -76,12 +76,11 @@ static inline std::string encode_address(const std::string& addr)
 }
 
 Node::Node(
-    Conf* configuration,
+    const Conf& configuration,
     const CBigNum& node_id,
     const std::string& rpc_addr)
-    : Routable(node_id, KAD_ROUTABLE_NODE)
+    : Routable(node_id, KAD_ROUTABLE_NODE), conf(&configuration)
 {
-    this->conf = configuration;
     this->verbose = false;
     this->addr = rpc_addr;
     if (!addr.empty()) {
@@ -100,7 +99,7 @@ Node::Node(
     }
 }
 
-Node::Node(Conf* configuration, const CBigNum& node_id)
+Node::Node(const Conf& configuration, const CBigNum& node_id)
     : Node(configuration, node_id, "")
 {
 }

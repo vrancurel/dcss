@@ -3,15 +3,14 @@
 
 namespace kad {
 
-File::File(const CBigNum& file_id, Node* ref)
-    : Routable(file_id, KAD_ROUTABLE_FILE)
+File::File(const CBigNum& file_id, const Node& ref)
+    : Routable(file_id, KAD_ROUTABLE_FILE), referencer(&ref)
 {
-    this->referencer = ref;
 }
 
-Node* File::get_referencer()
+const Node& File::get_referencer() const
 {
-    return referencer;
+    return *referencer;
 }
 
 } // namespace kad

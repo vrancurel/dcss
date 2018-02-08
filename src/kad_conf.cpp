@@ -18,7 +18,7 @@ Conf::Conf(
     this->n_nodes = nb_nodes;
 }
 
-void Conf::save(std::ostream& fout)
+void Conf::save(std::ostream& fout) const
 {
     fout << "n_bits " << n_bits << '\n'
          << "k " << k << '\n'
