@@ -8,7 +8,7 @@
 #include "bit_map.h"
 #include "exceptions.h"
 
-TEST(BitMapTest, TestCheck)
+TEST(BitMapTest, TestCheck) // NOLINT(-*)
 {
     const uint32_t nb_bits = 16;
     kad::BitMap bitmap(nb_bits);
@@ -23,7 +23,7 @@ TEST(BitMapTest, TestCheck)
         << "can't call get_rand_uint on an exhausted BitMap";
 }
 
-TEST(BitMapTest, TestOutput)
+TEST(BitMapTest, TestOutput) // NOLINT(-*)
 {
     const uint32_t nb_bits = 16;
     kad::BitMap bitmap(nb_bits);
