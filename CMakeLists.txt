@@ -172,25 +172,20 @@ coverage_evaluate()
 # Formatting & Linter
 #####################
 
+file(GLOB_RECURSE ALL_HEADERS
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/test/*.h
+)
+
 set(ALL_SRCS
   ${LIB_SRC}
+  ${TEST_SRC}
   ${SOURCE_DIR}/main.cpp
-  ${SOURCE_DIR}/cmds.h
-  ${SOURCE_DIR}/bignum.h
-  ${SOURCE_DIR}/bit_map.h
-  ${SOURCE_DIR}/exceptions.h
-  ${SOURCE_DIR}/kad_conf.h
-  ${SOURCE_DIR}/kad_file.h
-  ${SOURCE_DIR}/kad_network.h
-  ${SOURCE_DIR}/kad_node.h
-  ${SOURCE_DIR}/kad_routable.h
-  ${SOURCE_DIR}/kadsim.h
-  ${SOURCE_DIR}/shell.h
-  ${SOURCE_DIR}/utils.h
+  ${ALL_HEADERS}
 )
 
 add_custom_target(format
-  COMMAND clang-format -i ${ALL_SRCS} ${TEST_SRC}
+  COMMAND clang-format -i ${ALL_SRCS}
   COMMENT "fix code formatting"
 )
 add_dependencies(format ${PROJECT_NAME})
