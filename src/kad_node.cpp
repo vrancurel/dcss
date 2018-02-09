@@ -47,7 +47,7 @@ static void call_contract(
             if (exn.GetCode() == -32000) {
                 continue; // Transaction is pending…
             }
-            fprintf(stderr, "error: %s\n", exn.what());
+            std::cerr << "error: " << exn.what() << '\n';
             throw;
         }
     }

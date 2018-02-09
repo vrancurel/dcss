@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <list>
 
@@ -25,21 +26,21 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
 
         for (int i = 0; cmd_defs[i] != nullptr; ++i) {
             cmdp = cmd_defs[i];
-            printf("%16s", cmdp->name);
+            std::cout << std::setw(16) << cmdp->name;
             j++;
             if (j == 4) {
-                printf("\n");
+                std::cout << '\n';
                 j = 0;
             }
         }
-        printf("\n");
+        std::cout << '\n';
     } else if (argc == 2) {
         struct cmd_def* cmdp;
 
         for (int i = 0; cmd_defs[i] != nullptr; ++i) {
             cmdp = cmd_defs[i];
             if (strcmp(argv[1], cmdp->name) == 0) {
-                printf("%s\n", cmdp->purpose);
+                std::cout << cmdp->purpose << '\n';
                 break;
             }
         }
@@ -79,7 +80,7 @@ static int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
 static int cmd_jump(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: jump key\n");
+        std::cerr << "usage: jump key\n";
         return SHELL_CONT;
     }
 
@@ -87,7 +88,7 @@ static int cmd_jump(Shell* shell, int argc, char** argv)
 
     Node* node = network->lookup_cheat(argv[1]);
     if (nullptr == node) {
-        fprintf(stderr, "not found\n");
+        std::cerr << "not found\n";
         return SHELL_CONT;
     }
 
@@ -99,14 +100,14 @@ static int cmd_jump(Shell* shell, int argc, char** argv)
 static int cmd_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: lookup key\n");
+        std::cerr << "usage: lookup key\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
 
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
@@ -128,14 +129,14 @@ static int cmd_lookup(Shell* shell, int argc, char** argv)
 static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: find_nearest key amount\n");
+        std::cerr << "usage: find_nearest key amount\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
 
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
@@ -158,14 +159,14 @@ static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 static int cmd_show(Shell* shell, int argc, char** /*argv*/)
 {
     if (argc != 1) {
-        fprintf(stderr, "usage: show\n");
+        std::cerr << "usage: show\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
 
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
@@ -177,14 +178,14 @@ static int cmd_show(Shell* shell, int argc, char** /*argv*/)
 static int cmd_verbose(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: verbose 1|0\n");
+        std::cerr << "usage: verbose 1|0\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
 
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
@@ -196,7 +197,7 @@ static int cmd_verbose(Shell* shell, int argc, char** argv)
 static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: jump key\n");
+        std::cerr << "usage: jump key\n";
         return SHELL_CONT;
     }
 
@@ -208,7 +209,7 @@ static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 
     Node* node = network->find_nearest_cheat(routable);
     if (nullptr == node) {
-        fprintf(stderr, "not found\n");
+        std::cerr << "not found\n";
         return SHELL_CONT;
     }
 
@@ -220,7 +221,7 @@ static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 static int cmd_save(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: save file\n");
+        std::cerr << "usage: save file\n";
         return SHELL_CONT;
     }
 
@@ -235,7 +236,7 @@ static int cmd_save(Shell* shell, int argc, char** argv)
 static int cmd_xor(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: xor bn1 bn2\n");
+        std::cerr << "usage: xor bn1 bn2\n";
         return SHELL_CONT;
     }
 
@@ -255,7 +256,7 @@ static int cmd_xor(Shell* /*shell*/, int argc, char** argv)
 static int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: bit_length bn\n");
+        std::cerr << "usage: bit_length bn\n";
         return SHELL_CONT;
     }
 
@@ -270,7 +271,7 @@ static int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
 static int cmd_graphviz(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        fprintf(stderr, "usage: graphviz file\n");
+        std::cerr << "usage: graphviz file\n";
         return SHELL_CONT;
     }
 
@@ -285,13 +286,13 @@ static int cmd_graphviz(Shell* shell, int argc, char** argv)
 static int cmd_buy_storage(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: buy_storage SELLER N_BYTES\n");
+        std::cerr << "usage: buy_storage SELLER N_BYTES\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
@@ -303,13 +304,13 @@ static int cmd_buy_storage(Shell* shell, int argc, char** argv)
 static int cmd_put_bytes(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: put_bytes SELLER N_BYTES\n");
+        std::cerr << "usage: put_bytes SELLER N_BYTES\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
@@ -321,13 +322,13 @@ static int cmd_put_bytes(Shell* shell, int argc, char** argv)
 static int cmd_get_bytes(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
-        fprintf(stderr, "usage: get_bytes SELLER N_BYTES\n");
+        std::cerr << "usage: get_bytes SELLER N_BYTES\n";
         return SHELL_CONT;
     }
 
     auto* node = static_cast<Node*>(shell->get_handle2());
     if (nullptr == node) {
-        fprintf(stderr, "shall jump to a node first\n");
+        std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
