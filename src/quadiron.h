@@ -1,5 +1,5 @@
-#ifndef __KADSIM_H__
-#define __KADSIM_H__
+#ifndef __QUADIRON_H__
+#define __QUADIRON_H__
 
 #include "bignum.h"
 #include "cmds.h"
