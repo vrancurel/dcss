@@ -11,10 +11,7 @@
 
 namespace kad {
 
-Network::Network(Conf* configuration)
-{
-    this->conf = configuration;
-}
+Network::Network(const Conf& configuration) : conf(&configuration) {}
 
 /** Initialize nodes. */
 void Network::initialize_nodes(
@@ -39,10 +36,10 @@ void Network::initialize_nodes(
             bstraplist.pop_back();
             std::cout << "create remote node (" << bstrap << ")\n";
             // Create remote node from a bootstrap.
-            node = new Node(conf, bitmap.get_rand_uint() * keyspace, bstrap);
+            node = new Node(*conf, bitmap.get_rand_uint() * keyspace, bstrap);
         } else {
             // Simulate node.
-            node = new Node(conf, bitmap.get_rand_uint() * keyspace);
+            node = new Node(*conf, bitmap.get_rand_uint() * keyspace);
         }
         nodes.push_back(node);
         nodes_map[node->get_id().ToString(16)] = node;
@@ -105,7 +102,7 @@ void Network::initialize_files(uint32_t n_files)
         // Gen a random identifier for the file.
         CBigNum bn;
         bn.Rand(conf->n_bits);
-        auto* file = new File(bn, node);
+        auto* file = new File(bn, *node);
         files.push_back(file);
 
         // Store file at multiple location.
@@ -152,7 +149,7 @@ void Network::check_files()
         if (!found) {
             std::cerr << "file " << file->get_id().ToString(16)
                       << " who was referenced by "
-                      << file->get_referencer()->get_id().ToString(16)
+                      << file->get_referencer().get_id().ToString(16)
                       << " was not found\n";
             n_wrong++;
         }
@@ -166,7 +163,7 @@ void Network::rand_node(tnode_callback_func cb_func, void* cb_arg)
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
     uint64_t x = dis(prng());
     if (nullptr != cb_func) {
-        cb_func(nodes[x], cb_arg);
+        cb_func(*nodes[x], cb_arg);
     }
 }
 

@@ -17,8 +17,8 @@ class Routable {
     Routable(const CBigNum& entity_id, enum RoutableType entity_type);
 
     CBigNum get_id() const;
-    bool is_remote();
-    RoutableType get_type();
+    bool is_remote() const;
+    RoutableType get_type() const;
     CBigNum distance_to(const Routable& other) const;
     bool operator()(const Routable* first, const Routable* second) const;
 

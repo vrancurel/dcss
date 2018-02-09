@@ -19,9 +19,9 @@ class File;
 
 class Node : public Routable {
   public:
-    Node(Conf* configuration, const CBigNum& node_id);
+    Node(const Conf& configuration, const CBigNum& node_id);
     Node(
-        Conf* configuration,
+        const Conf& configuration,
         const CBigNum& node_id,
         const std::string& rpc_addr);
 
@@ -51,7 +51,7 @@ class Node : public Routable {
     void get_bytes(const std::string& seller, uint64_t nb_bytes);
 
   private:
-    Conf* conf;
+    const Conf* const conf;
 
     using tbucket = std::map<uint32_t, std::list<Node*>>;
     tbucket buckets;

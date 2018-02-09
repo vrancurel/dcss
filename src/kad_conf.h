@@ -22,7 +22,7 @@ class Conf {
         const std::string& geth_addr,
         std::vector<std::string> bootstrap_list);
 
-    void save(std::ostream& fout);
+    void save(std::ostream& fout) const;
 
     uint32_t n_bits;
     uint32_t k;
@@ -30,7 +30,7 @@ class Conf {
     uint32_t n_nodes;
 
     jsonrpc::HttpClient httpclient;
-    GethClient geth;
+    mutable GethClient geth;
     std::vector<std::string> bstraplist;
 };
 

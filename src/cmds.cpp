@@ -48,9 +48,9 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
     return SHELL_CONT;
 }
 
-static void cb_display_node(Node* node, void* /*cb_arg*/)
+static void cb_display_node(const Node& node, void* /*cb_arg*/)
 {
-    std::cout << node->get_id().ToString(16) << "\n";
+    std::cout << node.get_id().ToString(16) << "\n";
 }
 
 static void cb_display_routable(const Routable& routable, void* /*cb_arg*/)
@@ -212,7 +212,7 @@ static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    cb_display_node(node, nullptr);
+    cb_display_node(*node, nullptr);
 
     return SHELL_CONT;
 }

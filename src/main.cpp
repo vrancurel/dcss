@@ -113,7 +113,7 @@ int main(int argc, char** argv)
 
     kad::Conf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
     // conf.save(std::cout);
-    kad::Network network(&conf);
+    kad::Network network(conf);
     kad::Shell shell;
 
     kad::prng().seed(rand_seed);

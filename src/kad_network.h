@@ -14,12 +14,12 @@ class File;
 class Node;
 class Routable;
 
-using tnode_callback_func = void (*)(Node*, void*);
+using tnode_callback_func = void (*)(const Node&, void*);
 using troutable_callback_func = void (*)(const Routable&, void*);
 
 class Network {
   public:
-    explicit Network(Conf* configuration);
+    explicit Network(const Conf& configuration);
 
     ~Network() = default;
     Network(Network const&) = delete;
@@ -40,7 +40,7 @@ class Network {
     void check_files();
 
   private:
-    Conf* conf;
+    const Conf* const conf;
 
     std::vector<Node*> nodes;
     std::map<std::string, Node*> nodes_map;
