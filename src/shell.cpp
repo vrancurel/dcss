@@ -143,7 +143,7 @@ int Shell::do_cmd(struct cmd_def** definitions, int argc, char** argv)
         }
         if (strncmp(argv[0], tmp->name, len) == 0) {
             if (found) {
-                fprintf(stderr, "ambiguous command: %s\n", argv[0]);
+                std::cerr << "ambiguous command: " << argv[0] << '\n';
                 return SHELL_CONT;
             }
             found = true;
@@ -152,7 +152,7 @@ int Shell::do_cmd(struct cmd_def** definitions, int argc, char** argv)
     }
 
     if (!found) {
-        fprintf(stderr, "cmd %s: not found\n", argv[0]);
+        std::cerr << "cmd " << argv[0] << ": not found\n";
         return SHELL_CONT;
     }
 
@@ -341,7 +341,7 @@ void Shell::loop()
 
             ret = parse(defs, line, &shell_err);
             if (ret == SHELL_EPARSE) {
-                fprintf(stderr, "parsing: %s\n", shell_error_str(shell_err));
+                std::cerr << "parsing: " << shell_error_str(shell_err) << '\n';
             } else if (ret == SHELL_RETURN) {
                 return;
             }
@@ -350,7 +350,7 @@ void Shell::loop()
             }
             free(line);
         } else {
-            fprintf(stderr, "quit\n");
+            std::cerr << "quit\n";
             return;
         }
     }
