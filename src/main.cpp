@@ -6,7 +6,7 @@
 
 #include <getopt.h>
 
-#include "kadsim.h"
+#include "quadiron.h"
 
 [[noreturn]] static void usage()
 {
