@@ -5,12 +5,20 @@
 #include <vector>
 
 #include <getopt.h>
+#include <nttec/nttec.h>
 
 #include "quadiron.h"
 
+[[noreturn]] static void show_version()
+{
+    std::cout << PACKAGE << " (" << VERSION << ")\n"
+              << "using NTTEC " << nttec::get_version() << '\n';
+    exit(0);
+}
+
 [[noreturn]] static void usage()
 {
-    std::cerr << "usage: " << PACKAGE << " (" << VERSION << ")\n";
+    std::cerr << "usage: " << PACKAGE << '\n';
     std::cerr << "\t-b\tn_bits\n";
     std::cerr << "\t-k\tKademlia K parameter\n";
     std::cerr << "\t-a\tKademlia alpha parameter\n";
@@ -20,6 +28,7 @@
     std::cerr << "\t-B\tbootstrap list (comma-separated list of IPs)\n";
     std::cerr << "\t-N\tnumber of files\n";
     std::cerr << "\t-S\trandom seed\n";
+    std::cerr << "\t-V\tshow version\n";
     exit(1);
 }
 
@@ -45,7 +54,7 @@ int main(int argc, char** argv)
 
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:N:")) != -1) {
+    while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:N:V")) != -1) {
         switch (c) {
         case 'b':
             n_bits = kad::stou32(optarg);
@@ -82,6 +91,8 @@ int main(int argc, char** argv)
         case 'N':
             n_files = kad::stou32(optarg);
             break;
+        case 'V':
+            show_version();
         case '?':
         default:
             usage();
@@ -124,9 +135,7 @@ int main(int argc, char** argv)
 
     shell.set_cmds(kad::cmd_defs);
     shell.set_handle(&network);
-    std::ostringstream prompt;
-    prompt << PACKAGE << "> ";
-    shell.set_prompt(prompt.str());
+    shell.set_prompt(std::string(PACKAGE) + "> ");
     shell.loop();
 
     return EXIT_SUCCESS;
