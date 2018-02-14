@@ -50,11 +50,6 @@ set(SHARED_LIB ${CMAKE_PROJECT_NAME}_shared)
 set(STATIC_LIB ${CMAKE_PROJECT_NAME}_static)
 
 file(MAKE_DIRECTORY ${GENERATE_DIR})
-# Use SYSTEM so that our strict compilers settings are not applied to generated
-# code.
-include_directories(SYSTEM
-    ${GENERATE_DIR}
-)
 
 ####################
 # Default build type
