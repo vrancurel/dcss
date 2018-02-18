@@ -18,6 +18,9 @@ dependencies:
     - cd libjson-rpc-cpp && git checkout v0.6.0
     - mkdir libjson-rpc-cpp/build
     - cd libjson-rpc-cpp/build && cmake -DCOMPILE_TESTS=No .. && make && sudo make install
+    - git clone git@github.com:vrancurel/nttec.git
+    - mkdir nttec/build
+    - cd nttec/build && cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release .. && sudo make install
     - sudo ldconfig
 
 compile:

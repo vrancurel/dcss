@@ -9,6 +9,7 @@ A Decentralized Storage with the Ethereum Blockchain
 - OpenSSL
 - readline
 - [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)
+- [NTTEC](https://github.com/vrancurel/nttec)
 
 ## Build
 
