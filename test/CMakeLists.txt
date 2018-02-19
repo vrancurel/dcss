@@ -94,7 +94,7 @@ set(TEST_SRC
   FORCE
 )
 
-set(TEST_DRIVER ${CMAKE_PROJECT_NAME}_test)
+set(TEST_DRIVER unit_tests)
 add_executable(${TEST_DRIVER}
   ${TEST_SRC}
 )

@@ -29,9 +29,9 @@ The following targets are available:
 - `lint`: run the linter
 - `fix-lint`: run the linter and try to apply the proposed fixes
 - `quadiron`: build the QuadIron binary
-- `quadiron_shared`: build the QuadIron shared library
-- `quadiron_static`: build the QuadIron static library
-- `quadiron_test`: build the test driver
+- `shared`: build the QuadIron shared library
+- `static`: build the QuadIron static library
+- `unit_tests`: build the unit tests
 - `check`: run the test suite
 
 ### Code coverage
