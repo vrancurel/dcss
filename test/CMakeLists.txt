@@ -20,6 +20,7 @@ ExternalProject_Add(gtest
 
 # Get paths of the installed GoogleTest.
 ExternalProject_Get_Property(gtest source_dir binary_dir)
+set(GTEST_SOURCE_DIR ${source_dir})
 
 # GoogleTest target (to be used as a dependency by our test driver).
 add_library(libgtest IMPORTED STATIC GLOBAL)
@@ -35,12 +36,6 @@ add_dependencies(libgmock gtest)
 set_target_properties(libgmock PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/googlemock/libgmock.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-)
-
-# Use SYSTEM so that our strict compilers settings are not applied on this code.
-include_directories(SYSTEM
-    "${source_dir}/googletest/include"
-    "${source_dir}/googlemock/include"
 )
 
 ###########################################################################
@@ -99,17 +94,20 @@ set(TEST_SRC
   FORCE
 )
 
-set(TEST_DRIVER ${CMAKE_PROJECT_NAME}_test)
+set(TEST_DRIVER unit_tests)
 add_executable(${TEST_DRIVER}
   ${TEST_SRC}
 )
 add_coverage(${TEST_DRIVER})
 
-include_directories(${SOURCE_DIR})
-
 target_link_libraries(${TEST_DRIVER}
   libgtest
   ${STATIC_LIB}
+)
+# Use SYSTEM so that our strict compilers settings are not applied on this code.
+target_include_directories(${TEST_DRIVER} SYSTEM
+    PUBLIC "${GTEST_SOURCE_DIR}/googletest/include"
+    PUBLIC "${source_dir}/googlemock/include"
 )
 
 GTEST_ADD_TESTS(${TEST_DRIVER} "" ${TEST_SRC})

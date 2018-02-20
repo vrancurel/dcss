@@ -45,16 +45,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY bin/${CMAKE_BUILD_TYPE})
 
 # Targets
 set(JSON_RPC_STUB jsonrpcstup)
-set(OBJECT_LIB ${CMAKE_PROJECT_NAME}_object)
-set(SHARED_LIB ${CMAKE_PROJECT_NAME}_shared)
-set(STATIC_LIB ${CMAKE_PROJECT_NAME}_static)
+set(OBJECT_LIB object)
+set(SHARED_LIB shared)
+set(STATIC_LIB static)
 
 file(MAKE_DIRECTORY ${GENERATE_DIR})
-# Use SYSTEM so that our strict compilers settings are not applied to generated
-# code.
-include_directories(SYSTEM
-    ${GENERATE_DIR}
-)
 
 ####################
 # Default build type
