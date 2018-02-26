@@ -1,17 +1,19 @@
-# What is QuadIron?
+# QuadIron
+
+[![CircleCI][badgepub]](https://circleci.com/gh/vrancurel/quadiron)
 
 A Decentralized Storage with the Ethereum Blockchain
 
-# Build from source
+## Build from source
 
-## Install the dependencies
+### Install the dependencies
 
 - OpenSSL
 - readline
 - [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)
 - [NTTEC](https://github.com/vrancurel/nttec)
 
-## Build
+### Build
 
 ```sh
 mkdir build
@@ -20,7 +22,7 @@ CXX=/usr/bin/clang++ cmake -G 'Unix Makefiles' ..
 make
 ```
 
-### Targets
+#### Targets
 
 The following targets are available:
 
@@ -34,7 +36,7 @@ The following targets are available:
 - `unit_tests`: build the unit tests
 - `check`: run the test suite
 
-### Code coverage
+#### Code coverage
 
 By default the code coverage is not enabled.
 
@@ -49,7 +51,7 @@ To generate the code coverage reports:
 Note that, even though code coverage is supported by both Clang and GCC, result
 with GCC seems more reliable (not surprising as we are using gcov).
 
-# How to use it:
+## How to use it:
 
     $ ./quadiron -h
     usage: quadiron
@@ -71,3 +73,5 @@ In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
 
 ![Graphical Output of Simulator](graphviz.png )
+
+[badgepub]: https://circleci.com/gh/vrancurel/quadiron.svg?style=shield&circle-token=:circle-token
