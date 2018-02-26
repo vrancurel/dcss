@@ -50,7 +50,6 @@ find_package(Readline     REQUIRED)
 find_package(CURL         REQUIRED)
 find_package(Jsoncpp      REQUIRED)
 find_package(json_rpc_cpp REQUIRED)
-find_package(ntl          REQUIRED)
 
 add_definitions(-DHAVE_READLINE)
 
@@ -67,6 +66,5 @@ target_link_libraries(${EXECUTABLE_NAME}
   ${JSONCPP_LIBRARY}
   ${CURL_LIBRARIES}
   ${JSON_RPC_CPP_CLIENT_LIBRARIES}
-  ${NTL_LIBRARY}
 )
 
