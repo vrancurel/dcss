@@ -7,6 +7,8 @@ set(LIB_SRC
   ${SOURCE_DIR}/kad_network.cpp
   ${SOURCE_DIR}/kad_node.cpp
   ${SOURCE_DIR}/kad_routable.cpp
+  ${SOURCE_DIR}/io_client.cpp
+  ${SOURCE_DIR}/io_server.cpp
   ${SOURCE_DIR}/shell.cpp
 
   CACHE

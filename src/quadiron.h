@@ -10,6 +10,8 @@
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_routable.h"
+#include "io_server.h"
+#include "io_client.h"
 #include "shell.h"
 #include "utils.h"
 
