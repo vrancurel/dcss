@@ -350,6 +350,20 @@ static int cmd_put(Shell * /* shell */, int argc, char **argv)
   
   return SHELL_CONT;
 }
+
+static int cmd_io_server_info(Shell *shell, int, char **)
+{
+  auto* node = static_cast<Node*>(shell->get_handle2());
+  
+  if (nullptr == node) {
+    std::cerr << "shall jump to a node first\n";
+    return SHELL_CONT;
+  }
+  
+  std::cout << "port: " << node->io_server->get_port() << "\n";
+
+  return SHELL_CONT;
+}
   
 struct cmd_def quit_cmd = {"quit", "quit program", cmd_quit};
 struct cmd_def help_cmd = {"help", "help", cmd_help};
@@ -386,7 +400,10 @@ struct cmd_def put_bytes_cmd = {"put_bytes",
 struct cmd_def get_bytes_cmd = {"get_bytes",
                                 "get N bytes from storage",
                                 cmd_get_bytes};
-
+struct cmd_def io_server_info_cmd = {"io_server_info",
+                                     "get IO server info",
+                                     cmd_io_server_info};
+  
 struct cmd_def* cmd_defs[] = {
     &bit_length_cmd,
     &buy_storage_cmd,
@@ -406,6 +423,7 @@ struct cmd_def* cmd_defs[] = {
     &show_cmd,
     &verbose_cmd,
     &xor_cmd,
+    &io_server_info_cmd,
     nullptr,
 };
 

@@ -40,14 +40,17 @@ namespace io {
 public:
   Server();
   ~Server();
+
+  void start_daemon();
+  uint16_t get_port();
+
 private:
   struct MHD_Daemon *daemon;
 
-  int callback(void *cls, MHD_Connection *connection, const char *url,
-               const char *method, const char *version,
-               const char *upload_data, size_t *upload_data_size,
-               void **con_cls);
-  void start_daemon();
+  static int callback(void *cls, MHD_Connection *connection, const char *url,
+                      const char *method, const char *version,
+                      const char *upload_data, size_t *upload_data_size,
+                      void **con_cls);
 };
 
 } // namespace io

@@ -89,6 +89,9 @@ Node::Node(
         this->nodec = new NodeClient(*this->httpclient);
     }
 
+    this->io_server = new io::Server();
+    this->io_server->start_daemon();
+
     // The passphrase of the account is the hex of the node ID.
     this->eth_passphrase = id.ToString(16);
     try {
