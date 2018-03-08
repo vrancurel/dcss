@@ -27,21 +27,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __QUADIRON_H__
-#define __QUADIRON_H__
+#ifndef __IO_CLIENT_H__
+#define __IO_CLIENT_H__
 
-#include "bignum.h"
-#include "cmds.h"
-#include "config.h"
-#include "exceptions.h"
-#include "kad_conf.h"
-#include "kad_file.h"
-#include "kad_network.h"
-#include "kad_node.h"
-#include "kad_routable.h"
-#include "io_server.h"
-#include "io_client.h"
-#include "shell.h"
-#include "utils.h"
+#include <nttec/nttec.h>
+
+extern int create_coding_files(const char *filename,
+                               nttec::fec::FecCode<uint32_t> *fec);
+extern void do_put(const char *filename, int n_data, int n_parities);
 
 #endif

@@ -27,21 +27,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __QUADIRON_H__
-#define __QUADIRON_H__
+#ifndef __IO_SERVER_H__
+#define __IO_SERVER_H__
 
-#include "bignum.h"
-#include "cmds.h"
-#include "config.h"
-#include "exceptions.h"
-#include "kad_conf.h"
-#include "kad_file.h"
-#include "kad_network.h"
-#include "kad_node.h"
-#include "kad_routable.h"
-#include "io_server.h"
-#include "io_client.h"
-#include "shell.h"
-#include "utils.h"
+#include <jsonrpccpp/server.h>
+#include <jsonrpccpp/server/connectors/httpserver.h>
+#include <nttec/nttec.h>
+
+namespace io {
+
+  class Server {
+public:
+  Server();
+  ~Server();
+
+  void start_daemon();
+  uint16_t get_port();
+
+private:
+  struct MHD_Daemon *daemon;
+
+  static int callback(void *cls, MHD_Connection *connection, const char *url,
+                      const char *method, const char *version,
+                      const char *upload_data, size_t *upload_data_size,
+                      void **con_cls);
+};
+
+} // namespace io
 
 #endif

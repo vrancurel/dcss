@@ -37,6 +37,7 @@
 #include <jsonrpccpp/client/connectors/httpclient.h>
 
 #include "kad_routable.h"
+#include "io_server.h"
 
 class NodeClient;
 
@@ -78,6 +79,8 @@ class Node : public Routable {
     void buy_storage(const std::string& seller, uint64_t nb_bytes);
     void put_bytes(const std::string& seller, uint64_t nb_bytes);
     void get_bytes(const std::string& seller, uint64_t nb_bytes);
+
+    io::Server *io_server;
 
   private:
     const Conf* const conf;

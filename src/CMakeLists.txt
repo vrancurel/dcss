@@ -35,6 +35,8 @@ set(LIB_SRC
   ${SOURCE_DIR}/kad_network.cpp
   ${SOURCE_DIR}/kad_node.cpp
   ${SOURCE_DIR}/kad_routable.cpp
+  ${SOURCE_DIR}/io_client.cpp
+  ${SOURCE_DIR}/io_server.cpp
   ${SOURCE_DIR}/shell.cpp
 
   CACHE
@@ -54,6 +56,7 @@ configure_file(${SOURCE_DIR}/config.in ${GENERATE_DIR}/config.h @ONLY)
 find_package(OpenSSL          REQUIRED)
 find_package(Readline         REQUIRED)
 find_package(JsonRpcCppClient REQUIRED)
+find_package(MHD              REQUIRED)
 find_package(NTTEC            REQUIRED)
 
 get_property(NTTEC_INCLUDE_DIRS
@@ -65,6 +68,7 @@ set(OBJECT_SYS_INCLUDES
   ${GENERATE_DIR}
   ${OPENSSL_INCLUDE_DIR}
   ${JsonRpcCppClient_INCLUDE_DIRS}
+  ${MHD_INCLUDE_DIRS}
   ${Readline_INCLUDE_DIRS}
   ${NTTEC_INCLUDE_DIRS}
 )
@@ -103,6 +107,7 @@ foreach(lib ${SHARED_LIB} ${STATIC_LIB})
     ${OPENSSL_CRYPTO_LIBRARY}
     ${Readline_LIBRARIES}
     ${JsonRpcCppClient_LIBRARIES}
+    ${MHD_LIBRARIES}
     NTTEC::static
   )
 endforeach()
