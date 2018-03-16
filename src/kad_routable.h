@@ -49,7 +49,6 @@ class Routable {
     bool is_remote() const;
     RoutableType get_type() const;
     UInt160 distance_to(const Routable& other) const;
-    bool operator()(const Routable* first, const Routable* second) const;
 
   protected:
     UInt160 id;

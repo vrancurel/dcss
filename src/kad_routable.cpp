@@ -52,15 +52,4 @@ UInt160 Routable::distance_to(const Routable& other) const
     return id ^ other.get_id();
 }
 
-/** Sort from smallest distance to largest.
- *
- * @return true if first is smaller than second
- */
-bool Routable::operator()(const Routable* first, const Routable* second) const
-{
-    const UInt160 d1(first->distance_to(*this));
-    const UInt160 d2(second->distance_to(*this));
-    return d1 < d2;
-}
-
 } // namespace kad

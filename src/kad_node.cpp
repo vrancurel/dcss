@@ -44,6 +44,31 @@ namespace kad {
 // Address of the QuadIron contract on the blockchain.
 #define QUADIRON_CONTRACT_ADDR "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
 
+/** A functor to compare Routable by their distance from a specified Routable.
+ *
+ * This functor allow to sort a list of Routable from the closest (to the target
+ * Routable) to the farthest.
+ */
+class ByDistanceFrom {
+  public:
+    explicit ByDistanceFrom(const Routable& target_routable)
+        : target(target_routable)
+    {
+    }
+
+    /** Compare two Routable by their distance to a target Routable.
+     *
+     * @return true if first is closer than second
+     */
+    bool operator()(const Routable* first, const Routable* second) const
+    {
+        return first->distance_to(target) < second->distance_to(target);
+    }
+
+  private:
+    const Routable& target;
+};
+
 static void call_contract(
     GethClient& geth,
     const std::string& node_addr,
@@ -225,7 +250,7 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
     // First look in the corresponding k-bucket.
     std::list<Node*> list = buckets[bit_length];
 
-    list.sort(routable);
+    list.sort(ByDistanceFrom(routable));
     list.unique();
 
     if (verbose) {
@@ -273,7 +298,7 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
         }
 
         // Sort answers.
-        all.sort(routable);
+        all.sort(ByDistanceFrom(routable));
         all.unique();
 
         for (auto& it : all) {
@@ -286,7 +311,7 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
         }
     }
 
-    closest.sort(routable);
+    closest.sort(ByDistanceFrom(routable));
     closest.unique();
 
     return closest;
@@ -346,7 +371,7 @@ std::list<Node*> Node::lookup(const Routable& routable)
         }
 
         // Sort answers.
-        answers.sort(routable);
+        answers.sort(ByDistanceFrom(routable));
         answers.unique();
 
         if (verbose) {
@@ -411,7 +436,7 @@ std::list<Node*> Node::lookup(const Routable& routable)
         }
 
         // Sort round answers.
-        round_answers.sort(routable);
+        round_answers.sort(ByDistanceFrom(routable));
         round_answers.unique();
 
         if (verbose) {
