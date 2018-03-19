@@ -27,7 +27,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "kad_dht.h"
+#include "dht/dht.h"
 #include "kad_routable.h"
 
 namespace kad {

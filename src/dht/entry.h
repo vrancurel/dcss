@@ -27,19 +27,51 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "kad_file.h"
+#ifndef __KAD_DHT_ENTRY_H__
+#define __KAD_DHT_ENTRY_H__
+
 #include "uint160.h"
 
 namespace kad {
+namespace dht {
 
-File::File(const UInt160& file_id, const Node& ref)
-    : Routable(file_id, KAD_ROUTABLE_FILE), referencer(&ref)
-{
-}
+/** A DHT entry, identified by its key. */
+class Entry {
+  public:
+    /** Create a new DHT item identified by `id` and stored on `node`.
+     *
+     * @param key   a unique key that identify the entry
+     * @param value the entry payload
+     */
+    Entry(UInt160 key, std::string value)
+        : m_key(key), m_value(std::move(value))
+    {
+    }
+    virtual ~Entry() = default;
 
-const Node& File::get_referencer() const
-{
-    return *referencer;
-}
+    /** Return the entry key. */
+    inline const UInt160& key() const
+    {
+        return m_key;
+    };
 
+    /** Return the entry value. */
+    inline const std::string& value() const
+    {
+        return m_value;
+    };
+
+    Entry(Entry const&) = delete;
+    Entry& operator=(Entry const& x) = delete;
+    Entry(Entry&&) = delete;
+    Entry& operator=(Entry&& x) = delete;
+
+  private:
+    UInt160 m_key;       /**< Key of the entry in the DHT.   */
+    std::string m_value; /**< Value of the entry in the DHT. */
+};
+
+} // namespace dht
 } // namespace kad
+
+#endif

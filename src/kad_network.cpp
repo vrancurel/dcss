@@ -128,9 +128,9 @@ void Network::initialize_files(uint32_t n_files)
         // Take a random node.
         Node* node = nodes[dis(prng())];
 
-        // Gen a random identifier for the file.
-        const UInt160 bn(UInt160::rand(prng(), conf->n_bits));
-        auto* file = new File(bn, *node);
+        // Generate a random key for the file.
+        const UInt160 key(UInt160::rand(prng(), conf->n_bits));
+        auto* file = new File(key, "");
         files.push_back(file);
 
         // Store file at multiple location.
@@ -175,8 +175,7 @@ void Network::check_files()
         }
 
         if (!found) {
-            std::cerr << "file " << file->get_id() << " who was referenced by "
-                      << file->get_referencer().get_id() << " was not found\n";
+            std::cerr << "file " << file->key() << " was not found\n";
             n_wrong++;
         }
         ++n_files;

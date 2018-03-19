@@ -27,31 +27,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_FILE_H__
-#define __KAD_FILE_H__
+#ifndef __KAD_DHT_CORE_H__
+#define __KAD_DHT_CORE_H__
 
-#include "dht/dht.h"
-#include "kad_routable.h"
 #include "uint160.h"
 
 namespace kad {
 
-class File : public dht::Entry, public Routable {
-  public:
-    File(const UInt160& key, std::string value)
-        : dht::Entry(key, std::move(value)), Routable(key, KAD_ROUTABLE_FILE)
-    {
-    }
-    ~File() override = default;
-    File(File const&) = delete;
-    File& operator=(File const& x) = delete;
-    File(File&&) = delete;
-    File& operator=(File&& x) = delete;
+/** The Distributed Hash Table (DHT) implementation.
+ *
+ * This is an implementation of Kademlia.
+ */
+namespace dht {
 
-  private:
-    std::vector<UInt160> parts; /**< Keys of the file parts. */
-};
+static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
+{
+    return id1 ^ id2;
+}
 
+} // namespace dht
 } // namespace kad
 
 #endif

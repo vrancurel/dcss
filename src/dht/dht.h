@@ -30,24 +30,7 @@
 #ifndef __KAD_DHT_H__
 #define __KAD_DHT_H__
 
-#include "uint160.h"
-
-namespace kad {
-
-class Node;
-
-/** The Distributed Hash Table (DHT) implementation.
- *
- * This is an implementation of Kademlia.
- */
-namespace dht {
-
-static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
-{
-    return id1 ^ id2;
-}
-
-} // namespace dht
-} // namespace kad
+#include "core.h"
+#include "entry.h"
 
 #endif

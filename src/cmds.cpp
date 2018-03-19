@@ -33,7 +33,7 @@
 #include <list>
 
 #include "cmds.h"
-#include "kad_dht.h"
+#include "dht/dht.h"
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_routable.h"
