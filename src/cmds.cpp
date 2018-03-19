@@ -33,6 +33,7 @@
 #include <list>
 
 #include "cmds.h"
+#include "kad_dht.h"
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_routable.h"
@@ -259,20 +260,17 @@ static int cmd_save(Shell* shell, int argc, char** argv)
     return SHELL_CONT;
 }
 
-static int cmd_xor(Shell* /*shell*/, int argc, char** argv)
+static int cmd_distance(Shell* /*shell*/, int argc, char** argv)
 {
     if (argc != 3) {
-        std::cerr << "usage: xor bn1 bn2\n";
+        std::cerr << "usage: distance id1 id2\n";
         return SHELL_CONT;
     }
 
-    const UInt160 bn1(argv[1]);
-    Routable routable1(bn1, KAD_ROUTABLE_FILE);
+    const UInt160 id1(argv[1]);
+    const UInt160 id2(argv[2]);
 
-    const UInt160 bn2(argv[2]);
-    Routable routable2(bn2, KAD_ROUTABLE_FILE);
-
-    std::cout << routable1.distance_to(routable2).to_string() << "\n";
+    std::cout << dht::compute_distance(id1, id2) << "\n";
 
     return SHELL_CONT;
 }
@@ -377,7 +375,9 @@ struct cmd_def find_nearest_cmd = {"find_nearest",
                                    cmd_find_nearest};
 struct cmd_def verbose_cmd = {"verbose", "set verbosity level", cmd_verbose};
 struct cmd_def save_cmd = {"save", "save the network to file", cmd_save};
-struct cmd_def xor_cmd = {"xor", "XOR between 2 160-bit unsigned int", cmd_xor};
+struct cmd_def distance_cmd = {"distance",
+                               "distance between two DHT IDs",
+                               cmd_distance};
 struct cmd_def bit_length_cmd = {"bit_length",
                                  "bit length of 160-bit unsigned int",
                                  cmd_bit_length};
@@ -412,7 +412,7 @@ struct cmd_def* cmd_defs[] = {
     &save_cmd,
     &show_cmd,
     &verbose_cmd,
-    &xor_cmd,
+    &distance_cmd,
     nullptr,
 };
 

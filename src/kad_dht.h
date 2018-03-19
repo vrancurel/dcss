@@ -27,30 +27,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "kad_dht.h"
-#include "kad_routable.h"
+#ifndef __KAD_DHT_H__
+#define __KAD_DHT_H__
+
+#include "uint160.h"
 
 namespace kad {
 
-Routable::Routable(const UInt160& entity_id, enum RoutableType entity_type)
+class Node;
+
+/** The Distributed Hash Table (DHT) implementation.
+ *
+ * This is an implementation of Kademlia.
+ */
+namespace dht {
+
+static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
 {
-    this->id = entity_id;
-    this->type = entity_type;
+    return id1 ^ id2;
 }
 
-UInt160 Routable::get_id() const
-{
-    return id;
-}
-
-RoutableType Routable::get_type() const
-{
-    return type;
-}
-
-UInt160 Routable::distance_to(const Routable& other) const
-{
-    return dht::compute_distance(id, other.get_id());
-}
-
+} // namespace dht
 } // namespace kad
+
+#endif
