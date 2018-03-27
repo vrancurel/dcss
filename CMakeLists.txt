@@ -227,7 +227,6 @@ set(CLANG_LINTS_LIST
   hicpp-avoid-goto
   hicpp-exception-baseclass
   hicpp-member-init
-  hicpp-no-array-decay
   hicpp-no-assembler
   hicpp-no-malloc
   hicpp-signed-bitwise

@@ -37,7 +37,7 @@
 #include "bit_map.h"
 #include "exceptions.h"
 
-TEST(BitMapTest, TestCheck) // NOLINT(-*)
+TEST(BitMapTest, TestCheck) // NOLINT
 {
     const uint32_t nb_bits = 16;
     kad::BitMap bitmap(nb_bits);
@@ -52,7 +52,7 @@ TEST(BitMapTest, TestCheck) // NOLINT(-*)
         << "can't call get_rand_uint on an exhausted BitMap";
 }
 
-TEST(BitMapTest, TestOutput) // NOLINT(-*)
+TEST(BitMapTest, TestOutput) // NOLINT
 {
     const uint32_t nb_bits = 16;
     kad::BitMap bitmap(nb_bits);
@@ -68,8 +68,10 @@ TEST(BitMapTest, TestOutput) // NOLINT(-*)
         unique_values.insert(n);
     }
 
+    // NOLINTNEXTLINE(hicpp-vararg)
     EXPECT_EQ(all_values.size(), unique_values.size())
         << "all values must be uniques";
+    // NOLINTNEXTLINE(hicpp-vararg)
     EXPECT_EQ(expected, unique_values)
         << "all values in [0; " << nb_bits << "[ must be present";
 }

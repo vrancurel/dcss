@@ -126,7 +126,7 @@ class CBigNum {
         }
     }
 
-    // NOLINTNEXTLINE(google-explicit-constructor)
+    // NOLINTNEXTLINE(google-explicit-constructor,google-runtime-int)
     CBigNum(short n) : CBigNum()
     {
         if (n >= 0) {
@@ -136,7 +136,7 @@ class CBigNum {
         }
     }
 
-    // NOLINTNEXTLINE(google-explicit-constructor)
+    // NOLINTNEXTLINE(google-explicit-constructor,google-runtime-int)
     CBigNum(int n) : CBigNum()
     {
         if (n >= 0) {
@@ -146,7 +146,7 @@ class CBigNum {
         }
     }
 
-    // NOLINTNEXTLINE(google-explicit-constructor)
+    // NOLINTNEXTLINE(google-explicit-constructor,google-runtime-int)
     CBigNum(long n) : CBigNum()
     {
         if (n >= 0) {
@@ -168,19 +168,19 @@ class CBigNum {
         setulong(n);
     }
 
-    // NOLINTNEXTLINE(google-explicit-constructor)
+    // NOLINTNEXTLINE(google-explicit-constructor,google-runtime-int)
     CBigNum(unsigned short n) : CBigNum()
     {
         setulong(n);
     }
 
-    // NOLINTNEXTLINE(google-explicit-constructor)
+    // NOLINTNEXTLINE(google-explicit-constructor,google-runtime-int)
     CBigNum(unsigned int n) : CBigNum()
     {
         setulong(n);
     }
 
-    // NOLINTNEXTLINE(google-explicit-constructor)
+    // NOLINTNEXTLINE(google-explicit-constructor,google-runtime-int)
     CBigNum(unsigned long n) : CBigNum()
     {
         setulong(n);
@@ -233,13 +233,13 @@ class CBigNum {
 
         bool fLeadingZeroes = true;
         for (int i = 0; i < 8; i++) {
-            auto c = static_cast<unsigned char>(n >> 56);
+            auto c = static_cast<unsigned char>(n >> 56u);
             n <<= 8;
             if (fLeadingZeroes) {
                 if (c == 0) {
                     continue;
                 }
-                if ((c & 0x80) != 0) {
+                if ((c & 0x80u) != 0u) {
                     *p++ = (fNegative ? 0x80 : 0);
                 } else if (fNegative) {
                     c |= 0x80;
@@ -249,10 +249,10 @@ class CBigNum {
             *p++ = c;
         }
         uint64 nSize = p - (pch + 4);
-        pch[0] = (nSize >> 24) & 0xff;
-        pch[1] = (nSize >> 16) & 0xff;
-        pch[2] = (nSize >> 8) & 0xff;
-        pch[3] = (nSize)&0xff;
+        pch[0] = (nSize >> 24u) & 0xffu;
+        pch[1] = (nSize >> 16u) & 0xffu;
+        pch[2] = (nSize >> 8u) & 0xffu;
+        pch[3] = (nSize >> 0u) & 0xffu;
         BN_mpi2bn(pch, static_cast<int>(p - pch), bn);
     }
 
@@ -262,13 +262,13 @@ class CBigNum {
         unsigned char* p = pch + 4;
         bool fLeadingZeroes = true;
         for (int i = 0; i < 8; i++) {
-            auto c = static_cast<unsigned char>(n >> 56);
+            auto c = static_cast<unsigned char>(n >> 56u);
             n <<= 8;
             if (fLeadingZeroes) {
                 if (c == 0) {
                     continue;
                 }
-                if ((c & 0x80) != 0) {
+                if ((c & 0x80u) != 0u) {
                     *p++ = 0;
                 }
                 fLeadingZeroes = false;
@@ -276,10 +276,10 @@ class CBigNum {
             *p++ = c;
         }
         uint64 nSize = p - (pch + 4);
-        pch[0] = (nSize >> 24) & 0xff;
-        pch[1] = (nSize >> 16) & 0xff;
-        pch[2] = (nSize >> 8) & 0xff;
-        pch[3] = (nSize)&0xff;
+        pch[0] = (nSize >> 24u) & 0xffu;
+        pch[1] = (nSize >> 16u) & 0xffu;
+        pch[2] = (nSize >> 8u) & 0xffu;
+        pch[3] = (nSize >> 0u) & 0xffu;
         BN_mpi2bn(pch, static_cast<int>(p - pch), bn);
     }
 
@@ -289,10 +289,10 @@ class CBigNum {
         uint64 nSize = vch.size();
         // BIGNUM's byte stream format expects 4 bytes of
         // big endian size data info at the front
-        vch2[0] = (nSize >> 24) & 0xff;
-        vch2[1] = (nSize >> 16) & 0xff;
-        vch2[2] = (nSize >> 8) & 0xff;
-        vch2[3] = (nSize >> 0) & 0xff;
+        vch2[0] = (nSize >> 24u) & 0xffu;
+        vch2[1] = (nSize >> 16u) & 0xffu;
+        vch2[2] = (nSize >> 8u) & 0xffu;
+        vch2[3] = (nSize >> 0u) & 0xffu;
         // swap data to big endian
         reverse_copy(vch.begin(), vch.end(), vch2.begin() + 4);
         BN_mpi2bn(&vch2[0], static_cast<int>(vch2.size()), bn);
@@ -335,9 +335,9 @@ class CBigNum {
     // through an intermediate MPI representation.
     CBigNum& SetCompact(unsigned int nCompact)
     {
-        unsigned int nSize = nCompact >> 24;
-        bool fNegative = (nCompact & 0x00800000) != 0;
-        unsigned int nWord = nCompact & 0x007fffff;
+        unsigned int nSize = nCompact >> 24u;
+        bool fNegative = (nCompact & 0x00800000u) != 0u;
+        unsigned int nWord = nCompact & 0x007fffffu;
         if (nSize <= 3) {
             nWord >>= 8 * (3 - nSize);
             BN_set_word(bn, nWord);
@@ -363,11 +363,11 @@ class CBigNum {
         // The 0x00800000 bit denotes the sign.
         // Thus, if it is already set, divide the mantissa by 256 and increase
         // the exponent.
-        if ((nCompact & 0x00800000) != 0u) {
+        if ((nCompact & 0x00800000u) != 0u) {
             nCompact >>= 8;
             nSize++;
         }
-        nCompact |= nSize << 24;
+        nCompact |= nSize << 24u;
         nCompact |= (BN_is_negative(bn) != 0 ? 0x00800000 : 0);
         return nCompact;
     }
