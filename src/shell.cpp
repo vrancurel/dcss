@@ -377,7 +377,7 @@ void Shell::loop()
             if (strcmp(line, "") != 0) {
                 add_history(line);
             }
-            free(line);
+            free(line); // NOLINT(hicpp-no-malloc)
         } else {
             std::cerr << "quit\n";
             return;
