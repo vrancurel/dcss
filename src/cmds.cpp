@@ -37,7 +37,6 @@
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_node_com.h"
-#include "kad_routable.h"
 #include "shell.h"
 #include "uint160.h"
 #include "utils.h"
