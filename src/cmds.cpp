@@ -36,6 +36,7 @@
 #include "dht/dht.h"
 #include "kad_network.h"
 #include "kad_node.h"
+#include "kad_node_com.h"
 #include "kad_routable.h"
 #include "shell.h"
 #include "uint160.h"
@@ -79,14 +80,14 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
     return SHELL_CONT;
 }
 
-static void cb_display_node(const Node& node, void* /*cb_arg*/)
+static void cb_display_node(const Node<NodeLocalCom>& node, void* /*cb_arg*/)
 {
-    std::cout << node.get_id() << "\n";
+    std::cout << node.id() << '\n';
 }
 
-static void cb_display_routable(const Routable& routable, void* /*cb_arg*/)
+static void cb_display_key(const UInt160& key, void* /*cb_arg*/)
 {
-    std::cout << routable.get_id() << "\n";
+    std::cout << key << '\n';
 }
 
 static int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
@@ -102,7 +103,7 @@ static int cmd_rand_key(Shell* shell, int /*argc*/, char** /*argv*/)
 {
     auto* network = static_cast<Network*>(shell->get_handle());
 
-    network->rand_routable(cb_display_routable, nullptr);
+    network->rand_key(cb_display_key, nullptr);
 
     return SHELL_CONT;
 }
@@ -116,7 +117,7 @@ static int cmd_jump(Shell* shell, int argc, char** argv)
 
     auto* network = static_cast<Network*>(shell->get_handle());
 
-    Node* node = network->lookup_cheat(argv[1]);
+    Node<NodeLocalCom>* node = network->lookup_cheat(argv[1]);
     if (nullptr == node) {
         std::cerr << "not found\n";
         return SHELL_CONT;
@@ -134,22 +135,16 @@ static int cmd_lookup(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
-
-    if (nullptr == node) {
+    auto* start_node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
+    if (start_node == nullptr) {
         std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
-    const UInt160 bn(argv[1]);
-    Routable routable(bn, KAD_ROUTABLE_FILE);
-
-    std::list<Node*> result = node->lookup(routable);
-
-    std::list<Node*>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it) {
-        std::cout << "id " << (*it)->get_id() << " dist "
-                  << (*it)->distance_to(routable) << "\n";
+    const UInt160 node_id(argv[1]);
+    for (const auto& node : start_node->find_node(node_id, stou32(argv[2]))) {
+        std::cout << "id " << node.id() << " dist "
+                  << dht::compute_distance(node.id(), node_id) << "\n";
     }
 
     return SHELL_CONT;
@@ -158,27 +153,20 @@ static int cmd_lookup(Shell* shell, int argc, char** argv)
 static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 {
     if (argc != 3) {
-        std::cerr << "usage: find_nearest key amount\n";
+        std::cerr << "usage: find_nearest node_id nb_node\n";
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
-
-    if (nullptr == node) {
+    auto* start_node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
+    if (start_node == nullptr) {
         std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
     }
 
-    const UInt160 bn(argv[1]);
-    Routable routable(bn, KAD_ROUTABLE_FILE);
-
-    std::list<Node*> result =
-        node->find_nearest_nodes(routable, stou32(argv[2]));
-
-    std::list<Node*>::iterator it;
-    for (it = result.begin(); it != result.end(); ++it) {
-        std::cout << "id " << (*it)->get_id() << " dist "
-                  << (*it)->distance_to(routable) << "\n";
+    const UInt160 node_id(argv[1]);
+    for (const auto& node : start_node->find_node(node_id, stou32(argv[2]))) {
+        std::cout << "id " << node.id() << " dist "
+                  << dht::compute_distance(node.id(), node_id) << "\n";
     }
 
     return SHELL_CONT;
@@ -191,7 +179,7 @@ static int cmd_show(Shell* shell, int argc, char** /*argv*/)
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
+    auto* node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
 
     if (nullptr == node) {
         std::cerr << "shall jump to a node first\n";
@@ -210,7 +198,7 @@ static int cmd_verbose(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
+    auto* node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
 
     if (nullptr == node) {
         std::cerr << "shall jump to a node first\n";
@@ -225,16 +213,14 @@ static int cmd_verbose(Shell* shell, int argc, char** argv)
 static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 {
     if (argc != 2) {
-        std::cerr << "usage: jump key\n";
+        std::cerr << "usage: jump node_id\n";
         return SHELL_CONT;
     }
 
     auto* network = static_cast<Network*>(shell->get_handle());
 
-    const UInt160 bn(argv[1]);
-    Routable routable(bn, KAD_ROUTABLE_FILE);
-
-    Node* node = network->find_nearest_cheat(routable);
+    const UInt160 node_id(argv[1]);
+    Node<NodeLocalCom>* node = network->find_nearest_cheat(node_id);
     if (nullptr == node) {
         std::cerr << "not found\n";
         return SHELL_CONT;
@@ -311,7 +297,7 @@ static int cmd_buy_storage(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
+    auto* node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
     if (nullptr == node) {
         std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
@@ -329,7 +315,7 @@ static int cmd_put_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
+    auto* node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
     if (nullptr == node) {
         std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;
@@ -347,7 +333,7 @@ static int cmd_get_bytes(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    auto* node = static_cast<Node*>(shell->get_handle2());
+    auto* node = static_cast<Node<NodeLocalCom>*>(shell->get_handle2());
     if (nullptr == node) {
         std::cerr << "shall jump to a node first\n";
         return SHELL_CONT;

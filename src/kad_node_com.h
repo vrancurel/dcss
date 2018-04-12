@@ -27,20 +27,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __QUADIRON_H__
-#define __QUADIRON_H__
+#ifndef __KAD_NODE_COM_H__
+#define __KAD_NODE_COM_H__
 
-#include "cmds.h"
-#include "config.h"
 #include "dht/dht.h"
-#include "exceptions.h"
-#include "kad_conf.h"
-#include "kad_file.h"
-#include "kad_network.h"
-#include "kad_node.h"
-#include "kad_routable.h"
-#include "shell.h"
-#include "uint160.h"
-#include "utils.h"
+
+namespace kad {
+
+class Network;
+
+/// Communication module for "fake" node.
+class NodeLocalCom : public dht::NodeComBase {
+  public:
+    explicit NodeLocalCom(const Network* network) : m_network(network) {}
+
+    bool ping(const dht::NodeAddress& addr) override;
+
+    std::vector<dht::NodeAddress> find_node(
+        const dht::NodeAddress& addr,
+        const UInt160& target_id,
+        uint32_t nb_nodes) override;
+
+    NodeLocalCom() = delete;
+    ~NodeLocalCom() override = default;
+    NodeLocalCom(NodeLocalCom const&) = default;
+    NodeLocalCom& operator=(NodeLocalCom const& x) = default;
+    NodeLocalCom(NodeLocalCom&&) = delete;
+    NodeLocalCom& operator=(NodeLocalCom&& x) = delete;
+
+  private:
+    // TODO: use shared_ptr?
+    const Network* m_network;
+};
+
+} // namespace kad
 
 #endif

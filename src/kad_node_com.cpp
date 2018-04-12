@@ -27,20 +27,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __QUADIRON_H__
-#define __QUADIRON_H__
 
-#include "cmds.h"
-#include "config.h"
-#include "dht/dht.h"
-#include "exceptions.h"
-#include "kad_conf.h"
-#include "kad_file.h"
 #include "kad_network.h"
-#include "kad_node.h"
-#include "kad_routable.h"
-#include "shell.h"
-#include "uint160.h"
-#include "utils.h"
+#include "kad_node_com.h"
 
-#endif
+namespace kad {
+
+bool NodeLocalCom::ping(const dht::NodeAddress& addr)
+{
+    (void)addr; // Unused for now, later we may implement offline node.
+    return true;
+}
+
+std::vector<dht::NodeAddress> NodeLocalCom::find_node(
+    const dht::NodeAddress& addr,
+    const UInt160& target_id,
+    uint32_t nb_nodes)
+{
+    kad::Node<NodeLocalCom>* node =
+        m_network->lookup_cheat(addr.id().to_string());
+    return (node != nullptr) ? node->find_node(target_id, nb_nodes)
+                             : std::vector<dht::NodeAddress>();
+}
+
+} // namespace kad

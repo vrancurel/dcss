@@ -31,7 +31,9 @@
 #define __KAD_DHT_H__
 
 #include "address.h"
+#include "com.h"
 #include "core.h"
 #include "entry.h"
+#include "node.h"
 
 #endif

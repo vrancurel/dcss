@@ -36,15 +36,16 @@
 #include <string>
 #include <vector>
 
+#include "kad_node.h"
+#include "kad_node_com.h"
+#include "uint160.h"
+
 namespace kad {
 
 class Conf;
-class File;
-class Node;
-class Routable;
 
-using tnode_callback_func = void (*)(const Node&, void*);
-using troutable_callback_func = void (*)(const Routable&, void*);
+using tnode_callback_func = void (*)(const Node<NodeLocalCom>&, void*);
+using tkey_callback_func = void (*)(const UInt160&, void*);
 
 class Network {
   public:
@@ -61,9 +62,9 @@ class Network {
         std::vector<std::string> bstraplist);
     void initialize_files(uint32_t n_files);
     void rand_node(tnode_callback_func cb_func, void* cb_arg);
-    void rand_routable(troutable_callback_func cb_func, void* cb_arg);
-    Node* lookup_cheat(const std::string& id);
-    Node* find_nearest_cheat(const Routable& routable);
+    void rand_key(tkey_callback_func cb_func, void* cb_arg);
+    Node<NodeLocalCom>* lookup_cheat(const std::string& id) const;
+    Node<NodeLocalCom>* find_nearest_cheat(const UInt160& target_id);
     void save(std::ostream& fout);
     void graphviz(std::ostream& fout);
     void check_files();
@@ -71,9 +72,9 @@ class Network {
   private:
     const Conf* const conf;
 
-    std::vector<Node*> nodes;
-    std::map<std::string, Node*> nodes_map;
-    std::vector<File*> files;
+    std::vector<Node<NodeLocalCom>*> nodes;
+    std::map<std::string, Node<NodeLocalCom>*> nodes_map;
+    std::vector<UInt160> files;
 };
 
 } // namespace kad

@@ -31,48 +31,42 @@
 #define __KAD_NODE_H__
 
 #include <cstdint>
-#include <list>
 #include <string>
 
 #include <jsonrpccpp/client/connectors/httpclient.h>
 
-#include "kad_routable.h"
+#include "dht/dht.h"
 
 class NodeClient;
 
 namespace kad {
 
-class UInt160;
-class Conf;
-class File;
+namespace dht {
+class NodeAddress;
+} // namespace dht
 
-class Node : public Routable {
+class Conf;
+class UInt160;
+
+template <typename NodeCom>
+class Node : public dht::Node<NodeCom> {
   public:
-    Node(const Conf& configuration, const UInt160& node_id);
     Node(
         const Conf& configuration,
-        const UInt160& node_id,
-        const std::string& rpc_addr);
+        const dht::NodeAddress& addr,
+        const NodeCom& com_iface);
 
-    ~Node() = default;
+    ~Node() override = default;
     Node(Node const&) = delete;
     Node& operator=(Node const& x) = delete;
     Node(Node&&) = delete;
     Node& operator=(Node&& x) = delete;
 
-    uint32_t get_n_conns();
     const std::string& get_eth_account() const;
-    bool add_conn(Node* node, bool contacted_us);
-    std::list<Node*>
-    find_nearest_nodes(const Routable& routable, uint32_t amount);
-    std::list<Node*>
-    find_nearest_nodes_local(const Routable& routable, uint32_t amount);
-    std::list<Node*> lookup(const Routable& routable);
     void show();
     void set_verbose(bool enable);
     void save(std::ostream& fout);
-    void store(File* file);
-    std::vector<File*> get_files();
+    const std::vector<UInt160>& files() const;
     void graphviz(std::ostream& fout);
 
     void buy_storage(const std::string& seller, uint64_t nb_bytes);
@@ -80,13 +74,13 @@ class Node : public Routable {
     void get_bytes(const std::string& seller, uint64_t nb_bytes);
 
   private:
+    void on_store(const dht::Entry& entry) override;
+
     const Conf* const conf;
 
-    using tbucket = std::map<uint32_t, std::list<Node*>>;
-    tbucket buckets;
     bool verbose;
 
-    std::vector<File*> files;
+    std::vector<UInt160> m_file_keys;
     std::string eth_passphrase;
     std::string eth_account;
     jsonrpc::HttpClient* httpclient;
@@ -94,5 +88,7 @@ class Node : public Routable {
 };
 
 } // namespace kad
+
+#include "kad_node.tpp"
 
 #endif

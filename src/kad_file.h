@@ -31,15 +31,14 @@
 #define __KAD_FILE_H__
 
 #include "dht/dht.h"
-#include "kad_routable.h"
 #include "uint160.h"
 
 namespace kad {
 
-class File : public dht::Entry, public Routable {
+class File : public dht::Entry {
   public:
     File(const UInt160& key, std::string value)
-        : dht::Entry(key, std::move(value)), Routable(key, KAD_ROUTABLE_FILE)
+        : dht::Entry(key, std::move(value))
     {
     }
     ~File() override = default;

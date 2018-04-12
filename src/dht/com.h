@@ -27,20 +27,51 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __QUADIRON_H__
-#define __QUADIRON_H__
+#ifndef __KAD_DHT_COM_H__
+#define __KAD_DHT_COM_H__
 
-#include "cmds.h"
-#include "config.h"
-#include "dht/dht.h"
-#include "exceptions.h"
-#include "kad_conf.h"
-#include "kad_file.h"
-#include "kad_network.h"
-#include "kad_node.h"
-#include "kad_routable.h"
-#include "shell.h"
-#include "uint160.h"
-#include "utils.h"
+#include "address.h"
+
+namespace kad {
+namespace dht {
+
+/** Abstract class for inter-node communication. */
+class NodeComBase {
+  public:
+    virtual ~NodeComBase() = default;
+
+    /** Probe a node to check if it is online.
+     *
+     * @param addr address of the node to probe.
+     * @return true if the node is online, false if it is offline.
+     */
+    virtual bool ping(const NodeAddress& addr) = 0;
+
+    /** Return the `k` nodes, amongst the known nodes, closest to node
+     * `target_id`.
+     *
+     * @param addr      address of the node to query
+     * @param target_id the targeted node
+     * @param nb_nodes  the number of node to return
+     * @return the list of the `nb_nodes` nodes that are the closest to
+     * `target_id`.
+     *
+     * @note less than `nb_nodes` node can be returned (if the node knowns less
+     * than `nb_nodes` node).
+     */
+    virtual std::vector<NodeAddress> find_node(
+        const NodeAddress& addr,
+        const UInt160& target_id,
+        uint32_t nb_nodes) = 0;
+
+    NodeComBase() = default;
+    NodeComBase(NodeComBase const&) = default;
+    NodeComBase& operator=(NodeComBase const& x) = default;
+    NodeComBase(NodeComBase&&) = default;
+    NodeComBase& operator=(NodeComBase&& x) = default;
+};
+
+} // namespace dht
+} // namespace kad
 
 #endif
