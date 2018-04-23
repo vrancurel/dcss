@@ -36,6 +36,7 @@ set(LIB_SRC
   ${SOURCE_DIR}/kad_node.cpp
   ${SOURCE_DIR}/kad_routable.cpp
   ${SOURCE_DIR}/shell.cpp
+  ${SOURCE_DIR}/uint160.cpp
 
   CACHE
   INTERNAL
