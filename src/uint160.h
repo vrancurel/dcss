@@ -85,6 +85,12 @@ class UInt160 {
      */
     std::string to_string() const;
 
+    /** Return the length (in bit) of the value.
+     *
+     * @return the position of the highest bit set.
+     */
+    int bit_length() const;
+
     /** Return the hashed value of the integer.
      *
      * @return the hash of the value.

@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include <gtest/gtest.h>
 
@@ -82,4 +83,25 @@ TEST(UInt160Test, TestInitFromHex) // NOLINT
         kad::UInt160("One cannot step twice in the same river."),
         kad::Exception)
         << "bad string (not an hex string)";
+}
+
+TEST(UInt160Test, TestBitLength) // NOLINT
+{
+    const std::pair<kad::UInt160, int> testcases[] = {
+        std::make_pair(0u, 0),
+        std::make_pair(1u, 1),
+        std::make_pair(2u, 2),
+        std::make_pair(3u, 2),
+        std::make_pair(4u, 3),
+        std::make_pair(5u, 3),
+        std::make_pair(6u, 3),
+        std::make_pair(7u, 3),
+        std::make_pair(
+            kad::UInt160("8f0b49e7cdc5c120599cfe86886b622b2969e24f"), 160)};
+
+    for (const auto& test : testcases) {
+        // NOLINTNEXTLINE(hicpp-vararg)
+        EXPECT_EQ(test.first.bit_length(), test.second)
+            << "testing bit length of " << test.first;
+    }
 }

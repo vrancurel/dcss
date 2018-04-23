@@ -47,6 +47,30 @@ static inline uint32_t decode_hex_char(char hex)
     throw Exception("invalid hex string: bad character");
 }
 
+// Return the position of the last bit set in a 32-bit word.
+//
+// From: https://graphics.stanford.edu/~seander/bithacks.html#IntegerLogDeBruijn
+//
+// Based on:
+// "Using de Bruijn Sequences to Index a 1 in a Computer Word", 1998,
+// by Charles E. Leiserson , Harald Prokop , Keith H. Randall.
+// http://supertech.csail.mit.edu/papers/debruijn.pdf
+static inline uint32_t fls(uint32_t n)
+{
+    static const int lookup[32] = {0,  9,  1,  10, 13, 21, 2,  29, 11, 14, 16,
+                                   18, 22, 25, 3,  30, 8,  12, 20, 28, 15, 17,
+                                   24, 7,  19, 27, 23, 6,  26, 5,  4,  31};
+
+    // First, round to the next power of two - 1 (i.e 37 becomes 63).
+    n |= n >> 1u;
+    n |= n >> 2u;
+    n |= n >> 4u;
+    n |= n >> 8u;
+    n |= n >> 16u;
+
+    return n != 0u ? lookup[(n * 0x07C4ACDD) >> 27u] + 1 : n;
+}
+
 UInt160::UInt160(uint64_t n) : UInt160()
 {
     m_limbs[m_limbs.size() - 1] = static_cast<uint32_t>(n >> 0u);
@@ -100,6 +124,20 @@ std::string UInt160::to_string() const
         hex.push_back(charset[(limb >> 0u) & 0xFu]);
     }
     return hex;
+}
+
+int UInt160::bit_length() const
+{
+    int offset = 128;
+
+    for (size_t i = 0; i != m_limbs.size(); ++i) {
+        const int pos = fls(m_limbs[i]);
+        if (pos != 0) {
+            return offset + pos;
+        }
+        offset -= 32;
+    }
+    return 0;
 }
 
 size_t UInt160::hash() const
