@@ -85,6 +85,12 @@ class UInt160 {
      */
     std::string to_string() const;
 
+    /** Return the hashed value of the integer.
+     *
+     * @return the hash of the value.
+     */
+    size_t hash() const;
+
     friend bool operator==(const UInt160& lhs, const UInt160& rhs);
 
     // Output operator.
@@ -108,5 +114,16 @@ class UInt160 {
 };
 
 } // namespace kad
+
+// std::hash implementation for UInt160.
+namespace std {
+template <>
+struct hash<kad::UInt160> {
+    size_t operator()(const kad::UInt160& n) const
+    {
+        return n.hash();
+    }
+};
+} // namespace std
 
 #endif

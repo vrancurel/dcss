@@ -102,6 +102,17 @@ std::string UInt160::to_string() const
     return hex;
 }
 
+size_t UInt160::hash() const
+{
+    size_t h = 0;
+
+    for (const auto& limb : m_limbs) {
+        // From boost::hash
+        h ^= limb + 0x9e3779b9u + (h << 6u) + (h >> 2u);
+    }
+    return h;
+}
+
 bool operator==(const UInt160& lhs, const UInt160& rhs)
 {
     return lhs.m_limbs == rhs.m_limbs;
