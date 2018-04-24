@@ -197,6 +197,28 @@ IMPL_ORD(>=)
 
 #undef IMPL_ORD
 
+UInt160 operator+(const UInt160& lhs, const UInt160& rhs)
+{
+    UInt160 tmp(lhs);
+    tmp += rhs;
+    return tmp;
+}
+
+// Based on the algorithm A from The Art of Computer Programming, vol. 2 by
+// Donald Knuth.
+UInt160& UInt160::operator+=(const UInt160& rhs)
+{
+    uint32_t carry = 0;
+    for (size_t i = m_limbs.size(); i-- > 0;) {
+        const uint64_t sum = static_cast<uint64_t>(m_limbs[i])
+                             + static_cast<uint64_t>(rhs.m_limbs[i]) + carry;
+
+        m_limbs[i] = static_cast<uint32_t>(sum);
+        carry = static_cast<uint32_t>(sum >> 32u);
+    }
+    return *this;
+}
+
 UInt160 UInt160::operator~() const
 {
     UInt160 res(*this);

@@ -146,6 +146,18 @@ TEST(UInt160Test, TestOrdering) // NOLINT
     ASSERT_TRUE(a >= a) << "test >= on itself";
 }
 
+TEST(UInt160Test, TestAdd) // NOLINT
+{
+    const kad::UInt160 a("bd6756490ba3b01c0ea5ce627e7fc5b16bbe10e2");
+    const kad::UInt160 b("981bbf665b803744f91960058d69e4fb72ac3b18");
+    const kad::UInt160 expected("558315af6723e76107bf2e680be9aaacde6a4bfa");
+
+    ASSERT_EQ(a + b, expected) << "test a+b"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(b + a, expected) << "test b+a"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a + 0u, a) << "test a+0";       // NOLINT(hicpp-vararg)
+    ASSERT_EQ(0u + a, a) << "test 0+a";       // NOLINT(hicpp-vararg)
+}
+
 TEST(UInt160Test, TestBitwiseLogical) // NOLINT
 {
     const kad::UInt160 a("6ebee938eda3024d35d74729d7475a6b826a4a70");
