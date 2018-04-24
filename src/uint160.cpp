@@ -253,6 +253,32 @@ UInt160& UInt160::operator-=(const UInt160& rhs)
     return *this += -rhs;
 }
 
+UInt160& UInt160::operator++()
+{
+    return *this += one();
+}
+
+UInt160& UInt160::operator--()
+{
+    return *this -= one();
+}
+
+const UInt160 UInt160::operator++(int)
+{
+    const UInt160 tmp(*this);
+
+    *this += one();
+    return tmp;
+}
+
+const UInt160 UInt160::operator--(int)
+{
+    const UInt160 tmp(*this);
+
+    *this -= one();
+    return tmp;
+}
+
 UInt160 UInt160::operator~() const
 {
     UInt160 res(*this);

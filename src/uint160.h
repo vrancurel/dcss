@@ -119,6 +119,12 @@ class UInt160 {
     UInt160& operator+=(const UInt160& rhs);
     UInt160& operator-=(const UInt160& rhs);
 
+    // Increment and decrement operators.
+    UInt160& operator++();         // ++i
+    UInt160& operator--();         // --i
+    const UInt160 operator++(int); // i++
+    const UInt160 operator--(int); // i--
+
     // Bitwise operators.
     UInt160 operator~() const;
     UInt160& operator&=(const UInt160& rhs);

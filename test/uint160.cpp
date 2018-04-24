@@ -196,6 +196,34 @@ TEST(UInt160Test, TestSub) // NOLINT
     ASSERT_EQ(b - a, b_min_a) << "test b-a"; // NOLINT(hicpp-vararg)
 }
 
+TEST(UInt160Test, TestInc) // NOLINT
+{
+    kad::UInt160 n("22887ffeffe10cd8df3526a647193b59ddf1a55a");
+    kad::UInt160 n_ref(n);
+    const kad::UInt160 n_plus_1("22887ffeffe10cd8df3526a647193b59ddf1a55b");
+    const kad::UInt160 n_plus_2("22887ffeffe10cd8df3526a647193b59ddf1a55c");
+
+    ASSERT_EQ(n++, n_ref) << "test n++ (1/2)";  // NOLINT(hicpp-vararg)
+    ASSERT_EQ(n, n_plus_1) << "test n++ (2/2)"; // NOLINT(hicpp-vararg)
+
+    ASSERT_EQ(++n, n_plus_2) << "test ++n (1/2)"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(n, n_plus_2) << "test ++n (2/2)";   // NOLINT(hicpp-vararg)
+}
+
+TEST(UInt160Test, TestDec) // NOLINT
+{
+    kad::UInt160 n("7de849d8e2341271dcf1d88ec86a2cfc9e4dfd08");
+    kad::UInt160 n_ref(n);
+    const kad::UInt160 n_min_1("7de849d8e2341271dcf1d88ec86a2cfc9e4dfd07");
+    const kad::UInt160 n_min_2("7de849d8e2341271dcf1d88ec86a2cfc9e4dfd06");
+
+    ASSERT_EQ(n--, n_ref) << "test n-- (1/2)"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(n, n_min_1) << "test n-- (2/2)"; // NOLINT(hicpp-vararg)
+
+    ASSERT_EQ(--n, n_min_2) << "test --n (1/2)"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(n, n_min_2) << "test --n (2/2)";   // NOLINT(hicpp-vararg)
+}
+
 TEST(UInt160Test, TestBitwiseLogical) // NOLINT
 {
     const kad::UInt160 a("6ebee938eda3024d35d74729d7475a6b826a4a70");
