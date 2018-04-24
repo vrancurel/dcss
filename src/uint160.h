@@ -119,6 +119,10 @@ class UInt160 {
     friend UInt160 operator&(const UInt160& lhs, const UInt160& rhs);
     friend UInt160 operator|(const UInt160& lhs, const UInt160& rhs);
     friend UInt160 operator^(const UInt160& lhs, const UInt160& rhs);
+    UInt160& operator<<=(unsigned shift);
+    UInt160& operator>>=(unsigned shift);
+    UInt160 operator<<(unsigned shift) const;
+    UInt160 operator>>(unsigned shift) const;
 
     // Output operator.
     friend std::ostream& operator<<(std::ostream& os, const UInt160& n);

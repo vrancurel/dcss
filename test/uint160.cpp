@@ -160,3 +160,56 @@ TEST(UInt160Test, TestBitwiseLogical) // NOLINT
     ASSERT_EQ(a ^ b, a_xor_b) << "test ^"; // NOLINT(hicpp-vararg)
     ASSERT_EQ(~a, not_a) << "test ~";      // NOLINT(hicpp-vararg)
 }
+
+TEST(UInt160Test, TestLeftShift) // NOLINT
+{
+    kad::UInt160 n("7E4A78FD337C596B351BC7645EA266ADCE6EF780");
+    const std::pair<unsigned, std::string> testcases[] = {
+        std::make_pair(0, "7e4a78fd337c596b351bc7645ea266adce6ef780"),
+        std::make_pair(7, "253c7e99be2cb59a8de3b22f513356e7377bc000"),
+        std::make_pair(32, "337c596b351bc7645ea266adce6ef78000000000"),
+        std::make_pair(49, "b2d66a378ec8bd44cd5b9cddef00000000000000"),
+        std::make_pair(64, "351bc7645ea266adce6ef7800000000000000000"),
+        std::make_pair(68, "51bc7645ea266adce6ef78000000000000000000"),
+        std::make_pair(96, "5ea266adce6ef780000000000000000000000000"),
+        std::make_pair(103, "513356e7377bc000000000000000000000000000"),
+        std::make_pair(128, "ce6ef78000000000000000000000000000000000"),
+        std::make_pair(139, "77bc000000000000000000000000000000000000"),
+        std::make_pair(160, "0000000000000000000000000000000000000000"),
+        std::make_pair(192, "0000000000000000000000000000000000000000"),
+    };
+
+    for (const auto& test : testcases) {
+        const unsigned shift = test.first;
+        const kad::UInt160 result = n << shift;
+
+        // NOLINTNEXTLINE(hicpp-vararg)
+        EXPECT_EQ(result.to_string(), test.second) << "testing: n << " << shift;
+    }
+}
+
+TEST(UInt160Test, TestRightShift) // NOLINT
+{
+    kad::UInt160 n("6ADC6A3DB11C764E1BE600992CAFBEB7C293C068");
+    const std::pair<unsigned, std::string> testcases[] = {
+        std::make_pair(0, "6adc6a3db11c764e1be600992cafbeb7c293c068"),
+        std::make_pair(19, "00000d5b8d47b6238ec9c37cc0132595f7d6f852"),
+        std::make_pair(32, "000000006adc6a3db11c764e1be600992cafbeb7"),
+        std::make_pair(53, "0000000000000356e351ed88e3b270df3004c965"),
+        std::make_pair(64, "00000000000000006adc6a3db11c764e1be60099"),
+        std::make_pair(70, "000000000000000001ab71a8f6c471d9386f9802"),
+        std::make_pair(96, "0000000000000000000000006adc6a3db11c764e"),
+        std::make_pair(121, "000000000000000000000000000000356e351ed8"),
+        std::make_pair(128, "000000000000000000000000000000006adc6a3d"),
+        std::make_pair(147, "0000000000000000000000000000000000000d5b"),
+        std::make_pair(160, "0000000000000000000000000000000000000000"),
+        std::make_pair(192, "0000000000000000000000000000000000000000"),
+    };
+    for (const auto& test : testcases) {
+        const unsigned shift = test.first;
+        const kad::UInt160 result = n >> shift;
+
+        // NOLINTNEXTLINE(hicpp-vararg)
+        EXPECT_EQ(result.to_string(), test.second) << "testing: n >> " << shift;
+    }
+}

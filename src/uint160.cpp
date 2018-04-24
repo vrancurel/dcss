@@ -235,6 +235,80 @@ IMPL_BITWISE_LOGICAL (^)
 
 #undef IMPL_BITWISE_LOGICAL
 
+UInt160& UInt160::operator<<=(unsigned shift)
+{
+    if (shift == 0) {
+        return *this;
+    }
+    if (shift >= 160) {
+        *this = zero();
+        return *this;
+    }
+
+    // number of block between the source and destination.
+    size_t gap = shift / 32;
+    // number of block to shift (the others are zeroed).
+    size_t to_shift = m_limbs.size() - gap;
+    shift %= 32;
+    for (size_t i = 0; i != to_shift - 1; ++i) {
+        const size_t src = i + gap;
+        const uint32_t hi = m_limbs[src] << shift;
+        const uint32_t lo = shift != 0u ? m_limbs[src + 1] >> (32 - shift) : 0;
+        m_limbs[i] = hi | lo;
+    }
+    // last block (just before the zeroed blocks).
+    m_limbs[to_shift - 1] = m_limbs[to_shift - 1 + gap] << shift;
+    // set trailing blocks to zero.
+    std::fill(m_limbs.begin() + to_shift, m_limbs.end(), 0u);
+
+    return *this;
+}
+
+UInt160& UInt160::operator>>=(unsigned shift)
+{
+    if (shift == 0) {
+        return *this;
+    }
+    if (shift >= 160) {
+        *this = zero();
+        return *this;
+    }
+
+    // number of block between the source and destination.
+    size_t gap = shift / 32;
+    // number of block to shift (the others are zeroed).
+    size_t to_shift = gap;
+    shift %= 32;
+    for (size_t i = m_limbs.size() - 1; i != to_shift; --i) {
+        const size_t src = i - gap;
+        const uint32_t lo = m_limbs[src] >> shift;
+        const uint32_t hi = shift != 0u ? m_limbs[src - 1] << (32 - shift) : 0;
+        m_limbs[i] = hi | lo;
+    }
+    // last block (just before the zeroed blocks).
+    m_limbs[to_shift] = m_limbs[to_shift - gap] >> shift;
+    // set trailing blocks to zero.
+    std::fill(m_limbs.begin(), m_limbs.begin() + to_shift, 0u);
+
+    return *this;
+}
+
+UInt160 UInt160::operator<<(unsigned shift) const
+{
+    UInt160 tmp(*this);
+
+    tmp <<= shift;
+    return tmp;
+}
+
+UInt160 UInt160::operator>>(unsigned shift) const
+{
+    UInt160 tmp(*this);
+
+    tmp >>= shift;
+    return tmp;
+}
+
 std::ostream& operator<<(std::ostream& os, const UInt160& n)
 {
     // TODO: handle formatter such as std::dec, std::hex and std::oct?
