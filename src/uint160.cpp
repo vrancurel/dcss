@@ -225,6 +225,13 @@ UInt160 operator+(const UInt160& lhs, const UInt160& rhs)
     return tmp;
 }
 
+UInt160 operator-(const UInt160& lhs, const UInt160& rhs)
+{
+    UInt160 tmp(lhs);
+    tmp -= rhs;
+    return tmp;
+}
+
 // Based on the algorithm A from The Art of Computer Programming, vol. 2 by
 // Donald Knuth.
 UInt160& UInt160::operator+=(const UInt160& rhs)
@@ -238,6 +245,12 @@ UInt160& UInt160::operator+=(const UInt160& rhs)
         carry = static_cast<uint32_t>(sum >> 32u);
     }
     return *this;
+}
+
+// In a ring, the subtraction is defined as: a - b <=> a + (-b)
+UInt160& UInt160::operator-=(const UInt160& rhs)
+{
+    return *this += -rhs;
 }
 
 UInt160 UInt160::operator~() const

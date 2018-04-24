@@ -115,7 +115,9 @@ class UInt160 {
     UInt160 operator+() const;
     UInt160 operator-() const;
     friend UInt160 operator+(const UInt160& lhs, const UInt160& rhs);
+    friend UInt160 operator-(const UInt160& lhs, const UInt160& rhs);
     UInt160& operator+=(const UInt160& rhs);
+    UInt160& operator-=(const UInt160& rhs);
 
     // Bitwise operators.
     UInt160 operator~() const;
