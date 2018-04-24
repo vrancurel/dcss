@@ -232,6 +232,44 @@ UInt160 operator-(const UInt160& lhs, const UInt160& rhs)
     return tmp;
 }
 
+// Based on the algorithm M from The Art of Computer Programming, vol. 2 by
+// Donald Knuth.
+UInt160 operator*(const UInt160& lhs, const UInt160& rhs)
+{
+    // Shortcut for simple cases.
+    if (lhs == zero() || rhs == zero()) {
+        return zero();
+    }
+    if (lhs == one()) {
+        return rhs;
+    }
+    if (rhs == one()) {
+        return lhs;
+    }
+
+    // Main algorithm.
+    UInt160 res{};
+    uint32_t carry = 0;
+    size_t offset = 0;
+
+    for (size_t j = rhs.m_limbs.size(); j-- > 0;) {
+        for (size_t i = lhs.m_limbs.size(); i-- > offset;) {
+            const size_t dst = i - offset;
+            const uint64_t sum = static_cast<uint64_t>(lhs.m_limbs[i])
+                                     * static_cast<uint64_t>(rhs.m_limbs[j])
+                                 + static_cast<uint64_t>(res.m_limbs[dst])
+                                 + carry;
+
+            res.m_limbs[dst] = static_cast<uint32_t>(sum);
+            carry = static_cast<uint32_t>(sum >> 32u);
+        }
+        carry = 0;
+        ++offset;
+    }
+
+    return res;
+}
+
 // Based on the algorithm A from The Art of Computer Programming, vol. 2 by
 // Donald Knuth.
 UInt160& UInt160::operator+=(const UInt160& rhs)
@@ -251,6 +289,12 @@ UInt160& UInt160::operator+=(const UInt160& rhs)
 UInt160& UInt160::operator-=(const UInt160& rhs)
 {
     return *this += -rhs;
+}
+
+UInt160& UInt160::operator*=(const UInt160& rhs)
+{
+    *this = *this * rhs;
+    return *this;
 }
 
 UInt160& UInt160::operator++()
