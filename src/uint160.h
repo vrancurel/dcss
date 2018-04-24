@@ -111,6 +111,15 @@ class UInt160 {
     friend bool operator>(const UInt160& lhs, const UInt160& rhs);
     friend bool operator>=(const UInt160& lhs, const UInt160& rhs);
 
+    // Bitwise operators.
+    UInt160 operator~() const;
+    UInt160& operator&=(const UInt160& rhs);
+    UInt160& operator|=(const UInt160& rhs);
+    UInt160& operator^=(const UInt160& rhs);
+    friend UInt160 operator&(const UInt160& lhs, const UInt160& rhs);
+    friend UInt160 operator|(const UInt160& lhs, const UInt160& rhs);
+    friend UInt160 operator^(const UInt160& lhs, const UInt160& rhs);
+
     // Output operator.
     friend std::ostream& operator<<(std::ostream& os, const UInt160& n);
 

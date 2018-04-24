@@ -197,6 +197,44 @@ IMPL_ORD(>=)
 
 #undef IMPL_ORD
 
+UInt160 UInt160::operator~() const
+{
+    UInt160 res(*this);
+
+    for (auto& limb : res.m_limbs) {
+        limb = ~limb;
+    }
+
+    return res;
+}
+
+/** Generate implemention for the bitwise logical binary operators.
+ *
+ * To do so, the operation is applied limb-wise.
+ */
+#define IMPL_BITWISE_LOGICAL(_op)                                              \
+    UInt160& UInt160::operator _op##=(const UInt160& rhs)                      \
+    {                                                                          \
+        for (size_t i = 0; i != m_limbs.size(); ++i) {                         \
+            m_limbs[i] _op## = rhs.m_limbs[i];                                 \
+        }                                                                      \
+                                                                               \
+        return *this;                                                          \
+    }                                                                          \
+                                                                               \
+    UInt160 operator _op(const UInt160& lhs, const UInt160& rhs)               \
+    {                                                                          \
+        UInt160 res(lhs);                                                      \
+                                                                               \
+        return res _op## = rhs;                                                \
+    }
+
+IMPL_BITWISE_LOGICAL(&)
+IMPL_BITWISE_LOGICAL(|)
+IMPL_BITWISE_LOGICAL (^)
+
+#undef IMPL_BITWISE_LOGICAL
+
 std::ostream& operator<<(std::ostream& os, const UInt160& n)
 {
     // TODO: handle formatter such as std::dec, std::hex and std::oct?

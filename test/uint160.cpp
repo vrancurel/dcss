@@ -145,3 +145,18 @@ TEST(UInt160Test, TestOrdering) // NOLINT
     ASSERT_TRUE(a <= a) << "test <= on itself";
     ASSERT_TRUE(a >= a) << "test >= on itself";
 }
+
+TEST(UInt160Test, TestBitwiseLogical) // NOLINT
+{
+    const kad::UInt160 a("6ebee938eda3024d35d74729d7475a6b826a4a70");
+    const kad::UInt160 b("3af7f7bf61bd037eaee1b43bb895b57a21b4deb4");
+    const kad::UInt160 a_and_b("2ab6e13861a1024c24c104299005106a00204a30");
+    const kad::UInt160 a_or_b("7effffbfedbf037fbff7f73bffd7ff7ba3fedef4");
+    const kad::UInt160 a_xor_b("54491e878c1e01339b36f3126fd2ef11a3de94c4");
+    const kad::UInt160 not_a("914116c7125cfdb2ca28b8d628b8a5947d95b58f");
+
+    ASSERT_EQ(a & b, a_and_b) << "test &"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a | b, a_or_b) << "test |";  // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a ^ b, a_xor_b) << "test ^"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(~a, not_a) << "test ~";      // NOLINT(hicpp-vararg)
+}
