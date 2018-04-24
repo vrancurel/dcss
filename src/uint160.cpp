@@ -39,6 +39,13 @@ static inline const UInt160& zero()
     return zero;
 }
 
+// Return a 160-bit zero.
+static inline const UInt160& one()
+{
+    static const UInt160 one(1u);
+    return one;
+}
+
 // Return the integral value of an hex digit.
 static inline uint32_t decode_hex_char(char hex)
 {
@@ -196,6 +203,20 @@ IMPL_ORD(>)
 IMPL_ORD(>=)
 
 #undef IMPL_ORD
+
+UInt160 UInt160::operator+() const
+{
+    return *this;
+}
+
+// Return the inverse of this.
+//
+// In a ring the inverse of `a` defined as: a + (-a) <=> (-a) + a <=> 0
+// Which correspond to the bitwise NOT + 1 in a ring mod 2^n.
+UInt160 UInt160::operator-() const
+{
+    return ~(*this) + one();
+}
 
 UInt160 operator+(const UInt160& lhs, const UInt160& rhs)
 {

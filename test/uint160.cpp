@@ -146,6 +146,30 @@ TEST(UInt160Test, TestOrdering) // NOLINT
     ASSERT_TRUE(a >= a) << "test >= on itself";
 }
 
+TEST(UInt160Test, TestPositive) // NOLINT
+{
+    const kad::UInt160 zero(0u);
+    const kad::UInt160 one(1u);
+    const kad::UInt160 a("b476a316af1a0a53984c3e4324b3383c0640fd38");
+
+    ASSERT_EQ(+zero, 0u) << "test +0"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(+one, 1u) << "test +1";  // NOLINT(hicpp-vararg)
+    ASSERT_EQ(+a, a) << "test +a";     // NOLINT(hicpp-vararg)
+}
+
+TEST(UInt160Test, TestNegate) // NOLINT
+{
+    const kad::UInt160 zero(0u);
+    const kad::UInt160 one(1u);
+    const kad::UInt160 neg_1("ffffffffffffffffffffffffffffffffffffffff");
+    const kad::UInt160 a("229bb29286f7424f2f004f415d02efcd8f2b2fec");
+    const kad::UInt160 neg_a("dd644d6d7908bdb0d0ffb0bea2fd103270d4d014");
+
+    ASSERT_EQ(-zero, zero) << "test -0"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(-one, neg_1) << "test -1"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(-a, neg_a) << "test -a";   // NOLINT(hicpp-vararg)
+}
+
 TEST(UInt160Test, TestAdd) // NOLINT
 {
     const kad::UInt160 a("bd6756490ba3b01c0ea5ce627e7fc5b16bbe10e2");

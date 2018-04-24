@@ -112,6 +112,8 @@ class UInt160 {
     friend bool operator>=(const UInt160& lhs, const UInt160& rhs);
 
     // Arithmetic operators.
+    UInt160 operator+() const;
+    UInt160 operator-() const;
     friend UInt160 operator+(const UInt160& lhs, const UInt160& rhs);
     UInt160& operator+=(const UInt160& rhs);
 
