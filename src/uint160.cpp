@@ -32,6 +32,13 @@
 
 namespace kad {
 
+// Return a 160-bit zero.
+static inline const UInt160& zero()
+{
+    static const UInt160 zero(0u);
+    return zero;
+}
+
 // Return the integral value of an hex digit.
 static inline uint32_t decode_hex_char(char hex)
 {
@@ -149,6 +156,26 @@ size_t UInt160::hash() const
         h ^= limb + 0x9e3779b9u + (h << 6u) + (h >> 2u);
     }
     return h;
+}
+
+UInt160::operator bool() const
+{
+    return !(*this == zero());
+}
+
+bool UInt160::operator!() const
+{
+    return !bool(*this);
+}
+
+bool operator&&(const UInt160& a, const UInt160& b)
+{
+    return bool(a) && bool(b);
+}
+
+bool operator||(const UInt160& a, const UInt160& b)
+{
+    return bool(a) || bool(b);
 }
 
 bool operator==(const UInt160& lhs, const UInt160& rhs)

@@ -105,3 +105,25 @@ TEST(UInt160Test, TestBitLength) // NOLINT
             << "testing bit length of " << test.first;
     }
 }
+
+TEST(UInt160Test, TestBoolContext) // NOLINT
+{
+    const kad::UInt160 zero(0u);
+    const kad::UInt160 n(42u);
+
+    ASSERT_FALSE(bool(zero)) << "zero is false";
+    ASSERT_TRUE(bool(n)) << "non zero is true";
+
+    ASSERT_TRUE(!zero) << "!zero is true ";
+    ASSERT_FALSE(!n) << "!non zero is false";
+
+    ASSERT_FALSE(zero && zero) << "test false && false ";
+    ASSERT_FALSE(zero && n) << "test false && true";
+    ASSERT_FALSE(n && zero) << "test true && false";
+    ASSERT_TRUE(n && n) << "test true && true ";
+
+    ASSERT_FALSE(zero || zero) << "test false || false ";
+    ASSERT_TRUE(zero || n) << "test false || true";
+    ASSERT_TRUE(n || zero) << "test true || false";
+    ASSERT_TRUE(n || n) << "test true || true ";
+}

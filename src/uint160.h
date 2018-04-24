@@ -97,6 +97,12 @@ class UInt160 {
      */
     size_t hash() const;
 
+    // Logical operators.
+    explicit operator bool() const;
+    bool operator!() const;
+    friend bool operator&&(const UInt160& a, const UInt160& b);
+    friend bool operator||(const UInt160& a, const UInt160& b);
+
     friend bool operator==(const UInt160& lhs, const UInt160& rhs);
 
     // Output operator.
