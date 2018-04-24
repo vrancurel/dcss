@@ -27,12 +27,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "bignum.h"
 #include "kad_file.h"
+#include "uint160.h"
 
 namespace kad {
 
-File::File(const CBigNum& file_id, const Node& ref)
+File::File(const UInt160& file_id, const Node& ref)
     : Routable(file_id, KAD_ROUTABLE_FILE), referencer(&ref)
 {
 }

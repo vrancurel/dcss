@@ -42,16 +42,16 @@ class NodeClient;
 
 namespace kad {
 
-class CBigNum;
+class UInt160;
 class Conf;
 class File;
 
 class Node : public Routable {
   public:
-    Node(const Conf& configuration, const CBigNum& node_id);
+    Node(const Conf& configuration, const UInt160& node_id);
     Node(
         const Conf& configuration,
-        const CBigNum& node_id,
+        const UInt160& node_id,
         const std::string& rpc_addr);
 
     ~Node() = default;

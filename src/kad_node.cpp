@@ -33,11 +33,11 @@
 #include <iostream>
 #include <sstream>
 
-#include "bignum.h"
 #include "kad_conf.h"
 #include "kad_file.h"
 #include "kad_node.h"
 #include "nodeclient.h"
+#include "uint160.h"
 
 namespace kad {
 
@@ -106,7 +106,7 @@ static inline std::string encode_address(const std::string& addr)
 
 Node::Node(
     const Conf& configuration,
-    const CBigNum& node_id,
+    const UInt160& node_id,
     const std::string& rpc_addr)
     : Routable(node_id, KAD_ROUTABLE_NODE), conf(&configuration)
 {
@@ -119,7 +119,7 @@ Node::Node(
     }
 
     // The passphrase of the account is the hex of the node ID.
-    this->eth_passphrase = id.ToString(16);
+    this->eth_passphrase = id.to_string();
     try {
         this->eth_account = conf->geth.personal_newAccount(eth_passphrase);
         conf->geth.personal_unlockAccount(eth_account, eth_passphrase, 0);
@@ -128,7 +128,7 @@ Node::Node(
     }
 }
 
-Node::Node(const Conf& configuration, const CBigNum& node_id)
+Node::Node(const Conf& configuration, const UInt160& node_id)
     : Node(configuration, node_id, "")
 {
 }
@@ -162,11 +162,11 @@ uint32_t Node::get_n_conns()
 bool Node::add_conn(Node* node, bool contacted_us)
 {
     if (node->get_id() == get_id()) {
-        std::cout << "cannot add itself " << get_id().ToString(16) << std::endl;
+        std::cout << "cannot add itself " << get_id().to_string() << std::endl;
         return false;
     }
 
-    CBigNum distance = distance_to(*node);
+    const UInt160 distance(distance_to(*node));
     uint32_t bit_length = distance.bit_length();
 
     std::list<Node*>& list = buckets[bit_length];
@@ -203,7 +203,7 @@ Node::find_nearest_nodes(const Routable& routable, uint32_t amount)
 {
     if (!this->addr.empty()) {
         Json::Value params;
-        params["to"] = routable.get_id().ToString();
+        params["to"] = routable.get_id().to_string();
         params["amount"] = amount;
         Json::Value val = this->nodec->find_nearest_nodes(params);
         std::cout << val << "\n";
@@ -216,7 +216,7 @@ Node::find_nearest_nodes(const Routable& routable, uint32_t amount)
 std::list<Node*>
 Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
 {
-    CBigNum distance = distance_to(routable);
+    const UInt160 distance(distance_to(routable));
     uint32_t bit_length = distance.bit_length();
 
     uint32_t count = 0;
@@ -239,8 +239,8 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
             }
 
             if (verbose) {
-                std::cout << it->get_id().ToString(16) << " distance="
-                          << it->distance_to(routable).ToString(16) << "\n";
+                std::cout << it->get_id().to_string() << " distance="
+                          << it->distance_to(routable).to_string() << "\n";
             }
 
             closest.push_back(it);
@@ -262,8 +262,8 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
                 for (auto& it : nodes) {
                     if (verbose) {
                         std::cout << "kbucket " << i << " "
-                                  << it->get_id().ToString(16) << " distance="
-                                  << it->distance_to(routable).ToString(16)
+                                  << it->get_id().to_string() << " distance="
+                                  << it->distance_to(routable).to_string()
                                   << "\n";
                     }
 
@@ -300,12 +300,12 @@ static void print_list(
     std::map<Node*, bool>* queried)
 {
     std::cout << "---" << comment << " size " << list.size() << "\n";
-    std::cout << "target " << routable.get_id().ToString(16) << "\n";
+    std::cout << "target " << routable.get_id().to_string() << "\n";
     std::list<Node*>::iterator it;
     for (it = list.begin(); it != list.end(); ++it) {
-        std::cout << "id " << (*it)->get_id().ToString(16) << " eth_account "
+        std::cout << "id " << (*it)->get_id().to_string() << " eth_account "
                   << (*it)->get_eth_account() << " dist "
-                  << (*it)->distance_to(routable).ToString(16) << " queried "
+                  << (*it)->distance_to(routable).to_string() << " queried "
                   << (*queried)[*it] << "\n";
     }
 }
@@ -427,8 +427,8 @@ std::list<Node*> Node::lookup(const Routable& routable)
         } else if (round_answers.empty() && !k_answers.empty()) {
             found_closest = false;
         } else {
-            CBigNum d1 = round_answers.front()->distance_to(routable);
-            CBigNum d2 = k_answers.front()->distance_to(routable);
+            const UInt160 d1(round_answers.front()->distance_to(routable));
+            const UInt160 d2(k_answers.front()->distance_to(routable));
             found_closest = d1 < d2;
         }
 
@@ -484,7 +484,7 @@ std::vector<File*> Node::get_files()
 
 void Node::show()
 {
-    std::cout << "id " << get_id().ToString(16) << "\n";
+    std::cout << "id " << get_id().to_string() << "\n";
     std::cout << "eth_account " << get_eth_account() << "\n";
     std::cout << "n_conns " << get_n_conns() << "\n";
     save(std::cout);
@@ -502,7 +502,7 @@ void Node::save(std::ostream& fout)
             fout << "bucket " << i << "\n";
             std::list<Node*>& list = buckets[i];
             for (auto& it : list) {
-                fout << it->get_id().ToString(16) << "\n";
+                fout << it->get_id().to_string() << "\n";
             }
         }
     }
@@ -510,7 +510,7 @@ void Node::save(std::ostream& fout)
     fout << "files\n";
     for (std::vector<File*>::size_type i = 1; i < files.size(); i++) {
         File* file = files[i];
-        fout << file->get_id().ToString(16) << "\n";
+        fout << file->get_id().to_string() << "\n";
     }
 }
 
@@ -520,8 +520,8 @@ void Node::graphviz(std::ostream& fout)
         if (!buckets[i].empty()) {
             std::list<Node*>& list = buckets[i];
             for (auto& it : list) {
-                fout << "node_" << get_id().ToString(16) << " -> node_"
-                     << it->get_id().ToString(16) << ";\n";
+                fout << "node_" << get_id().to_string() << " -> node_"
+                     << it->get_id().to_string() << ";\n";
             }
         }
     }

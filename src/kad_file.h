@@ -34,12 +34,12 @@
 
 namespace kad {
 
-class CBigNum;
+class UInt160;
 class Node;
 
 class File : public Routable {
   public:
-    File(const CBigNum& file_id, const Node& ref);
+    File(const UInt160& file_id, const Node& ref);
     const Node& get_referencer() const;
 
     ~File() = default;
