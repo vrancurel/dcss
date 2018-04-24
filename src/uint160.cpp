@@ -160,7 +160,7 @@ size_t UInt160::hash() const
 
 UInt160::operator bool() const
 {
-    return !(*this == zero());
+    return *this != zero();
 }
 
 bool UInt160::operator!() const
@@ -178,10 +178,24 @@ bool operator||(const UInt160& a, const UInt160& b)
     return bool(a) || bool(b);
 }
 
-bool operator==(const UInt160& lhs, const UInt160& rhs)
-{
-    return lhs.m_limbs == rhs.m_limbs;
-}
+/** Generate implementation for the relational operators.
+ *
+ * The task is delegated to the underlying std::array.
+ */
+#define IMPL_ORD(op)                                                           \
+    bool operator op(const UInt160& lhs, const UInt160& rhs)                   \
+    {                                                                          \
+        return lhs.m_limbs op rhs.m_limbs;                                     \
+    }
+
+IMPL_ORD(==)
+IMPL_ORD(!=)
+IMPL_ORD(<)
+IMPL_ORD(<=)
+IMPL_ORD(>)
+IMPL_ORD(>=)
+
+#undef IMPL_ORD
 
 std::ostream& operator<<(std::ostream& os, const UInt160& n)
 {

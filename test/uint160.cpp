@@ -127,3 +127,21 @@ TEST(UInt160Test, TestBoolContext) // NOLINT
     ASSERT_TRUE(n || zero) << "test true || false";
     ASSERT_TRUE(n || n) << "test true || true ";
 }
+
+TEST(UInt160Test, TestOrdering) // NOLINT
+{
+    const kad::UInt160 a("3198e90e9149480c3d76354e1cbbdbff5c80b590");
+    const kad::UInt160 b("97a149c721c981fe4e3a7440f6227ac4797bc238");
+
+    ASSERT_TRUE(a == a) << "test ==";
+    ASSERT_TRUE(a != b) << "test !=";
+
+    ASSERT_TRUE(a < b) << "test <";
+    ASSERT_TRUE(a <= b) << "test <=";
+
+    ASSERT_FALSE(a > b) << "test >";
+    ASSERT_FALSE(a >= b) << "test >=";
+
+    ASSERT_TRUE(a <= a) << "test <= on itself";
+    ASSERT_TRUE(a >= a) << "test >= on itself";
+}

@@ -103,7 +103,13 @@ class UInt160 {
     friend bool operator&&(const UInt160& a, const UInt160& b);
     friend bool operator||(const UInt160& a, const UInt160& b);
 
+    // Comparison operators.
     friend bool operator==(const UInt160& lhs, const UInt160& rhs);
+    friend bool operator!=(const UInt160& lhs, const UInt160& rhs);
+    friend bool operator<(const UInt160& lhs, const UInt160& rhs);
+    friend bool operator<=(const UInt160& lhs, const UInt160& rhs);
+    friend bool operator>(const UInt160& lhs, const UInt160& rhs);
+    friend bool operator>=(const UInt160& lhs, const UInt160& rhs);
 
     // Output operator.
     friend std::ostream& operator<<(std::ostream& os, const UInt160& n);
