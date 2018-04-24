@@ -79,6 +79,18 @@ class UInt160 {
      */
     static UInt160 rand(std::mt19937& prng);
 
+    /** Generate a random n-bit integer.
+     *
+     * @pre `nb_bits` must be in [0; 160].
+     *
+     * @param prng the PRNG to use
+     * @param n_bits the number of random bits.
+     * @return a random n-bit integer.
+     *
+     * @throw LogicError — `n_bits` is too large.
+     */
+    static UInt160 rand(std::mt19937& prng, size_t n_bits);
+
     /** Return the hex string representation of the value.
      *
      * @return a 40-char hex string.

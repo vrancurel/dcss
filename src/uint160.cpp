@@ -48,13 +48,7 @@ static inline const UInt160& one()
     return one;
 }
 
-/** Return the shift offset corresponding to the given power of two
- *
- * @param n number to test
- * @return the shift offset corresponding to the given value (-1 if `n` is not a
- * power of two).
- */
-static inline int power_of_two_shift(const UInt160& n)
+static inline const std::array<UInt160, 160>& power_of_two()
 {
 #define POW_TWO(_leading, _trailing)                                           \
     kad::UInt160(_leading "00001" _trailing),                                  \
@@ -91,8 +85,19 @@ static inline int power_of_two_shift(const UInt160& n)
 
 #undef POW_TWO
 
-    const auto begin = power_of_two.begin();
-    const auto end = power_of_two.end();
+    return power_of_two;
+}
+
+/** Return the shift offset corresponding to the given power of two
+ *
+ * @param n number to test
+ * @return the shift offset corresponding to the given value (-1 if `n` is not a
+ * power of two).
+ */
+static inline int power_of_two_shift(const UInt160& n)
+{
+    const auto begin = power_of_two().begin();
+    const auto end = power_of_two().end();
     const auto pos = std::find(begin, end, n);
 
     return static_cast<int>(pos != end ? std::distance(begin, pos) : -1);
@@ -195,6 +200,20 @@ UInt160 UInt160::rand(std::mt19937& prng)
     }
 
     return n;
+}
+
+UInt160 UInt160::rand(std::mt19937& prng, size_t n_bits)
+{
+    if (n_bits == 0) {
+        return zero();
+    }
+    if (n_bits == 160) {
+        return UInt160::rand(prng);
+    }
+    if (n_bits > 160) {
+        throw LogicError("not enough bit");
+    }
+    return rand(prng) & (power_of_two()[n_bits] - 1u);
 }
 
 std::string UInt160::to_string() const
