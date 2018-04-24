@@ -27,6 +27,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include <algorithm>
+
 #include "exceptions.h"
 #include "uint160.h"
 
@@ -44,6 +46,56 @@ static inline const UInt160& one()
 {
     static const UInt160 one(1u);
     return one;
+}
+
+/** Return the shift offset corresponding to the given power of two
+ *
+ * @param n number to test
+ * @return the shift offset corresponding to the given value (-1 if `n` is not a
+ * power of two).
+ */
+static inline int power_of_two_shift(const UInt160& n)
+{
+#define POW_TWO(_leading, _trailing)                                           \
+    kad::UInt160(_leading "00001" _trailing),                                  \
+        kad::UInt160(_leading "00002" _trailing),                              \
+        kad::UInt160(_leading "00004" _trailing),                              \
+        kad::UInt160(_leading "00008" _trailing),                              \
+        kad::UInt160(_leading "00010" _trailing),                              \
+        kad::UInt160(_leading "00020" _trailing),                              \
+        kad::UInt160(_leading "00040" _trailing),                              \
+        kad::UInt160(_leading "00080" _trailing),                              \
+        kad::UInt160(_leading "00100" _trailing),                              \
+        kad::UInt160(_leading "00200" _trailing),                              \
+        kad::UInt160(_leading "00400" _trailing),                              \
+        kad::UInt160(_leading "00800" _trailing),                              \
+        kad::UInt160(_leading "01000" _trailing),                              \
+        kad::UInt160(_leading "02000" _trailing),                              \
+        kad::UInt160(_leading "04000" _trailing),                              \
+        kad::UInt160(_leading "08000" _trailing),                              \
+        kad::UInt160(_leading "10000" _trailing),                              \
+        kad::UInt160(_leading "20000" _trailing),                              \
+        kad::UInt160(_leading "40000" _trailing),                              \
+        kad::UInt160(_leading "80000" _trailing)
+
+    static std::array<UInt160, 160> power_of_two = {
+        POW_TWO("00000000000000000000000000000000000", ""),
+        POW_TWO("000000000000000000000000000000", "00000"),
+        POW_TWO("0000000000000000000000000", "0000000000"),
+        POW_TWO("00000000000000000000", "000000000000000"),
+        POW_TWO("000000000000000", "00000000000000000000"),
+        POW_TWO("0000000000", "0000000000000000000000000"),
+        POW_TWO("00000", "000000000000000000000000000000"),
+        POW_TWO("", "00000000000000000000000000000000000"),
+    };
+
+#undef POW_TWO
+
+    const auto begin = power_of_two.begin();
+    const auto end = power_of_two.end();
+    const auto pos = std::find(begin, end, n);
+
+    return static_cast<int>(pos != end ? std::distance(begin, pos) : -1);
 }
 
 // Return the integral value of an hex digit.
@@ -270,6 +322,10 @@ UInt160 operator*(const UInt160& lhs, const UInt160& rhs)
     if (rhs == one()) {
         return lhs;
     }
+    const int shift = power_of_two_shift(rhs);
+    if (shift > 0) {
+        return lhs << static_cast<unsigned>(shift);
+    }
 
     // Main algorithm.
     UInt160 res{};
@@ -309,6 +365,10 @@ UInt160 operator/(const UInt160& lhs, const UInt160& rhs)
     if (rhs == one()) {
         return lhs;
     }
+    const int shift = power_of_two_shift(rhs);
+    if (shift > 0) {
+        return lhs >> static_cast<unsigned>(shift);
+    }
 
     return divmod(lhs, rhs).first;
 }
@@ -321,6 +381,9 @@ UInt160 operator%(const UInt160& lhs, const UInt160& rhs)
     }
     if (lhs == zero() || rhs == one() || lhs == rhs) {
         return zero();
+    }
+    if (power_of_two_shift(rhs) >= 0) {
+        return lhs & (rhs - 1u);
     }
 
     return divmod(lhs, rhs).second;
