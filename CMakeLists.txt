@@ -139,6 +139,7 @@ set(COMMON_CXX_FLAGS
   -Wsometimes-uninitialized
   -Wswitch-enum
   -Wunreachable-code-aggressive
+  -Wno-missing-braces
 )
 
 # Manually add -Werror, for some reasons I can't make it works in the foreach…
