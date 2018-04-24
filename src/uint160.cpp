@@ -85,6 +85,30 @@ static inline uint32_t fls(uint32_t n)
     return n != 0u ? lookup[(n * 0x07C4ACDD) >> 27u] + 1 : n;
 }
 
+// Binary version of the famous long division algorithm.
+// Source: https://en.wikipedia.org/wiki/Division_algorithm
+static inline std::pair<UInt160, UInt160>
+divmod(const UInt160& lhs, const UInt160& rhs)
+{
+    UInt160 quot{};
+    UInt160 rem{};
+
+    for (unsigned i = lhs.bit_length(); i-- > 0;) {
+        rem <<= 1u;
+        quot <<= 1u;
+
+        if (!!(lhs & (one() << i))) {
+            ++rem;
+        }
+
+        if (rem >= rhs) {
+            rem -= rhs;
+            ++quot;
+        }
+    }
+    return std::make_pair(quot, rem);
+}
+
 UInt160::UInt160(uint64_t n) : UInt160()
 {
     m_limbs[m_limbs.size() - 1] = static_cast<uint32_t>(n >> 0u);
@@ -270,6 +294,38 @@ UInt160 operator*(const UInt160& lhs, const UInt160& rhs)
     return res;
 }
 
+UInt160 operator/(const UInt160& lhs, const UInt160& rhs)
+{
+    // Shortcut for simple cases.
+    if (rhs == zero()) {
+        throw DomainError("division by zero");
+    }
+    if (lhs == zero() || lhs < rhs) {
+        return zero();
+    }
+    if (lhs == rhs) {
+        return one();
+    }
+    if (rhs == one()) {
+        return lhs;
+    }
+
+    return divmod(lhs, rhs).first;
+}
+
+UInt160 operator%(const UInt160& lhs, const UInt160& rhs)
+{
+    // Shortcut for simple cases.
+    if (rhs == zero()) {
+        throw DomainError("division by zero");
+    }
+    if (lhs == zero() || rhs == one() || lhs == rhs) {
+        return zero();
+    }
+
+    return divmod(lhs, rhs).second;
+}
+
 // Based on the algorithm A from The Art of Computer Programming, vol. 2 by
 // Donald Knuth.
 UInt160& UInt160::operator+=(const UInt160& rhs)
@@ -294,6 +350,18 @@ UInt160& UInt160::operator-=(const UInt160& rhs)
 UInt160& UInt160::operator*=(const UInt160& rhs)
 {
     *this = *this * rhs;
+    return *this;
+}
+
+UInt160& UInt160::operator/=(const UInt160& rhs)
+{
+    *this = *this / rhs;
+    return *this;
+}
+
+UInt160& UInt160::operator%=(const UInt160& rhs)
+{
+    *this = *this % rhs;
     return *this;
 }
 

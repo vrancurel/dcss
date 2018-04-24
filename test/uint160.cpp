@@ -215,6 +215,46 @@ TEST(UInt160Test, TestMul) // NOLINT
     ASSERT_EQ(a, expected) << "test a*=b"; // NOLINT(hicpp-vararg)
 }
 
+TEST(UInt160Test, TestDiv) // NOLINT
+{
+    kad::UInt160 a("3ec8c0bb0a565c0f3e262fd090fda7a6f9cb0288");
+    const kad::UInt160 b("13ef00e4427e23836f14d68e34a1154f478fab14");
+
+    ASSERT_THROW(a / 0u, kad::DomainError) << "division by zero";
+    ASSERT_EQ(0u / a, 0u) << "test 0/a"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a / 1u, a) << "test a/1";  // NOLINT(hicpp-vararg)
+    ASSERT_EQ(1u / a, 0u) << "test 1/a"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a / a, 1u) << "test a/a";  // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a / b, 3u) << "test a/b";  // NOLINT(hicpp-vararg)
+    ASSERT_EQ(b / a, 0u) << "test b/a";  // NOLINT(hicpp-vararg)
+
+    ASSERT_EQ(a / 32u, a >> 5) << "test power of two"; // NOLINT(hicpp-vararg)
+
+    a /= b;
+    ASSERT_EQ(a, 3u) << "test a/=b"; // NOLINT(hicpp-vararg)
+}
+
+TEST(UInt160Test, TestMod) // NOLINT
+{
+    kad::UInt160 a("f51fe80071defe3e555077d6490efd114470ce71");
+    const kad::UInt160 b("83f0cd136c7889d21054afd9fbf45ed6a32815a8");
+    const kad::UInt160 expected("712f1aed0566746c44fbc7fc4d1a9e3aa148b8c9");
+
+    ASSERT_THROW(a % 0u, kad::DomainError) << "division by zero";
+    ASSERT_EQ(0u % a, 0u) << "test 0%a";      // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a % 1u, 0u) << "test a%1";      // NOLINT(hicpp-vararg)
+    ASSERT_EQ(1u % a, 1u) << "test 1%a";      // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a % a, 0u) << "test a%a";       // NOLINT(hicpp-vararg)
+    ASSERT_EQ(a % b, expected) << "test a%b"; // NOLINT(hicpp-vararg)
+    ASSERT_EQ(b % a, b) << "test b%a";        // NOLINT(hicpp-vararg)
+
+    // NOLINTNEXTLINE(hicpp-vararg)
+    ASSERT_EQ(a % 4294967296u, a & 0xFFFFFFFF) << "test power of two";
+
+    a %= b;
+    ASSERT_EQ(a, expected) << "test a%=b"; // NOLINT(hicpp-vararg)
+}
+
 TEST(UInt160Test, TestInc) // NOLINT
 {
     kad::UInt160 n("22887ffeffe10cd8df3526a647193b59ddf1a55a");
