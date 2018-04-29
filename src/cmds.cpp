@@ -32,12 +32,12 @@
 #include <iostream>
 #include <list>
 
-#include "bignum.h"
 #include "cmds.h"
 #include "kad_network.h"
 #include "kad_node.h"
 #include "kad_routable.h"
 #include "shell.h"
+#include "uint160.h"
 #include "utils.h"
 
 namespace kad {
@@ -80,12 +80,12 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
 
 static void cb_display_node(const Node& node, void* /*cb_arg*/)
 {
-    std::cout << node.get_id().ToString(16) << "\n";
+    std::cout << node.get_id().to_string() << "\n";
 }
 
 static void cb_display_routable(const Routable& routable, void* /*cb_arg*/)
 {
-    std::cout << routable.get_id().ToString(16) << "\n";
+    std::cout << routable.get_id().to_string() << "\n";
 }
 
 static int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
@@ -140,16 +140,15 @@ static int cmd_lookup(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    CBigNum bn;
-    bn.SetHex(argv[1]);
+    const UInt160 bn(argv[1]);
     Routable routable(bn, KAD_ROUTABLE_FILE);
 
     std::list<Node*> result = node->lookup(routable);
 
     std::list<Node*>::iterator it;
     for (it = result.begin(); it != result.end(); ++it) {
-        std::cout << "id " << (*it)->get_id().ToString(16) << " dist "
-                  << (*it)->distance_to(routable).ToString(16) << "\n";
+        std::cout << "id " << (*it)->get_id().to_string() << " dist "
+                  << (*it)->distance_to(routable).to_string() << "\n";
     }
 
     return SHELL_CONT;
@@ -169,8 +168,7 @@ static int cmd_find_nearest(Shell* shell, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    CBigNum bn;
-    bn.SetHex(argv[1]);
+    const UInt160 bn(argv[1]);
     Routable routable(bn, KAD_ROUTABLE_FILE);
 
     std::list<Node*> result =
@@ -178,8 +176,8 @@ static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 
     std::list<Node*>::iterator it;
     for (it = result.begin(); it != result.end(); ++it) {
-        std::cout << "id " << (*it)->get_id().ToString(16) << " dist "
-                  << (*it)->distance_to(routable).ToString(16) << "\n";
+        std::cout << "id " << (*it)->get_id().to_string() << " dist "
+                  << (*it)->distance_to(routable).to_string() << "\n";
     }
 
     return SHELL_CONT;
@@ -232,8 +230,7 @@ static int cmd_cheat_lookup(Shell* shell, int argc, char** argv)
 
     auto* network = static_cast<Network*>(shell->get_handle());
 
-    CBigNum bn;
-    bn.SetHex(argv[1]);
+    const UInt160 bn(argv[1]);
     Routable routable(bn, KAD_ROUTABLE_FILE);
 
     Node* node = network->find_nearest_cheat(routable);
@@ -269,15 +266,13 @@ static int cmd_xor(Shell* /*shell*/, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    CBigNum bn1;
-    bn1.SetHex(argv[1]);
+    const UInt160 bn1(argv[1]);
     Routable routable1(bn1, KAD_ROUTABLE_FILE);
 
-    CBigNum bn2;
-    bn2.SetHex(argv[2]);
+    const UInt160 bn2(argv[2]);
     Routable routable2(bn2, KAD_ROUTABLE_FILE);
 
-    std::cout << routable1.distance_to(routable2).ToString(16) << "\n";
+    std::cout << routable1.distance_to(routable2).to_string() << "\n";
 
     return SHELL_CONT;
 }
@@ -289,8 +284,7 @@ static int cmd_bit_length(Shell* /*shell*/, int argc, char** argv)
         return SHELL_CONT;
     }
 
-    CBigNum bn;
-    bn.SetHex(argv[1]);
+    const UInt160 bn(argv[1]);
 
     std::cout << bn.bit_length() << "\n";
 
@@ -383,9 +377,9 @@ struct cmd_def find_nearest_cmd = {"find_nearest",
                                    cmd_find_nearest};
 struct cmd_def verbose_cmd = {"verbose", "set verbosity level", cmd_verbose};
 struct cmd_def save_cmd = {"save", "save the network to file", cmd_save};
-struct cmd_def xor_cmd = {"xor", "xor between 2 bignums", cmd_xor};
+struct cmd_def xor_cmd = {"xor", "XOR between 2 160-bit unsigned int", cmd_xor};
 struct cmd_def bit_length_cmd = {"bit_length",
-                                 "bit length of bignum",
+                                 "bit length of 160-bit unsigned int",
                                  cmd_bit_length};
 struct cmd_def graphviz_cmd = {
     "graphviz",

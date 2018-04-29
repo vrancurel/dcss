@@ -87,6 +87,10 @@ int main(int argc, char** argv)
         switch (c) {
         case 'b':
             n_bits = kad::stou32(optarg);
+            if (n_bits > 160) {
+                std::cerr << "cannot support more than 160 bits\n";
+                exit(1);
+            }
             break;
         case 'k':
             k = kad::stou32(optarg);

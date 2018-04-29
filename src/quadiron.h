@@ -30,7 +30,6 @@
 #ifndef __QUADIRON_H__
 #define __QUADIRON_H__
 
-#include "bignum.h"
 #include "cmds.h"
 #include "config.h"
 #include "exceptions.h"
@@ -40,6 +39,7 @@
 #include "kad_node.h"
 #include "kad_routable.h"
 #include "shell.h"
+#include "uint160.h"
 #include "utils.h"
 
 #endif

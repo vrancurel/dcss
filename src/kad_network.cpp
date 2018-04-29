@@ -52,7 +52,7 @@ void Network::initialize_nodes(
     BitMap bitmap(conf->n_nodes);
 
     // Split the total keyspace equally among nodes.
-    CBigNum keyspace = CBigNum(1);
+    UInt160 keyspace(1u);
     keyspace = (keyspace << conf->n_bits);
     keyspace /= conf->n_nodes;
 
@@ -71,7 +71,7 @@ void Network::initialize_nodes(
             node = new Node(*conf, bitmap.get_rand_uint() * keyspace);
         }
         nodes.push_back(node);
-        nodes_map[node->get_id().ToString(16)] = node;
+        nodes_map[node->get_id().to_string()] = node;
     }
 
     // There shall be a responsable for every portion of the keyspace.
@@ -94,7 +94,7 @@ void Network::initialize_nodes(
 
             if (guard >= (2 * conf->n_nodes)) {
                 std::cout << "forgiving required conditions for "
-                          << node->get_id().ToString(16) << ", it has only "
+                          << node->get_id().to_string() << ", it has only "
                           << node->get_n_conns() << " connections\n";
                 break;
             }
@@ -129,8 +129,7 @@ void Network::initialize_files(uint32_t n_files)
         Node* node = nodes[dis(prng())];
 
         // Gen a random identifier for the file.
-        CBigNum bn;
-        bn.Rand(conf->n_bits);
+        const UInt160 bn(UInt160::rand(prng(), conf->n_bits));
         auto* file = new File(bn, *node);
         files.push_back(file);
 
@@ -176,9 +175,9 @@ void Network::check_files()
         }
 
         if (!found) {
-            std::cerr << "file " << file->get_id().ToString(16)
+            std::cerr << "file " << file->get_id().to_string()
                       << " who was referenced by "
-                      << file->get_referencer().get_id().ToString(16)
+                      << file->get_referencer().get_id().to_string()
                       << " was not found\n";
             n_wrong++;
         }
@@ -198,8 +197,7 @@ void Network::rand_node(tnode_callback_func cb_func, void* cb_arg)
 
 void Network::rand_routable(troutable_callback_func cb_func, void* cb_arg)
 {
-    CBigNum bn;
-    bn.Rand(conf->n_bits);
+    const UInt160 bn(UInt160::rand(prng(), conf->n_bits));
     Routable routable(bn, KAD_ROUTABLE_FILE);
     if (nullptr != cb_func) {
         cb_func(routable, cb_arg);
@@ -226,8 +224,8 @@ Node* Network::find_nearest_cheat(const Routable& routable)
         if (nullptr == nearest) {
             nearest = node;
         } else {
-            CBigNum d1 = node->distance_to(routable);
-            CBigNum d2 = nearest->distance_to(routable);
+            const UInt160 d1(node->distance_to(routable));
+            const UInt160 d2(nearest->distance_to(routable));
 
             if (d1 < d2) {
                 nearest = node;
@@ -244,7 +242,7 @@ void Network::save(std::ostream& fout)
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
         Node* node = nodes[i];
 
-        fout << "node " << i << " " << node->get_id().ToString(16) << "\n";
+        fout << "node " << i << " " << node->get_id().to_string() << "\n";
         node->save(fout);
     }
 }
@@ -258,8 +256,8 @@ void Network::graphviz(std::ostream& fout)
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
         Node* node = nodes[i];
 
-        fout << "node_" << node->get_id().ToString(16)
-             << " [color=blue, label=\"" << node->get_id().ToString(16)
+        fout << "node_" << node->get_id().to_string()
+             << " [color=blue, label=\"" << node->get_id().to_string()
              << "\"];\n";
         node->graphviz(fout);
     }

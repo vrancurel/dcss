@@ -114,6 +114,7 @@ endfunction()
 # Source files.
 set(TEST_SRC
   ${CMAKE_CURRENT_SOURCE_DIR}/bit_map.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/uint160.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 
   CACHE

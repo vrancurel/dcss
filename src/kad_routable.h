@@ -32,7 +32,7 @@
 
 #include <string>
 
-#include "bignum.h"
+#include "uint160.h"
 
 namespace kad {
 
@@ -43,16 +43,16 @@ enum RoutableType {
 
 class Routable {
   public:
-    Routable(const CBigNum& entity_id, enum RoutableType entity_type);
+    Routable(const UInt160& entity_id, enum RoutableType entity_type);
 
-    CBigNum get_id() const;
+    UInt160 get_id() const;
     bool is_remote() const;
     RoutableType get_type() const;
-    CBigNum distance_to(const Routable& other) const;
+    UInt160 distance_to(const Routable& other) const;
     bool operator()(const Routable* first, const Routable* second) const;
 
   protected:
-    CBigNum id;
+    UInt160 id;
     RoutableType type;
     std::string addr; // Remote peer IP address, or "" if local.
 };
