@@ -94,7 +94,7 @@ void Network::initialize_nodes(
 
             if (guard >= (2 * conf->n_nodes)) {
                 std::cout << "forgiving required conditions for "
-                          << node->get_id().to_string() << ", it has only "
+                          << node->get_id() << ", it has only "
                           << node->get_n_conns() << " connections\n";
                 break;
             }
@@ -175,10 +175,8 @@ void Network::check_files()
         }
 
         if (!found) {
-            std::cerr << "file " << file->get_id().to_string()
-                      << " who was referenced by "
-                      << file->get_referencer().get_id().to_string()
-                      << " was not found\n";
+            std::cerr << "file " << file->get_id() << " who was referenced by "
+                      << file->get_referencer().get_id() << " was not found\n";
             n_wrong++;
         }
         ++n_files;
@@ -242,7 +240,7 @@ void Network::save(std::ostream& fout)
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
         Node* node = nodes[i];
 
-        fout << "node " << i << " " << node->get_id().to_string() << "\n";
+        fout << "node " << i << " " << node->get_id() << "\n";
         node->save(fout);
     }
 }
@@ -256,9 +254,8 @@ void Network::graphviz(std::ostream& fout)
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
         Node* node = nodes[i];
 
-        fout << "node_" << node->get_id().to_string()
-             << " [color=blue, label=\"" << node->get_id().to_string()
-             << "\"];\n";
+        fout << "node_" << node->get_id() << " [color=blue, label=\""
+             << node->get_id() << "\"];\n";
         node->graphviz(fout);
     }
 

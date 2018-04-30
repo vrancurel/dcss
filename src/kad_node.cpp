@@ -187,7 +187,7 @@ uint32_t Node::get_n_conns()
 bool Node::add_conn(Node* node, bool contacted_us)
 {
     if (node->get_id() == get_id()) {
-        std::cout << "cannot add itself " << get_id().to_string() << std::endl;
+        std::cout << "cannot add itself " << get_id() << std::endl;
         return false;
     }
 
@@ -264,8 +264,8 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
             }
 
             if (verbose) {
-                std::cout << it->get_id().to_string() << " distance="
-                          << it->distance_to(routable).to_string() << "\n";
+                std::cout << it->get_id()
+                          << " distance=" << it->distance_to(routable) << "\n";
             }
 
             closest.push_back(it);
@@ -286,9 +286,8 @@ Node::find_nearest_nodes_local(const Routable& routable, uint32_t amount)
                 std::list<Node*>& nodes = buckets[i];
                 for (auto& it : nodes) {
                     if (verbose) {
-                        std::cout << "kbucket " << i << " "
-                                  << it->get_id().to_string() << " distance="
-                                  << it->distance_to(routable).to_string()
+                        std::cout << "kbucket " << i << " " << it->get_id()
+                                  << " distance=" << it->distance_to(routable)
                                   << "\n";
                     }
 
@@ -325,12 +324,12 @@ static void print_list(
     std::map<Node*, bool>* queried)
 {
     std::cout << "---" << comment << " size " << list.size() << "\n";
-    std::cout << "target " << routable.get_id().to_string() << "\n";
+    std::cout << "target " << routable.get_id() << "\n";
     std::list<Node*>::iterator it;
     for (it = list.begin(); it != list.end(); ++it) {
-        std::cout << "id " << (*it)->get_id().to_string() << " eth_account "
+        std::cout << "id " << (*it)->get_id() << " eth_account "
                   << (*it)->get_eth_account() << " dist "
-                  << (*it)->distance_to(routable).to_string() << " queried "
+                  << (*it)->distance_to(routable) << " queried "
                   << (*queried)[*it] << "\n";
     }
 }
@@ -509,7 +508,7 @@ std::vector<File*> Node::get_files()
 
 void Node::show()
 {
-    std::cout << "id " << get_id().to_string() << "\n";
+    std::cout << "id " << get_id() << "\n";
     std::cout << "eth_account " << get_eth_account() << "\n";
     std::cout << "n_conns " << get_n_conns() << "\n";
     save(std::cout);
@@ -527,7 +526,7 @@ void Node::save(std::ostream& fout)
             fout << "bucket " << i << "\n";
             std::list<Node*>& list = buckets[i];
             for (auto& it : list) {
-                fout << it->get_id().to_string() << "\n";
+                fout << it->get_id() << "\n";
             }
         }
     }
@@ -535,7 +534,7 @@ void Node::save(std::ostream& fout)
     fout << "files\n";
     for (std::vector<File*>::size_type i = 1; i < files.size(); i++) {
         File* file = files[i];
-        fout << file->get_id().to_string() << "\n";
+        fout << file->get_id() << "\n";
     }
 }
 
@@ -545,8 +544,8 @@ void Node::graphviz(std::ostream& fout)
         if (!buckets[i].empty()) {
             std::list<Node*>& list = buckets[i];
             for (auto& it : list) {
-                fout << "node_" << get_id().to_string() << " -> node_"
-                     << it->get_id().to_string() << ";\n";
+                fout << "node_" << get_id() << " -> node_" << it->get_id()
+                     << ";\n";
             }
         }
     }

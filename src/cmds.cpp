@@ -81,12 +81,12 @@ static int cmd_help(Shell* /*shell*/, int argc, char** argv)
 
 static void cb_display_node(const Node& node, void* /*cb_arg*/)
 {
-    std::cout << node.get_id().to_string() << "\n";
+    std::cout << node.get_id() << "\n";
 }
 
 static void cb_display_routable(const Routable& routable, void* /*cb_arg*/)
 {
-    std::cout << routable.get_id().to_string() << "\n";
+    std::cout << routable.get_id() << "\n";
 }
 
 static int cmd_rand_node(Shell* shell, int /*argc*/, char** /*argv*/)
@@ -148,8 +148,8 @@ static int cmd_lookup(Shell* shell, int argc, char** argv)
 
     std::list<Node*>::iterator it;
     for (it = result.begin(); it != result.end(); ++it) {
-        std::cout << "id " << (*it)->get_id().to_string() << " dist "
-                  << (*it)->distance_to(routable).to_string() << "\n";
+        std::cout << "id " << (*it)->get_id() << " dist "
+                  << (*it)->distance_to(routable) << "\n";
     }
 
     return SHELL_CONT;
@@ -177,8 +177,8 @@ static int cmd_find_nearest(Shell* shell, int argc, char** argv)
 
     std::list<Node*>::iterator it;
     for (it = result.begin(); it != result.end(); ++it) {
-        std::cout << "id " << (*it)->get_id().to_string() << " dist "
-                  << (*it)->distance_to(routable).to_string() << "\n";
+        std::cout << "id " << (*it)->get_id() << " dist "
+                  << (*it)->distance_to(routable) << "\n";
     }
 
     return SHELL_CONT;
