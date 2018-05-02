@@ -1,3 +1,4 @@
 *.swp
 bin
 build
+__pycache__/
