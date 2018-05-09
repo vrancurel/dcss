@@ -72,7 +72,8 @@ class Network {
   private:
     const Conf* const conf;
 
-    std::vector<Node<NodeLocalCom>*> nodes;
+    std::vector<std::unique_ptr<Node<NodeLocalCom>>> nodes;
+    // Nothing to free: memory is owned by `nodes`.
     std::map<std::string, Node<NodeLocalCom>*> nodes_map;
     std::vector<UInt160> files;
 };

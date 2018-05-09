@@ -62,18 +62,18 @@ void Network::initialize_nodes(
         std::cerr << "creating node " << i << '\n';
 
         const UInt160 id(bitmap.get_rand_uint() * keyspace);
-        Node<NodeLocalCom>* node;
         std::string ip("127.0.0.1");
-        NodeLocalCom com_iface(this);
+        NodeLocalCom node_com(this);
 
         // Create remote node from a bootstrap.
         if (!bstraplist.empty()) {
             ip = bstraplist.back();
             std::cout << "create remote node (" << ip << ")\n";
         }
-        node = new Node<NodeLocalCom>(*conf, {id, ip, 0}, com_iface);
-        nodes.push_back(node);
-        nodes_map[node->id().to_string()] = node;
+        const dht::NodeAddress addr{id, ip, 0};
+        auto node = std::make_unique<Node<NodeLocalCom>>(*conf, addr, node_com);
+        nodes_map[node->id().to_string()] = node.get();
+        nodes.push_back(std::move(node));
     }
 
     // There shall be a responsable for every portion of the keyspace.
@@ -83,7 +83,7 @@ void Network::initialize_nodes(
     // required.
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        Node<NodeLocalCom>* node = nodes[i];
+        std::unique_ptr<Node<NodeLocalCom>>& node = nodes[i];
 
         if ((i % 1000) == 0) {
             std::cerr << "node " << i << "/" << conf->n_nodes
@@ -92,8 +92,6 @@ void Network::initialize_nodes(
 
         uint32_t guard = 0;
         while (node->connection_count() < n_initial_conn) {
-            Node<NodeLocalCom>* other;
-
             if (guard >= (2 * conf->n_nodes)) {
                 std::cout << "forgiving required conditions for " << node->id()
                           << ", it has only " << node->connection_count()
@@ -102,7 +100,7 @@ void Network::initialize_nodes(
             }
 
             // Pick a random node.
-            other = nodes[dis(prng())];
+            std::unique_ptr<Node<NodeLocalCom>>& other = nodes[dis(prng())];
             if (*node == *other) {
                 continue;
             }
@@ -131,7 +129,7 @@ void Network::initialize_files(uint32_t n_files)
         }
 
         // Take a random node.
-        Node<NodeLocalCom>* node = nodes[dis(prng())];
+        std::unique_ptr<Node<NodeLocalCom>>& node = nodes[dis(prng())];
 
         // Generate a random key for the file.
         const UInt160 key(UInt160::rand(prng(), conf->n_bits));
@@ -162,7 +160,7 @@ void Network::check_files()
         }
 
         // Take a random node.
-        Node<NodeLocalCom>* node = nodes[dis(prng())];
+        std::unique_ptr<Node<NodeLocalCom>>& node = nodes[dis(prng())];
 
         // Check that at least one node has the file.
         bool found = false;
@@ -220,22 +218,21 @@ Node<NodeLocalCom>* Network::find_nearest_cheat(const UInt160& target_id)
         nodes.begin(),
         nodes.end(),
         [&target_id](
-            Node<NodeLocalCom> const* n1, Node<NodeLocalCom> const* n2) {
+            std::unique_ptr<Node<NodeLocalCom>>& n1,
+            std::unique_ptr<Node<NodeLocalCom>>& n2) {
             const UInt160 d1(n1->distance_to(target_id));
             const UInt160 d2(n2->distance_to(target_id));
             return d1 < d2;
         });
-    return nearest != nodes.end() ? *nearest : nullptr;
+    return nearest != nodes.end() ? nearest->get() : nullptr;
 }
 
 void Network::save(std::ostream& fout)
 {
     conf->save(fout);
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        Node<NodeLocalCom>* node = nodes[i];
-
-        fout << "node " << i << " " << node->id() << "\n";
-        node->save(fout);
+        fout << "node " << i << " " << nodes[i]->id() << "\n";
+        nodes[i]->save(fout);
     }
 }
 
@@ -244,15 +241,11 @@ void Network::graphviz(std::ostream& fout)
     fout << "digraph G {\n";
     fout << "  node [shape=record];\n";
     fout << "  rankdir=TB;\n";
-
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        Node<NodeLocalCom>* node = nodes[i];
-
-        fout << "node_" << node->id() << " [color=blue, label=\"" << node->id()
-             << "\"];\n";
-        node->graphviz(fout);
+        fout << "node_" << nodes[i]->id() << " [color=blue, label=\""
+             << nodes[i]->id() << "\"];\n";
+        nodes[i]->graphviz(fout);
     }
-
     fout << "}\n";
 }
 
