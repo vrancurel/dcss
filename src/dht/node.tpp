@@ -37,6 +37,7 @@
 #include "exceptions.h"
 #include "kad_conf.h"
 #include "node.h"
+#include "utils.h"
 
 namespace kad {
 namespace dht {
@@ -114,7 +115,7 @@ std::vector<NodeAddress> Node<NodeCom>::find_node(const UInt160& target_id,
     // Or even better: use a container that enforce this (heap/priority queue).
     k_bucket.sort(ByDistanceFrom(target_id));
     k_bucket.unique();
-    std::copy_n(k_bucket.begin(), nb_nodes, std::back_inserter(closest));
+    safe_copy_n(k_bucket, nb_nodes, closest);
 
     // If the selected k-bucket doesn't contains enough node, use the others.
     if (closest.size() < nb_nodes) {
@@ -132,10 +133,7 @@ std::vector<NodeAddress> Node<NodeCom>::find_node(const UInt160& target_id,
         all.sort(ByDistanceFrom(target_id));
         all.unique();
 
-        std::copy_n(
-            all.begin(),
-            nb_nodes - closest.size(),
-            std::back_inserter(closest));
+        safe_copy_n(all, nb_nodes - closest.size(), closest);
     }
 
     return closest;
@@ -270,7 +268,7 @@ std::vector<NodeAddress> Node<NodeCom>::node_lookup(const UInt160& target_id)
         std::vector<NodeAddress> k_nodes;
 
         // From the answers of the previous round, only keep the k-closest.
-        std::copy_n(answers.begin(), m_k, back_inserter(k_nodes));
+        safe_copy_n(answers, m_k, k_nodes);
 
         // For querying, only keep the new nodes.
         std::vector<NodeAddress> k_new_nodes(k_nodes);
@@ -278,7 +276,7 @@ std::vector<NodeAddress> Node<NodeCom>::node_lookup(const UInt160& target_id)
 
         // Query α nodes from the k-closest.
         to_query.clear();
-        std::copy_n(k_new_nodes.begin(), m_alpha, back_inserter(to_query));
+        safe_copy_n(k_new_nodes, m_alpha, to_query);
         answers = send_find_node(to_query, target_id, queried);
 
         // We already have queried (and got an answer) from the k closest nodes

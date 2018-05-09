@@ -30,6 +30,7 @@
 #ifndef __KAD_UTILS_H__
 #define __KAD_UTILS_H__
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 #include <random>
@@ -69,6 +70,14 @@ static inline std::mt19937& prng()
     static std::mt19937 PRNG;
 
     return PRNG;
+}
+
+/** Append at most `n` items from the start of `src` to `dst`. */
+template <typename SrcContainer, typename DstContainer>
+static inline void
+safe_copy_n(const SrcContainer& src, size_t n, DstContainer& dst)
+{
+    std::copy_n(src.begin(), std::min(n, src.size()), std::back_inserter(dst));
 }
 
 } // namespace kad
