@@ -27,68 +27,74 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_NODE_H__
-#define __KAD_NODE_H__
+#ifndef __KAD_DHT_ADDRESS_H__
+#define __KAD_DHT_ADDRESS_H__
 
 #include <cstdint>
-#include <string>
 
-#include <jsonrpccpp/client/connectors/httpclient.h>
-
-#include "dht/dht.h"
-
-class NodeClient;
+#include "uint160.h"
 
 namespace kad {
-
 namespace dht {
-class NodeAddress;
-} // namespace dht
 
-class Conf;
-class UInt160;
-
-template <typename NodeCom>
-class Node : public dht::Node<NodeCom> {
+// TODO: just a placeholder for now, should be implemented later.
+class IpAddress {
   public:
-    Node(
-        const Conf& configuration,
-        const dht::NodeAddress& addr,
-        const NodeCom& com_iface);
-
-    ~Node() override = default;
-    Node(Node const&) = delete;
-    Node& operator=(Node const& x) = delete;
-    Node(Node&&) = delete;
-    Node& operator=(Node&& x) = delete;
-
-    const std::string& get_eth_account() const;
-    void show();
-    void set_verbose(bool enable);
-    void save(std::ostream& fout);
-    const std::vector<UInt160>& files() const;
-    void graphviz(std::ostream& fout);
-
-    void buy_storage(const std::string& seller, uint64_t nb_bytes);
-    void put_bytes(const std::string& seller, uint64_t nb_bytes);
-    void get_bytes(const std::string& seller, uint64_t nb_bytes);
-
-  private:
-    void on_store(const dht::Entry& entry) override;
-
-    const Conf* const conf;
-
-    bool verbose;
-
-    std::vector<UInt160> m_file_keys;
-    std::string eth_passphrase;
-    std::string eth_account;
-    jsonrpc::HttpClient* httpclient;
-    NodeClient* nodec;
+    explicit IpAddress(const std::string& ip)
+    {
+        // TODO: parse the IP using `inet_pton`
+        (void)ip;
+    }
 };
 
+class NodeAddress {
+  public:
+    NodeAddress(UInt160 id, const std::string& ip, uint16_t port)
+        : m_id(id), m_ip(ip), m_port(port)
+    {
+    }
+
+    /** Return the node's ID. */
+    inline const UInt160& id() const
+    {
+        return m_id;
+    };
+
+    /** Return the node's IP. */
+    inline const IpAddress& ip() const
+    {
+        return m_ip;
+    };
+
+    /** Return the node's port. */
+    inline uint16_t port() const
+    {
+        return m_port;
+    };
+
+    inline bool operator==(const NodeAddress& other) const
+    {
+        return m_id == other.m_id;
+    }
+
+  private:
+    UInt160 m_id;
+    IpAddress m_ip;
+    uint16_t m_port;
+};
+
+} // namespace dht
 } // namespace kad
 
-#include "kad_node.tpp"
+// Implementing std::hash for dht::NodeAddress.
+namespace std {
+template <>
+struct hash<kad::dht::NodeAddress> {
+    size_t operator()(const kad::dht::NodeAddress& addr) const
+    {
+        return hash<kad::UInt160>()(addr.id());
+    }
+};
+} // namespace std
 
 #endif

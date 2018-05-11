@@ -32,12 +32,12 @@
 
 #include "cmds.h"
 #include "config.h"
+#include "dht/dht.h"
 #include "exceptions.h"
 #include "kad_conf.h"
 #include "kad_file.h"
 #include "kad_network.h"
 #include "kad_node.h"
-#include "kad_routable.h"
 #include "shell.h"
 #include "uint160.h"
 #include "utils.h"

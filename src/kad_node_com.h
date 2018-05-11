@@ -27,68 +27,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_NODE_H__
-#define __KAD_NODE_H__
-
-#include <cstdint>
-#include <string>
-
-#include <jsonrpccpp/client/connectors/httpclient.h>
+#ifndef __KAD_NODE_COM_H__
+#define __KAD_NODE_COM_H__
 
 #include "dht/dht.h"
 
-class NodeClient;
-
 namespace kad {
 
-namespace dht {
-class NodeAddress;
-} // namespace dht
+class Network;
 
-class Conf;
-class UInt160;
-
-template <typename NodeCom>
-class Node : public dht::Node<NodeCom> {
+/// Communication module for "fake" node.
+class NodeLocalCom : public dht::NodeComBase {
   public:
-    Node(
-        const Conf& configuration,
+    explicit NodeLocalCom(const Network* network) : m_network(network) {}
+
+    bool ping(const dht::NodeAddress& addr) override;
+
+    std::vector<dht::NodeAddress> find_node(
         const dht::NodeAddress& addr,
-        const NodeCom& com_iface);
+        const UInt160& target_id,
+        uint32_t nb_nodes) override;
 
-    ~Node() override = default;
-    Node(Node const&) = delete;
-    Node& operator=(Node const& x) = delete;
-    Node(Node&&) = delete;
-    Node& operator=(Node&& x) = delete;
-
-    const std::string& get_eth_account() const;
-    void show();
-    void set_verbose(bool enable);
-    void save(std::ostream& fout);
-    const std::vector<UInt160>& files() const;
-    void graphviz(std::ostream& fout);
-
-    void buy_storage(const std::string& seller, uint64_t nb_bytes);
-    void put_bytes(const std::string& seller, uint64_t nb_bytes);
-    void get_bytes(const std::string& seller, uint64_t nb_bytes);
+    NodeLocalCom() = delete;
+    ~NodeLocalCom() override = default;
+    NodeLocalCom(NodeLocalCom const&) = default;
+    NodeLocalCom& operator=(NodeLocalCom const& x) = default;
+    NodeLocalCom(NodeLocalCom&&) = delete;
+    NodeLocalCom& operator=(NodeLocalCom&& x) = delete;
 
   private:
-    void on_store(const dht::Entry& entry) override;
-
-    const Conf* const conf;
-
-    bool verbose;
-
-    std::vector<UInt160> m_file_keys;
-    std::string eth_passphrase;
-    std::string eth_account;
-    jsonrpc::HttpClient* httpclient;
-    NodeClient* nodec;
+    // TODO: use shared_ptr?
+    const Network* m_network;
 };
 
 } // namespace kad
-
-#include "kad_node.tpp"
 
 #endif

@@ -30,26 +30,25 @@
 #ifndef __KAD_FILE_H__
 #define __KAD_FILE_H__
 
-#include "kad_routable.h"
+#include "dht/dht.h"
+#include "uint160.h"
 
 namespace kad {
 
-class UInt160;
-class Node;
-
-class File : public Routable {
+class File : public dht::Entry {
   public:
-    File(const UInt160& file_id, const Node& ref);
-    const Node& get_referencer() const;
-
-    ~File() = default;
+    File(const UInt160& key, std::string value)
+        : dht::Entry(key, std::move(value))
+    {
+    }
+    ~File() override = default;
     File(File const&) = delete;
     File& operator=(File const& x) = delete;
     File(File&&) = delete;
     File& operator=(File&& x) = delete;
 
   private:
-    const Node* const referencer;
+    std::vector<UInt160> parts; /**< Keys of the file parts. */
 };
 
 } // namespace kad

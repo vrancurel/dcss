@@ -27,36 +27,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_ROUTABLE_H__
-#define __KAD_ROUTABLE_H__
 
-#include <string>
-
-#include "uint160.h"
+#include "kad_network.h"
+#include "kad_node_com.h"
 
 namespace kad {
 
-enum RoutableType {
-    KAD_ROUTABLE_NODE,
-    KAD_ROUTABLE_FILE,
-};
+bool NodeLocalCom::ping(const dht::NodeAddress& addr)
+{
+    (void)addr; // Unused for now, later we may implement offline node.
+    return true;
+}
 
-class Routable {
-  public:
-    Routable(const UInt160& entity_id, enum RoutableType entity_type);
-
-    UInt160 get_id() const;
-    bool is_remote() const;
-    RoutableType get_type() const;
-    UInt160 distance_to(const Routable& other) const;
-    bool operator()(const Routable* first, const Routable* second) const;
-
-  protected:
-    UInt160 id;
-    RoutableType type;
-    std::string addr; // Remote peer IP address, or "" if local.
-};
+std::vector<dht::NodeAddress> NodeLocalCom::find_node(
+    const dht::NodeAddress& addr,
+    const UInt160& target_id,
+    uint32_t nb_nodes)
+{
+    kad::Node<NodeLocalCom>* node =
+        m_network->lookup_cheat(addr.id().to_string());
+    return (node != nullptr) ? node->find_node(target_id, nb_nodes)
+                             : std::vector<dht::NodeAddress>();
+}
 
 } // namespace kad
-
-#endif

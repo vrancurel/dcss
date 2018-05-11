@@ -31,10 +31,8 @@ set(LIB_SRC
   ${SOURCE_DIR}/bit_map.cpp
   ${SOURCE_DIR}/cmds.cpp
   ${SOURCE_DIR}/kad_conf.cpp
-  ${SOURCE_DIR}/kad_file.cpp
   ${SOURCE_DIR}/kad_network.cpp
-  ${SOURCE_DIR}/kad_node.cpp
-  ${SOURCE_DIR}/kad_routable.cpp
+  ${SOURCE_DIR}/kad_node_com.cpp
   ${SOURCE_DIR}/shell.cpp
   ${SOURCE_DIR}/uint160.cpp
 

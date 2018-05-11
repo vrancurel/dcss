@@ -32,6 +32,7 @@
 #include <iostream>
 
 #include "bit_map.h"
+#include "dht/dht.h"
 #include "kad_conf.h"
 #include "kad_file.h"
 #include "kad_network.h"
@@ -59,19 +60,20 @@ void Network::initialize_nodes(
     // Create nodes.
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
         std::cerr << "creating node " << i << '\n';
-        Node* node;
+
+        const UInt160 id(bitmap.get_rand_uint() * keyspace);
+        std::string ip("127.0.0.1");
+        NodeLocalCom node_com(this);
+
+        // Create remote node from a bootstrap.
         if (!bstraplist.empty()) {
-            std::string bstrap = bstraplist.back();
-            bstraplist.pop_back();
-            std::cout << "create remote node (" << bstrap << ")\n";
-            // Create remote node from a bootstrap.
-            node = new Node(*conf, bitmap.get_rand_uint() * keyspace, bstrap);
-        } else {
-            // Simulate node.
-            node = new Node(*conf, bitmap.get_rand_uint() * keyspace);
+            ip = bstraplist.back();
+            std::cout << "create remote node (" << ip << ")\n";
         }
-        nodes.push_back(node);
-        nodes_map[node->get_id().to_string()] = node;
+        const dht::NodeAddress addr{id, ip, 0};
+        auto node = std::make_unique<Node<NodeLocalCom>>(*conf, addr, node_com);
+        nodes_map[node->id().to_string()] = node.get();
+        nodes.push_back(std::move(node));
     }
 
     // There shall be a responsable for every portion of the keyspace.
@@ -81,7 +83,7 @@ void Network::initialize_nodes(
     // required.
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        Node* node = nodes[i];
+        std::unique_ptr<Node<NodeLocalCom>>& node = nodes[i];
 
         if ((i % 1000) == 0) {
             std::cerr << "node " << i << "/" << conf->n_nodes
@@ -89,22 +91,23 @@ void Network::initialize_nodes(
         }
 
         uint32_t guard = 0;
-        while (node->get_n_conns() < n_initial_conn) {
-            Node* other;
-
+        while (node->connection_count() < n_initial_conn) {
             if (guard >= (2 * conf->n_nodes)) {
-                std::cout << "forgiving required conditions for "
-                          << node->get_id().to_string() << ", it has only "
-                          << node->get_n_conns() << " connections\n";
+                std::cout << "forgiving required conditions for " << node->id()
+                          << ", it has only " << node->connection_count()
+                          << " connections\n";
                 break;
             }
 
             // Pick a random node.
-            other = nodes[dis(prng())];
+            std::unique_ptr<Node<NodeLocalCom>>& other = nodes[dis(prng())];
+            if (*node == *other) {
+                continue;
+            }
 
             // Connect them 2-way.
-            node->add_conn(other, false);
-            other->add_conn(node, false);
+            node->ping(*other);
+            other->ping(*node);
 
             guard++;
         }
@@ -126,17 +129,17 @@ void Network::initialize_files(uint32_t n_files)
         }
 
         // Take a random node.
-        Node* node = nodes[dis(prng())];
+        std::unique_ptr<Node<NodeLocalCom>>& node = nodes[dis(prng())];
 
-        // Gen a random identifier for the file.
-        const UInt160 bn(UInt160::rand(prng(), conf->n_bits));
-        auto* file = new File(bn, *node);
-        files.push_back(file);
+        // Generate a random key for the file.
+        const UInt160 key(UInt160::rand(prng(), conf->n_bits));
+        node->store(std::make_unique<File>(key, ""));
+        files.push_back(key);
 
         // Store file at multiple location.
-        std::list<Node*> result = node->lookup(*file);
-        for (auto& it : result) {
-            it->store(file);
+        for (auto& it : node->node_lookup(key)) {
+            const auto dst = lookup_cheat(it.id().to_string());
+            dst->store(std::make_unique<File>(key, ""));
         }
     }
 }
@@ -150,24 +153,22 @@ void Network::check_files()
 
     uint64_t n_wrong = 0;
     uint64_t n_files = 0;
-    for (auto& file : files) {
+    for (auto& file_key : files) {
         if ((n_files % 1000) == 0) {
             std::cerr << "file " << n_files << "/" << files.size()
                       << "                   \r";
         }
 
         // Take a random node.
-        Node* node = nodes[dis(prng())];
+        std::unique_ptr<Node<NodeLocalCom>>& node = nodes[dis(prng())];
 
-        // Get results.
-        std::list<Node*> result = node->lookup(*file);
-
-        // Check that at least one result has the file.
+        // Check that at least one node has the file.
         bool found = false;
-        for (auto& it : result) {
-            std::vector<File*> node_files = it->get_files();
-            for (auto node_file : node_files) {
-                if (node_file == file) {
+        for (const auto& it : node->node_lookup(file_key)) {
+            const auto kad_node = lookup_cheat(it.id().to_string());
+
+            for (const auto& node_file_key : kad_node->files()) {
+                if (node_file_key == file_key) {
                     found = true;
                     break;
                 }
@@ -175,10 +176,7 @@ void Network::check_files()
         }
 
         if (!found) {
-            std::cerr << "file " << file->get_id().to_string()
-                      << " who was referenced by "
-                      << file->get_referencer().get_id().to_string()
-                      << " was not found\n";
+            std::cerr << "file " << file_key << " was not found\n";
             n_wrong++;
         }
         ++n_files;
@@ -195,55 +193,46 @@ void Network::rand_node(tnode_callback_func cb_func, void* cb_arg)
     }
 }
 
-void Network::rand_routable(troutable_callback_func cb_func, void* cb_arg)
+void Network::rand_key(tkey_callback_func cb_func, void* cb_arg)
 {
-    const UInt160 bn(UInt160::rand(prng(), conf->n_bits));
-    Routable routable(bn, KAD_ROUTABLE_FILE);
     if (nullptr != cb_func) {
-        cb_func(routable, cb_arg);
+        cb_func(UInt160::rand(prng(), conf->n_bits), cb_arg);
     }
 }
 
 /** Lookup a node by its id
  *
- * @param id node IS
+ * @param id node ID
  *
  * @return the node identified by `id`
  */
-Node* Network::lookup_cheat(const std::string& id)
+Node<NodeLocalCom>* Network::lookup_cheat(const std::string& id) const
 {
-    return nodes_map[id];
+    return nodes_map.at(id);
 }
 
 /** Find node nearest to specified routable. */
-Node* Network::find_nearest_cheat(const Routable& routable)
+Node<NodeLocalCom>* Network::find_nearest_cheat(const UInt160& target_id)
 {
-    Node* nearest = nullptr;
-
-    for (auto& node : nodes) {
-        if (nullptr == nearest) {
-            nearest = node;
-        } else {
-            const UInt160 d1(node->distance_to(routable));
-            const UInt160 d2(nearest->distance_to(routable));
-
-            if (d1 < d2) {
-                nearest = node;
-            }
-        }
-    }
-
-    return nearest;
+    const auto nearest = std::min_element(
+        nodes.begin(),
+        nodes.end(),
+        [&target_id](
+            std::unique_ptr<Node<NodeLocalCom>>& n1,
+            std::unique_ptr<Node<NodeLocalCom>>& n2) {
+            const UInt160 d1(n1->distance_to(target_id));
+            const UInt160 d2(n2->distance_to(target_id));
+            return d1 < d2;
+        });
+    return nearest != nodes.end() ? nearest->get() : nullptr;
 }
 
 void Network::save(std::ostream& fout)
 {
     conf->save(fout);
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        Node* node = nodes[i];
-
-        fout << "node " << i << " " << node->get_id().to_string() << "\n";
-        node->save(fout);
+        fout << "node " << i << " " << nodes[i]->id() << "\n";
+        nodes[i]->save(fout);
     }
 }
 
@@ -252,16 +241,11 @@ void Network::graphviz(std::ostream& fout)
     fout << "digraph G {\n";
     fout << "  node [shape=record];\n";
     fout << "  rankdir=TB;\n";
-
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        Node* node = nodes[i];
-
-        fout << "node_" << node->get_id().to_string()
-             << " [color=blue, label=\"" << node->get_id().to_string()
-             << "\"];\n";
-        node->graphviz(fout);
+        fout << "node_" << nodes[i]->id() << " [color=blue, label=\""
+             << nodes[i]->id() << "\"];\n";
+        nodes[i]->graphviz(fout);
     }
-
     fout << "}\n";
 }
 

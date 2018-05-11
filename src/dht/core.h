@@ -27,68 +27,25 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_NODE_H__
-#define __KAD_NODE_H__
+#ifndef __KAD_DHT_CORE_H__
+#define __KAD_DHT_CORE_H__
 
-#include <cstdint>
-#include <string>
-
-#include <jsonrpccpp/client/connectors/httpclient.h>
-
-#include "dht/dht.h"
-
-class NodeClient;
+#include "uint160.h"
 
 namespace kad {
 
+/** The Distributed Hash Table (DHT) implementation.
+ *
+ * This is an implementation of Kademlia.
+ */
 namespace dht {
-class NodeAddress;
+
+static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
+{
+    return id1 ^ id2;
+}
+
 } // namespace dht
-
-class Conf;
-class UInt160;
-
-template <typename NodeCom>
-class Node : public dht::Node<NodeCom> {
-  public:
-    Node(
-        const Conf& configuration,
-        const dht::NodeAddress& addr,
-        const NodeCom& com_iface);
-
-    ~Node() override = default;
-    Node(Node const&) = delete;
-    Node& operator=(Node const& x) = delete;
-    Node(Node&&) = delete;
-    Node& operator=(Node&& x) = delete;
-
-    const std::string& get_eth_account() const;
-    void show();
-    void set_verbose(bool enable);
-    void save(std::ostream& fout);
-    const std::vector<UInt160>& files() const;
-    void graphviz(std::ostream& fout);
-
-    void buy_storage(const std::string& seller, uint64_t nb_bytes);
-    void put_bytes(const std::string& seller, uint64_t nb_bytes);
-    void get_bytes(const std::string& seller, uint64_t nb_bytes);
-
-  private:
-    void on_store(const dht::Entry& entry) override;
-
-    const Conf* const conf;
-
-    bool verbose;
-
-    std::vector<UInt160> m_file_keys;
-    std::string eth_passphrase;
-    std::string eth_account;
-    jsonrpc::HttpClient* httpclient;
-    NodeClient* nodec;
-};
-
 } // namespace kad
-
-#include "kad_node.tpp"
 
 #endif
