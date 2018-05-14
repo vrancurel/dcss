@@ -68,10 +68,8 @@ TEST(BitMapTest, TestOutput) // NOLINT
         unique_values.insert(n);
     }
 
-    // NOLINTNEXTLINE(hicpp-vararg)
     EXPECT_EQ(all_values.size(), unique_values.size())
         << "all values must be uniques";
-    // NOLINTNEXTLINE(hicpp-vararg)
     EXPECT_EQ(expected, unique_values)
         << "all values in [0; " << nb_bits << "[ must be present";
 }

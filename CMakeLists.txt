@@ -232,7 +232,6 @@ set(CLANG_LINTS_LIST
   hicpp-no-malloc
   hicpp-signed-bitwise
   hicpp-special-member-functions
-  hicpp-vararg
   misc-*
   modernize-*
   mpi-*
