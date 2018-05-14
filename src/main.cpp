@@ -67,6 +67,36 @@
     exit(1);
 }
 
+/** Setup the logging system and initialize the loggers.
+ *
+ * @return 0 on success, -1 on error.
+ */
+static int setup_logging()
+{
+#define TIME_FMT "%datetime{%Y-%M-%dT%H:%m:%s}"
+    const char* std_fmt = TIME_FMT " [%level] %logger: %msg";
+    const char* dbg_fmt = TIME_FMT " [%level] %logger (%loc): %msg";
+    const char* vvv_fmt = TIME_FMT " [%level-%vlevel] %logger (%loc): %msg";
+#undef TIME_FMT
+    const el::Logger* sim_log = el::Loggers::getLogger(SIM_LOG_ID);
+
+    // Default configuration.
+    el::Configurations sim_log_cfg;
+    sim_log_cfg.setToDefault();
+    sim_log_cfg.set(el::Level::Global, el::ConfigurationType::Format, std_fmt);
+    sim_log_cfg.set(el::Level::Global, el::ConfigurationType::ToFile, "false");
+    sim_log_cfg.set(el::Level::Debug, el::ConfigurationType::Format, dbg_fmt);
+    sim_log_cfg.set(el::Level::Verbose, el::ConfigurationType::Format, vvv_fmt);
+    sim_log_cfg.set(el::Level::Trace, el::ConfigurationType::Enabled, "false");
+    sim_log_cfg.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+    el::Loggers::reconfigureLogger(SIM_LOG_ID, sim_log_cfg);
+
+    return sim_log != nullptr ? 0 : -1;
+}
+
+// NOLINTNEXTLINE(cert-err58-cpp)
+INITIALIZE_EASYLOGGINGPP
+
 int main(int argc, char** argv)
 {
     int c;
@@ -80,6 +110,8 @@ int main(int argc, char** argv)
     std::string fname;
     std::string geth_addr = "localhost:8545";
     std::vector<std::string> bstraplist;
+
+    START_EASYLOGGINGPP(argc, argv);
 
     opterr = 0;
 
@@ -127,9 +159,15 @@ int main(int argc, char** argv)
         case 'V':
             show_version();
         case '?':
+            break; // Could be options for easyloggingpp.
         default:
             usage();
         }
+    }
+
+    if (setup_logging() < 0) {
+        std::cerr << "cannot setup the logging system\n";
+        return EXIT_FAILURE;
     }
 
     if (!fname.empty()) {

@@ -48,7 +48,7 @@ void Network::initialize_nodes(
     uint32_t n_initial_conn,
     std::vector<std::string> bstraplist)
 {
-    std::cout << "initialize nodes\n";
+    SIM_LOG(INFO) << "nodes initialization";
 
     BitMap bitmap(conf->n_nodes);
 
@@ -59,7 +59,8 @@ void Network::initialize_nodes(
 
     // Create nodes.
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
-        std::cerr << "creating node " << i << '\n';
+        CLOG_EVERY_N(1000, INFO, SIM_LOG_ID)
+            << "creating node " << i + 1 << "/" << conf->n_nodes;
 
         const UInt160 id(bitmap.get_rand_uint() * keyspace);
         std::string ip("127.0.0.1");
@@ -68,7 +69,7 @@ void Network::initialize_nodes(
         // Create remote node from a bootstrap.
         if (!bstraplist.empty()) {
             ip = bstraplist.back();
-            std::cout << "create remote node (" << ip << ")\n";
+            SIM_LOG(INFO) << "create remote node (" << ip << ')';
         }
         const dht::NodeAddress addr{id, ip, 0};
         auto node = std::make_unique<Node<NodeLocalCom>>(*conf, addr, node_com);
@@ -79,23 +80,22 @@ void Network::initialize_nodes(
     // There shall be a responsable for every portion of the keyspace.
     assert(bitmap.is_exhausted());
 
+    SIM_LOG(INFO) << "creating inter-nodes connections...";
     // Continue creating conns for the nodes that dont meet the initial number
     // required.
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
     for (uint32_t i = 0; i < conf->n_nodes; i++) {
         std::unique_ptr<Node<NodeLocalCom>>& node = nodes[i];
 
-        if ((i % 1000) == 0) {
-            std::cerr << "node " << i << "/" << conf->n_nodes
-                      << "                   \r";
-        }
+        CLOG_EVERY_N(1000, INFO, SIM_LOG_ID)
+            << "connecting node " << i + 1 << "/" << conf->n_nodes;
 
         uint32_t guard = 0;
         while (node->connection_count() < n_initial_conn) {
             if (guard >= (2 * conf->n_nodes)) {
-                std::cout << "forgiving required conditions for " << node->id()
-                          << ", it has only " << node->connection_count()
-                          << " connections\n";
+                SIM_LOG(WARNING) << "forgiving required conditions for "
+                                 << node->id() << ", it has only "
+                                 << node->connection_count() << " connections";
                 break;
             }
 
@@ -105,6 +105,7 @@ void Network::initialize_nodes(
                 continue;
             }
 
+            SIM_VLOG(1) << "connect: " << node->id() << " and " << other->id();
             // Connect them 2-way.
             node->ping(*other);
             other->ping(*node);
@@ -112,33 +113,33 @@ void Network::initialize_nodes(
             guard++;
         }
     }
-
-    std::cout << "\n";
 }
 
 void Network::initialize_files(uint32_t n_files)
 {
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
 
-    std::cout << "initialize files\n";
+    SIM_LOG(INFO) << "files initialization";
 
     for (uint32_t i = 0; i < n_files; i++) {
-        if ((i % 1000) == 0) {
-            std::cerr << "file " << i << "/" << n_files
-                      << "                   \r";
-        }
+        CLOG_EVERY_N(1000, INFO, SIM_LOG_ID)
+            << "creating file " << i + 1 << "/" << n_files;
 
         // Take a random node.
         std::unique_ptr<Node<NodeLocalCom>>& node = nodes[dis(prng())];
 
         // Generate a random key for the file.
         const UInt160 key(UInt160::rand(prng(), conf->n_bits));
+
+        SIM_VLOG(1) << "storing " << key << " on " << node->id();
         node->store(std::make_unique<File>(key, ""));
         files.push_back(key);
 
         // Store file at multiple location.
         for (auto& it : node->node_lookup(key)) {
             const auto dst = lookup_cheat(it.id().to_string());
+
+            SIM_VLOG(1) << "replicating " << key << " on " << dst->id();
             dst->store(std::make_unique<File>(key, ""));
         }
     }
@@ -149,15 +150,13 @@ void Network::check_files()
 {
     std::uniform_int_distribution<uint64_t> dis(0, nodes.size() - 1);
 
-    std::cout << "checking files\n";
+    SIM_LOG(INFO) << "files checking";
 
     uint64_t n_wrong = 0;
     uint64_t n_files = 0;
     for (auto& file_key : files) {
-        if ((n_files % 1000) == 0) {
-            std::cerr << "file " << n_files << "/" << files.size()
-                      << "                   \r";
-        }
+        CLOG_EVERY_N(1000, INFO, SIM_LOG_ID)
+            << "checking file " << n_files + 1 << "/" << files.size();
 
         // Take a random node.
         std::unique_ptr<Node<NodeLocalCom>>& node = nodes[dis(prng())];
@@ -176,12 +175,12 @@ void Network::check_files()
         }
 
         if (!found) {
-            std::cerr << "file " << file_key << " was not found\n";
+            SIM_LOG(ERROR) << "file " << file_key << " was not found";
             n_wrong++;
         }
         ++n_files;
     }
-    std::cerr << n_wrong << "/" << files.size() << " files wrongly stored\n";
+    SIM_LOG(INFO) << n_wrong << "/" << files.size() << " files wrongly stored";
 }
 
 void Network::rand_node(tnode_callback_func cb_func, void* cb_arg)
@@ -224,7 +223,14 @@ Node<NodeLocalCom>* Network::find_nearest_cheat(const UInt160& target_id)
             const UInt160 d2(n2->distance_to(target_id));
             return d1 < d2;
         });
-    return nearest != nodes.end() ? nearest->get() : nullptr;
+
+    if (nearest == nodes.end()) {
+        SIM_VLOG(3) << "nearest node to " << target_id << ": NONE FOUND";
+        return nullptr;
+    }
+    SIM_VLOG(3) << "nearest node to " << target_id << ": "
+                << nearest->get()->id();
+    return nearest->get();
 }
 
 void Network::save(std::ostream& fout)

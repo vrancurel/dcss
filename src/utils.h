@@ -36,6 +36,8 @@
 #include <random>
 #include <string>
 
+#include <easylogging++.h>
+
 #include "exceptions.h"
 
 namespace kad {
@@ -79,6 +81,11 @@ safe_copy_n(const SrcContainer& src, size_t n, DstContainer& dst)
 {
     std::copy_n(src.begin(), std::min(n, src.size()), std::back_inserter(dst));
 }
+
+// Logger for the simulator.
+#define SIM_LOG_ID "simulator"
+#define SIM_LOG(_level) CLOG(_level, SIM_LOG_ID)
+#define SIM_VLOG(_level) CVLOG(_level, SIM_LOG_ID)
 
 } // namespace kad
 
