@@ -78,20 +78,28 @@ static int setup_logging()
     const char* dbg_fmt = TIME_FMT " [%level] %logger (%loc): %msg";
     const char* vvv_fmt = TIME_FMT " [%level-%vlevel] %logger (%loc): %msg";
 #undef TIME_FMT
-    const el::Logger* sim_log = el::Loggers::getLogger(SIM_LOG_ID);
 
-    // Default configuration.
-    el::Configurations sim_log_cfg;
-    sim_log_cfg.setToDefault();
-    sim_log_cfg.set(el::Level::Global, el::ConfigurationType::Format, std_fmt);
-    sim_log_cfg.set(el::Level::Global, el::ConfigurationType::ToFile, "false");
-    sim_log_cfg.set(el::Level::Debug, el::ConfigurationType::Format, dbg_fmt);
-    sim_log_cfg.set(el::Level::Verbose, el::ConfigurationType::Format, vvv_fmt);
-    sim_log_cfg.set(el::Level::Trace, el::ConfigurationType::Enabled, "false");
-    sim_log_cfg.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
-    el::Loggers::reconfigureLogger(SIM_LOG_ID, sim_log_cfg);
+    // Apply default configuration to all the loggers.
+    el::Configurations log_cfg;
+    log_cfg.setToDefault();
+    log_cfg.set(el::Level::Global, el::ConfigurationType::Format, std_fmt);
+    log_cfg.set(el::Level::Global, el::ConfigurationType::ToFile, "false");
+    log_cfg.set(el::Level::Debug, el::ConfigurationType::Format, dbg_fmt);
+    log_cfg.set(el::Level::Verbose, el::ConfigurationType::Format, vvv_fmt);
+    log_cfg.set(el::Level::Trace, el::ConfigurationType::Enabled, "false");
+    log_cfg.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
 
-    return sim_log != nullptr ? 0 : -1;
+    const char* logger_ids[] = {SIM_LOG_ID, ETH_LOG_ID};
+    for (const auto& log_id : logger_ids) {
+        const el::Logger* logger = el::Loggers::getLogger(log_id);
+
+        if (logger == nullptr) {
+            return -1;
+        }
+        el::Loggers::reconfigureLogger(log_id, log_cfg);
+    }
+
+    return 0;
 }
 
 // NOLINTNEXTLINE(cert-err58-cpp)
