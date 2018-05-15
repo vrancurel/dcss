@@ -89,7 +89,7 @@ static int setup_logging()
     log_cfg.set(el::Level::Trace, el::ConfigurationType::Enabled, "false");
     log_cfg.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
 
-    const char* logger_ids[] = {SIM_LOG_ID, ETH_LOG_ID};
+    const char* logger_ids[] = {SIM_LOG_ID, ETH_LOG_ID, DHT_LOG_ID};
     for (const auto& log_id : logger_ids) {
         const el::Logger* logger = el::Loggers::getLogger(log_id);
 

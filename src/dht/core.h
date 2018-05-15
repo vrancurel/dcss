@@ -40,6 +40,11 @@ namespace kad {
  */
 namespace dht {
 
+// Logger for the DHT routing.
+#define DHT_LOG_ID "DHT"
+#define DHT_LOG(_level) CLOG(_level, DHT_LOG_ID)
+#define DHT_VLOG(_level) CVLOG(_level, DHT_LOG_ID)
+
 static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
 {
     return id1 ^ id2;

@@ -36,6 +36,8 @@
 #include <random>
 #include <string>
 
+#define ELPP_STL_LOGGING
+#define ELPP_LOG_UNORDERED_SET
 #include <easylogging++.h>
 
 #include "exceptions.h"
