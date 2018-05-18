@@ -76,7 +76,7 @@ static int setup_logging()
 #define TIME_FMT "%datetime{%Y-%M-%dT%H:%m:%s}"
     const char* std_fmt = TIME_FMT " [%level] %logger: %msg";
     const char* dbg_fmt = TIME_FMT " [%level] %logger (%loc): %msg";
-    const char* vvv_fmt = TIME_FMT " [%level-%vlevel] %logger (%loc): %msg";
+    const char* vvv_fmt = TIME_FMT " [%level-%vlevel] %logger: %msg";
 #undef TIME_FMT
 
     // Apply default configuration to all the loggers.

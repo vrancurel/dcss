@@ -87,12 +87,12 @@ safe_copy_n(const SrcContainer& src, size_t n, DstContainer& dst)
 // Logger for the simulator.
 #define SIM_LOG_ID "simulator"
 #define SIM_LOG(_level) CLOG(_level, SIM_LOG_ID)
-#define SIM_VLOG(_level) CVLOG(_level, SIM_LOG_ID)
+#define SIM_VLOG(_level) CVLOG(_level, SIM_LOG_ID) << '(' << __func__ << "): "
 
 // Logger for the Ethereum interaction.
 #define ETH_LOG_ID "ethereum"
 #define ETH_LOG(_level) CLOG(_level, ETH_LOG_ID)
-#define ETH_VLOG(_level) CVLOG(_level, ETH_LOG_ID)
+#define ETH_VLOG(_level) CVLOG(_level, ETH_LOG_ID) << '(' << __func__ << "): "
 
 } // namespace kad
 
