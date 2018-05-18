@@ -29,8 +29,8 @@ RUN git clone git://github.com/cinemast/libjson-rpc-cpp.git &&\
     cd ../../ && rm -rf libjson-rpc-cpp
 
 # Install easyloggingpp from the source.
-RUN git clone https://github.com/muflihun/easyloggingpp.git &&\
-    cd easyloggingpp && git checkout v9.96.4 &&\
+RUN git clone https://github.com/slaperche-scality/easyloggingpp.git &&\
+    cd easyloggingpp && git checkout support_pic_code &&\
     mkdir build && cd build &&\
     cmake -Dbuild_static_lib=ON -Dlib_utc_datetime=ON ../ && make && make install &&\
     cd ../../ && rm -rf easyloggingpp
