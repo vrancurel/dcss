@@ -48,6 +48,7 @@
 [[noreturn]] static void usage()
 {
     std::cerr << "usage: " << PACKAGE << '\n';
+    std::cerr << "\t-l\tpath to the logging configuration\n";
     std::cerr << "\t-b\tn_bits\n";
     std::cerr << "\t-k\tKademlia K parameter\n";
     std::cerr << "\t-a\tKademlia alpha parameter\n";
@@ -69,9 +70,10 @@
 
 /** Setup the logging system and initialize the loggers.
  *
+ * @param config path to a configuration file, optional
  * @return 0 on success, -1 on error.
  */
-static int setup_logging()
+static int setup_logging(const std::string& config)
 {
 #define TIME_FMT "%datetime{%Y-%M-%dT%H:%m:%s}"
     const char* std_fmt = TIME_FMT " [%level] %logger: %msg";
@@ -99,6 +101,11 @@ static int setup_logging()
         el::Loggers::reconfigureLogger(log_id, log_cfg);
     }
 
+    // Override the defaults by loading the specified configuration, if any.
+    if (!config.empty()) {
+        el::Loggers::configureFromGlobal(config.c_str());
+    }
+
     return 0;
 }
 
@@ -116,6 +123,7 @@ int main(int argc, char** argv)
     uint32_t n_files = 5000;
     uint32_t rand_seed = 0;
     std::string fname;
+    std::string log_cfg;
     std::string geth_addr = "localhost:8545";
     std::vector<std::string> bstraplist;
 
@@ -123,7 +131,7 @@ int main(int argc, char** argv)
 
     opterr = 0;
 
-    while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:N:V")) != -1) {
+    while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:l:N:V")) != -1) {
         switch (c) {
         case 'b':
             n_bits = kad::stou32(optarg);
@@ -161,6 +169,9 @@ int main(int argc, char** argv)
         case 'f':
             fname = optarg;
             break;
+        case 'l':
+            log_cfg = optarg;
+            break;
         case 'N':
             n_files = kad::stou32(optarg);
             break;
@@ -173,7 +184,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if (setup_logging() < 0) {
+    if (setup_logging(log_cfg) < 0) {
         std::cerr << "cannot setup the logging system\n";
         return EXIT_FAILURE;
     }
