@@ -36,6 +36,8 @@ set(LIB_SRC
   ${SOURCE_DIR}/shell.cpp
   ${SOURCE_DIR}/uint160.cpp
 
+  ${SOURCE_DIR}/dht/address.cpp
+
   CACHE
   INTERNAL
   ""
