@@ -55,6 +55,7 @@ with GCC seems more reliable (not surprising as we are using gcov).
 
     $ ./quadiron -h
     usage: quadiron
+       -l       path to the logging configuration
        -b       n_bits
        -k       Kademlia K parameter
        -a       Kademlia alpha parameter
@@ -73,5 +74,19 @@ In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
 
 ![Graphical Output of Simulator](graphviz.png )
+
+### Logging configuration
+
+Quadiron uses EasyLogging as a logging framework and the loggers can be
+configured through a dedicated configuration file (which you can specify by
+using the option `-l`, if not provided a default configuration will be applied).
+
+Quadiron has three loggers that can be configured independently:
+- "simulator": logging for the simulated network.
+- "ethereum": logging for the Ethereum transactions.
+- "DHT": logging for the DHT layer.
+
+For more details on how to configure the loggers, see
+[the official documentation of EasyLogging](https://github.com/muflihun/easyloggingpp#configuration)
 
 [badgepub]: https://circleci.com/gh/vrancurel/quadiron.svg?style=shield&circle-token=:circle-token
