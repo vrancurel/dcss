@@ -77,6 +77,9 @@ class NodeAddress {
         return m_id == other.m_id;
     }
 
+    // Output operator.
+    friend std::ostream& operator<<(std::ostream& os, const NodeAddress& addr);
+
   private:
     UInt160 m_id;
     IpAddress m_ip;

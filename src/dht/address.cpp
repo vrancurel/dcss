@@ -27,30 +27,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_DHT_CORE_H__
-#define __KAD_DHT_CORE_H__
-
-#include "uint160.h"
+#include "address.h"
 
 namespace kad {
-
-/** The Distributed Hash Table (DHT) implementation.
- *
- * This is an implementation of Kademlia.
- */
 namespace dht {
 
-// Logger for the DHT routing.
-#define DHT_LOG_ID "DHT"
-#define DHT_LOG(_level) CLOG(_level, DHT_LOG_ID)
-#define DHT_VLOG(_level) CVLOG(_level, DHT_LOG_ID) << '(' << __func__ << "): "
-
-static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
+std::ostream& operator<<(std::ostream& os, const NodeAddress& addr)
 {
-    return id1 ^ id2;
+    // TODO: add the other fields (such as IP:port)?
+    return os << addr.m_id.to_string();
 }
 
 } // namespace dht
 } // namespace kad
-
-#endif

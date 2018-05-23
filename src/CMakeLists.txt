@@ -36,6 +36,8 @@ set(LIB_SRC
   ${SOURCE_DIR}/shell.cpp
   ${SOURCE_DIR}/uint160.cpp
 
+  ${SOURCE_DIR}/dht/address.cpp
+
   CACHE
   INTERNAL
   ""
@@ -52,6 +54,7 @@ configure_file(${SOURCE_DIR}/config.in ${GENERATE_DIR}/config.h @ONLY)
 # Dependencies.
 find_package(Readline         REQUIRED)
 find_package(JsonRpcCppClient REQUIRED)
+find_package(EasyLogging      REQUIRED)
 find_package(NTTEC            REQUIRED)
 
 get_property(NTTEC_INCLUDE_DIRS
@@ -62,6 +65,7 @@ get_property(NTTEC_INCLUDE_DIRS
 set(OBJECT_SYS_INCLUDES
   ${GENERATE_DIR}
   ${JsonRpcCppClient_INCLUDE_DIRS}
+  ${EasyLogging_INCLUDE_DIRS}
   ${Readline_INCLUDE_DIRS}
   ${NTTEC_INCLUDE_DIRS}
 )
@@ -99,6 +103,7 @@ foreach(lib ${SHARED_LIB} ${STATIC_LIB})
   target_link_libraries(${lib}
     ${Readline_LIBRARIES}
     ${JsonRpcCppClient_LIBRARIES}
+    ${EasyLogging_LIBRARIES}
     NTTEC::static
   )
 endforeach()

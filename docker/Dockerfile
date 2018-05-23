@@ -28,6 +28,13 @@ RUN git clone git://github.com/cinemast/libjson-rpc-cpp.git &&\
     cmake -DCOMPILE_TESTS=No .. && make && make install &&\
     cd ../../ && rm -rf libjson-rpc-cpp
 
+# Install easyloggingpp from the source.
+RUN git clone https://github.com/slaperche-scality/easyloggingpp.git &&\
+    cd easyloggingpp && git checkout support_pic_code &&\
+    mkdir build && cd build &&\
+    cmake -Dbuild_static_lib=ON -Dlib_utc_datetime=ON ../ && make && make install &&\
+    cd ../../ && rm -rf easyloggingpp
+
 # Install NTTEC.
 RUN git clone git://github.com/scality/nttec.git &&\
     mkdir nttec/build && cd nttec/build &&\

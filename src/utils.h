@@ -36,6 +36,10 @@
 #include <random>
 #include <string>
 
+#define ELPP_STL_LOGGING
+#define ELPP_LOG_UNORDERED_SET
+#include <easylogging++.h>
+
 #include "exceptions.h"
 
 namespace kad {
@@ -79,6 +83,16 @@ safe_copy_n(const SrcContainer& src, size_t n, DstContainer& dst)
 {
     std::copy_n(src.begin(), std::min(n, src.size()), std::back_inserter(dst));
 }
+
+// Logger for the simulator.
+#define SIM_LOG_ID "simulator"
+#define SIM_LOG(_level) CLOG(_level, SIM_LOG_ID)
+#define SIM_VLOG(_level) CVLOG(_level, SIM_LOG_ID) << '(' << __func__ << "): "
+
+// Logger for the Ethereum interaction.
+#define ETH_LOG_ID "ethereum"
+#define ETH_LOG(_level) CLOG(_level, ETH_LOG_ID)
+#define ETH_VLOG(_level) CVLOG(_level, ETH_LOG_ID) << '(' << __func__ << "): "
 
 } // namespace kad
 

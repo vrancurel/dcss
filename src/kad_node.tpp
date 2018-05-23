@@ -56,26 +56,27 @@ static inline void call_contract(
     params["data"] = payload;
 
     const std::string tx_hash = geth.eth_sendTransaction(params);
-    std::cout << "tx_hash: " << tx_hash << '\n';
+    ETH_LOG(TRACE) << "tx_hash=" << tx_hash;
 
     // FIXME: busy wait is ugly.
     while (true) {
         try {
             const Json::Value receipt = geth.eth_getTransactionReceipt(tx_hash);
-            std::cout << "result: " << receipt.toStyledString() << '\n';
+            ETH_LOG(TRACE) << "tx_receipt=" << receipt.toStyledString();
+
             // TODO: we should probably return a bool to the caller, or raise…
             if (receipt["status"] == "0x0") {
-                std::cout << "transaction failed\n";
+                ETH_LOG(WARNING) << "transaction " << tx_hash << " failed";
             } else {
-                std::cout << "transaction successed: " << receipt["status"]
-                          << '\n';
+              ETH_LOG(TRACE) << "transaction " << tx_hash
+                             << " successed: status=" << receipt["status"];
             }
             return;
         } catch (jsonrpc::JsonRpcException& exn) {
             if (exn.GetCode() == -32000) {
                 continue; // Transaction is pending…
             }
-            std::cerr << "error: " << exn.what() << '\n';
+            ETH_LOG(ERROR) << exn.what();
             throw;
         }
     }
@@ -148,7 +149,6 @@ Node::find_node(const UInt160& target_id, uint32_t nb_nodes)
         params["to"] = target_id.to_string();
         params["amount"] = nb_nodes;
         Json::Value val = this->nodec->find_nearest_nodes(params);
-        std::cout << val << "\n";
 
         return std::vector<Node*>();
     }
@@ -230,10 +230,12 @@ void Node<NodeCom>::buy_storage(const std::string& seller, uint64_t nb_bytes)
                                 + encode_uint256(nb_bytes);
 
     try {
+        ETH_LOG(INFO) << eth_account
+                      << ": buy " << nb_bytes << " bytes from " << seller;
         call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
     } catch (jsonrpc::JsonRpcException& exn) {
-        std::cerr << "cannot buy " << nb_bytes << "bytes from " << seller
-                  << ": " << exn.what() << '\n';
+        ETH_LOG(ERROR) << "cannot buy " << nb_bytes << "bytes from " << seller
+                       << ": " << exn.what() << '\n';
     }
 }
 
@@ -248,10 +250,12 @@ void Node<NodeCom>::put_bytes(const std::string& seller, uint64_t nb_bytes)
                                 + encode_uint256(nb_bytes);
 
     try {
+        ETH_LOG(INFO) << eth_account
+                      << ": put " << nb_bytes << " bytes from " << seller;
         call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
     } catch (jsonrpc::JsonRpcException& exn) {
-        std::cerr << "cannot put " << nb_bytes << "bytes on storage of "
-                  << seller << ": " << exn.what() << '\n';
+        ETH_LOG(ERROR) << "cannot put " << nb_bytes << "bytes from " << seller
+                       << ": " << exn.what() << '\n';
     }
 }
 
@@ -266,10 +270,11 @@ void Node<NodeCom>::get_bytes(const std::string& seller, uint64_t nb_bytes)
                                 + encode_uint256(nb_bytes);
 
     try {
-        call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+        ETH_LOG(INFO) << eth_account
+                      << ": get " << nb_bytes << " bytes from " << seller;
     } catch (jsonrpc::JsonRpcException& exn) {
-        std::cerr << "cannot get " << nb_bytes << "bytes from storage of "
-                  << seller << ": " << exn.what() << '\n';
+        ETH_LOG(ERROR) << "cannot get " << nb_bytes << "bytes from " << seller
+                       << ": " << exn.what() << '\n';
     }
 }
 

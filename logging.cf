@@ -1,0 +1,38 @@
+-- simulator
+* GLOBAL:
+    ENABLED            =  true
+    FORMAT             =  "%datetime{%Y-%M-%dT%H:%m:%s} [%level] %logger: %msg"
+    TO_FILE            =  false
+    TO_STANDARD_OUTPUT =  true
+* TRACE:
+    ENABLED = false
+* DEBUG:
+    ENABLED = false
+    FORMAT  =  "%datetime{%Y-%M-%dT%H:%m:%s} [%level] %logger (%loc): %msg"
+* VERBOSE:
+    FORMAT  =  "%datetime{%Y-%M-%dT%H:%m:%s}  [%level-%vlevel] %logger: %msg"
+
+-- ethereum
+* GLOBAL:
+    ENABLED            =  true
+    FORMAT             =  "%datetime{%Y-%M-%dT%H:%m:%s} [%level] %logger: %msg"
+    TO_FILE            =  false
+    TO_STANDARD_OUTPUT =  true
+* TRACE:
+    ENABLED = false
+* DEBUG:
+    ENABLED = false
+    FORMAT  =  "%datetime{%Y-%M-%dT%H:%m:%s} [%level] %logger (%loc): %msg"
+* VERBOSE:
+    FORMAT  =  "%datetime{%Y-%M-%dT%H:%m:%s}  [%level-%vlevel] %logger: %msg"
+
+-- DHT
+* GLOBAL:
+    ENABLED            =  false
+    FORMAT             =  "%datetime{%Y-%M-%dT%H:%m:%s} [%level] %logger: %msg"
+    TO_FILE            =  false
+    TO_STANDARD_OUTPUT =  true
+* DEBUG:
+    FORMAT  =  "%datetime{%Y-%M-%dT%H:%m:%s} [%level] %logger (%loc): %msg"
+* VERBOSE:
+    FORMAT  =  "%datetime{%Y-%M-%dT%H:%m:%s}  [%level-%vlevel] %logger: %msg"
