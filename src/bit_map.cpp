@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,7 +33,7 @@
 #include "exceptions.h"
 #include "utils.h"
 
-namespace kad {
+namespace dcss {
 
 bool BitMap::is_exhausted() const
 {
@@ -57,4 +57,4 @@ uint32_t BitMap::get_rand_uint()
     return pool[pos++];
 }
 
-} // namespace kad
+} // namespace dcss

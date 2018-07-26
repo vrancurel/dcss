@@ -18,6 +18,6 @@ class UInt160Printer(object):
         return ''.join(chunks)
 
 def pretty_printers():
-    pp = RegexpCollectionPrettyPrinter("quadiron")
-    pp.add_printer('UInt160',  '^kad::UInt160$',  UInt160Printer)
+    pp = RegexpCollectionPrettyPrinter("DCSS")
+    pp.add_printer('UInt160',  '^dcss::UInt160$',  UInt160Printer)
     return pp

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#include "kad_conf.h"
+#include "dcss_conf.h"
 
-namespace kad {
+namespace dcss {
 
 Conf::Conf(
     uint32_t nb_bits,
@@ -55,4 +55,4 @@ void Conf::save(std::ostream& fout) const
          << "n_nodes " << n_nodes << '\n';
 }
 
-} // namespace kad
+} // namespace dcss

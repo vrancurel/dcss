@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,14 +27,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_DHT_ADDRESS_H__
-#define __KAD_DHT_ADDRESS_H__
+#ifndef __DCSS_DHT_ADDRESS_H__
+#define __DCSS_DHT_ADDRESS_H__
 
 #include <cstdint>
 
 #include "uint160.h"
 
-namespace kad {
+namespace dcss {
 namespace dht {
 
 // TODO: just a placeholder for now, should be implemented later.
@@ -87,15 +87,15 @@ class NodeAddress {
 };
 
 } // namespace dht
-} // namespace kad
+} // namespace dcss
 
 // Implementing std::hash for dht::NodeAddress.
 namespace std {
 template <>
-struct hash<kad::dht::NodeAddress> {
-    size_t operator()(const kad::dht::NodeAddress& addr) const
+struct hash<dcss::dht::NodeAddress> {
+    size_t operator()(const dcss::dht::NodeAddress& addr) const
     {
-        return hash<kad::UInt160>()(addr.id());
+        return hash<dcss::UInt160>()(addr.id());
     }
 };
 } // namespace std

@@ -1,4 +1,4 @@
-# Copyright 2017-2018 the QuadIron authors
+# Copyright 2017-2018 the DCSS authors
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -31,7 +31,7 @@ cmake_minimum_required(VERSION 3.5)
 # Project informations
 ######################
 
-project(quadiron CXX)
+project(dcss CXX)
 
 enable_testing()
 
@@ -174,15 +174,15 @@ foreach(flag -O3 -flto -DNDEBUG)
   endif(has_flag_${flag})
 endforeach(flag)
 
-################
-# QuadIron build
-################
+############
+# DCSS build
+############
 
 find_package(codecov)
 
 # JSON-RPC stubs
 add_subdirectory(jsonrpc_spec)
-# QuadIron
+# DCSS
 add_subdirectory(src)
 # Tests
 add_subdirectory(test)

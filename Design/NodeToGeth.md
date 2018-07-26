@@ -1,14 +1,14 @@
 # geth communication
 
-The communication between `QuadIron`'s nodes and `geth` is done through
+The communication between `DCSS`'s nodes and `geth` is done through
 JSON-RPC.
 The C++ client, `GethClient`, is automatically generated from `geth_spec.json`
 using `jsonrpcstub`.
 
 There is a single instance of `GethClient`, shared by all the nodes, in the
-global configuration of `QuadIron`.
+global configuration of `DCSS`.
 
-Each `QuadIron` node has an Ethereum account (created when the node is
+Each `DCSS` node has an Ethereum account (created when the node is
 spawned/respawned¹).
 The node can execute contract on the blockchain² to buy storage and PUT/GET
 tokens.

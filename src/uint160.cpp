@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,7 +32,7 @@
 #include "exceptions.h"
 #include "uint160.h"
 
-namespace kad {
+namespace dcss {
 
 // Return a 160-bit zero.
 static inline const UInt160& zero()
@@ -51,26 +51,26 @@ static inline const UInt160& one()
 static inline const std::array<UInt160, 160>& power_of_two()
 {
 #define POW_TWO(_leading, _trailing)                                           \
-    kad::UInt160(_leading "00001" _trailing),                                  \
-        kad::UInt160(_leading "00002" _trailing),                              \
-        kad::UInt160(_leading "00004" _trailing),                              \
-        kad::UInt160(_leading "00008" _trailing),                              \
-        kad::UInt160(_leading "00010" _trailing),                              \
-        kad::UInt160(_leading "00020" _trailing),                              \
-        kad::UInt160(_leading "00040" _trailing),                              \
-        kad::UInt160(_leading "00080" _trailing),                              \
-        kad::UInt160(_leading "00100" _trailing),                              \
-        kad::UInt160(_leading "00200" _trailing),                              \
-        kad::UInt160(_leading "00400" _trailing),                              \
-        kad::UInt160(_leading "00800" _trailing),                              \
-        kad::UInt160(_leading "01000" _trailing),                              \
-        kad::UInt160(_leading "02000" _trailing),                              \
-        kad::UInt160(_leading "04000" _trailing),                              \
-        kad::UInt160(_leading "08000" _trailing),                              \
-        kad::UInt160(_leading "10000" _trailing),                              \
-        kad::UInt160(_leading "20000" _trailing),                              \
-        kad::UInt160(_leading "40000" _trailing),                              \
-        kad::UInt160(_leading "80000" _trailing)
+    dcss::UInt160(_leading "00001" _trailing),                                 \
+        dcss::UInt160(_leading "00002" _trailing),                             \
+        dcss::UInt160(_leading "00004" _trailing),                             \
+        dcss::UInt160(_leading "00008" _trailing),                             \
+        dcss::UInt160(_leading "00010" _trailing),                             \
+        dcss::UInt160(_leading "00020" _trailing),                             \
+        dcss::UInt160(_leading "00040" _trailing),                             \
+        dcss::UInt160(_leading "00080" _trailing),                             \
+        dcss::UInt160(_leading "00100" _trailing),                             \
+        dcss::UInt160(_leading "00200" _trailing),                             \
+        dcss::UInt160(_leading "00400" _trailing),                             \
+        dcss::UInt160(_leading "00800" _trailing),                             \
+        dcss::UInt160(_leading "01000" _trailing),                             \
+        dcss::UInt160(_leading "02000" _trailing),                             \
+        dcss::UInt160(_leading "04000" _trailing),                             \
+        dcss::UInt160(_leading "08000" _trailing),                             \
+        dcss::UInt160(_leading "10000" _trailing),                             \
+        dcss::UInt160(_leading "20000" _trailing),                             \
+        dcss::UInt160(_leading "40000" _trailing),                             \
+        dcss::UInt160(_leading "80000" _trailing)
 
     static std::array<UInt160, 160> power_of_two = {
         POW_TWO("00000000000000000000000000000000000", ""),
@@ -591,4 +591,4 @@ std::ostream& operator<<(std::ostream& os, const UInt160& n)
     return os << n.to_string();
 }
 
-} // namespace kad
+} // namespace dcss

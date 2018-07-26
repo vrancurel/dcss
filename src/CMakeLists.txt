@@ -1,4 +1,4 @@
-# Copyright 2017-2018 the QuadIron authors
+# Copyright 2017-2018 the DCSS authors
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,9 +30,9 @@
 set(LIB_SRC
   ${SOURCE_DIR}/bit_map.cpp
   ${SOURCE_DIR}/cmds.cpp
-  ${SOURCE_DIR}/kad_conf.cpp
-  ${SOURCE_DIR}/kad_network.cpp
-  ${SOURCE_DIR}/kad_node_com.cpp
+  ${SOURCE_DIR}/dcss_conf.cpp
+  ${SOURCE_DIR}/dcss_network.cpp
+  ${SOURCE_DIR}/dcss_node_com.cpp
   ${SOURCE_DIR}/shell.cpp
   ${SOURCE_DIR}/uint160.cpp
 

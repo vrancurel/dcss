@@ -1,4 +1,4 @@
-# Contributing to QuadIron
+# Contributing to DCSS
 
 ## Coding Rules
 

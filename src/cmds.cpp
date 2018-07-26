@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -33,15 +33,15 @@
 #include <list>
 
 #include "cmds.h"
+#include "dcss_network.h"
+#include "dcss_node.h"
+#include "dcss_node_com.h"
 #include "dht/dht.h"
-#include "kad_network.h"
-#include "kad_node.h"
-#include "kad_node_com.h"
 #include "shell.h"
 #include "uint160.h"
 #include "utils.h"
 
-namespace kad {
+namespace dcss {
 
 static int cmd_quit(Shell* /*shell*/, int /*argc*/, char** /*argv*/)
 {
@@ -401,4 +401,4 @@ struct cmd_def* cmd_defs[] = {
     nullptr,
 };
 
-} // namespace kad
+} // namespace dcss

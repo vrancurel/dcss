@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,27 +27,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#ifndef __DCSS_H__
+#define __DCSS_H__
 
-#include "kad_network.h"
-#include "kad_node_com.h"
+#include "cmds.h"
+#include "config.h"
+#include "dcss_conf.h"
+#include "dcss_file.h"
+#include "dcss_network.h"
+#include "dcss_node.h"
+#include "dht/dht.h"
+#include "exceptions.h"
+#include "shell.h"
+#include "uint160.h"
+#include "utils.h"
 
-namespace kad {
-
-bool NodeLocalCom::ping(const dht::NodeAddress& addr)
-{
-    (void)addr; // Unused for now, later we may implement offline node.
-    return true;
-}
-
-std::vector<dht::NodeAddress> NodeLocalCom::find_node(
-    const dht::NodeAddress& addr,
-    const UInt160& target_id,
-    uint32_t nb_nodes)
-{
-    kad::Node<NodeLocalCom>* node =
-        m_network->lookup_cheat(addr.id().to_string());
-    return (node != nullptr) ? node->find_node(target_id, nb_nodes)
-                             : std::vector<dht::NodeAddress>();
-}
-
-} // namespace kad
+#endif

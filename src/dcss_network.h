@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,19 +27,57 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __QUADIRON_H__
-#define __QUADIRON_H__
+#ifndef __DCSS_NETWORK_H__
+#define __DCSS_NETWORK_H__
 
-#include "cmds.h"
-#include "config.h"
-#include "dht/dht.h"
-#include "exceptions.h"
-#include "kad_conf.h"
-#include "kad_file.h"
-#include "kad_network.h"
-#include "kad_node.h"
-#include "shell.h"
+#include <cstdint>
+#include <map>
+#include <ostream>
+#include <string>
+#include <vector>
+
+#include "dcss_node.h"
+#include "dcss_node_com.h"
 #include "uint160.h"
-#include "utils.h"
+
+namespace dcss {
+
+class Conf;
+
+using tnode_callback_func = void (*)(const Node<NodeLocalCom>&, void*);
+using tkey_callback_func = void (*)(const UInt160&, void*);
+
+class Network {
+  public:
+    explicit Network(const Conf& configuration);
+
+    ~Network() = default;
+    Network(Network const&) = delete;
+    Network& operator=(Network const& x) = delete;
+    Network(Network&&) = delete;
+    Network& operator=(Network&& x) = delete;
+
+    void initialize_nodes(
+        uint32_t n_initial_conn,
+        std::vector<std::string> bstraplist);
+    void initialize_files(uint32_t n_files);
+    void rand_node(tnode_callback_func cb_func, void* cb_arg);
+    void rand_key(tkey_callback_func cb_func, void* cb_arg);
+    Node<NodeLocalCom>* lookup_cheat(const std::string& id) const;
+    Node<NodeLocalCom>* find_nearest_cheat(const UInt160& target_id);
+    void save(std::ostream& fout);
+    void graphviz(std::ostream& fout);
+    void check_files();
+
+  private:
+    const Conf* const conf;
+
+    std::vector<std::unique_ptr<Node<NodeLocalCom>>> nodes;
+    // Nothing to free: memory is owned by `nodes`.
+    std::map<std::string, Node<NodeLocalCom>*> nodes_map;
+    std::vector<UInt160> files;
+};
+
+} // namespace dcss
 
 #endif

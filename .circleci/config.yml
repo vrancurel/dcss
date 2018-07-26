@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: slaperche0scality/quadiron:latest
+      - image: slaperche0scality/dcss:latest
     steps:
       - checkout
       - run: mkdir build && cd build && cmake -G 'Unix Makefiles' .. && make

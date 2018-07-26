@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@
 #include <getopt.h>
 #include <nttec/nttec.h>
 
-#include "quadiron.h"
+#include "dcss.h"
 
 [[noreturn]] static void show_version()
 {
@@ -134,23 +134,23 @@ int main(int argc, char** argv)
     while ((c = getopt(argc, argv, "b:k:a:n:c:g:B:S:f:l:N:V")) != -1) {
         switch (c) {
         case 'b':
-            n_bits = kad::stou32(optarg);
+            n_bits = dcss::stou32(optarg);
             if (n_bits > 160) {
                 std::cerr << "cannot support more than 160 bits\n";
                 exit(1);
             }
             break;
         case 'k':
-            k = kad::stou32(optarg);
+            k = dcss::stou32(optarg);
             break;
         case 'a':
-            alpha = kad::stou32(optarg);
+            alpha = dcss::stou32(optarg);
             break;
         case 'n':
-            n_nodes = kad::stou32(optarg);
+            n_nodes = dcss::stou32(optarg);
             break;
         case 'c':
-            n_init_conn = kad::stou32(optarg);
+            n_init_conn = dcss::stou32(optarg);
             break;
         case 'g':
             geth_addr = optarg;
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
             break;
         }
         case 'S':
-            rand_seed = kad::stou32(optarg);
+            rand_seed = dcss::stou32(optarg);
             break;
         case 'f':
             fname = optarg;
@@ -173,7 +173,7 @@ int main(int argc, char** argv)
             log_cfg = optarg;
             break;
         case 'N':
-            n_files = kad::stou32(optarg);
+            n_files = dcss::stou32(optarg);
             break;
         case 'V':
             show_version();
@@ -203,27 +203,27 @@ int main(int argc, char** argv)
         parse_error();                                                         \
     p++;
         GETLINE();
-        n_bits = kad::stou32(p);
+        n_bits = dcss::stou32(p);
         GETLINE();
-        k = kad::stou32(p);
+        k = dcss::stou32(p);
         GETLINE();
-        alpha = kad::stou32(p);
+        alpha = dcss::stou32(p);
         GETLINE();
-        n_nodes = kad::stou32(p);
+        n_nodes = dcss::stou32(p);
     }
 
-    kad::Conf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
+    dcss::Conf conf(n_bits, k, alpha, n_nodes, geth_addr, bstraplist);
     // conf.save(std::cout);
-    kad::Network network(conf);
-    kad::Shell shell;
+    dcss::Network network(conf);
+    dcss::Shell shell;
 
-    kad::prng().seed(rand_seed);
+    dcss::prng().seed(rand_seed);
 
     network.initialize_nodes(n_init_conn, bstraplist);
     network.initialize_files(n_files);
     network.check_files();
 
-    shell.set_cmds(kad::cmd_defs);
+    shell.set_cmds(dcss::cmd_defs);
     shell.set_handle(&network);
     shell.set_prompt(std::string(PACKAGE) + "> ");
     shell.loop();

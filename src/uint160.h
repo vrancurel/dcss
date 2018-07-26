@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,15 +27,15 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_UINT160_H__
-#define __KAD_UINT160_H__
+#ifndef __DCSS_UINT160_H__
+#define __DCSS_UINT160_H__
 
 #include <array>
 #include <cstdint>
 #include <random>
 #include <string>
 
-namespace kad {
+namespace dcss {
 
 /** A sequence of bytes (up to 160 bits). */
 class UInt160 {
@@ -176,13 +176,13 @@ class UInt160 {
     std::array<uint32_t, 5> m_limbs;
 };
 
-} // namespace kad
+} // namespace dcss
 
 // std::hash implementation for UInt160.
 namespace std {
 template <>
-struct hash<kad::UInt160> {
-    size_t operator()(const kad::UInt160& n) const
+struct hash<dcss::UInt160> {
+    size_t operator()(const dcss::UInt160& n) const
     {
         return n.hash();
     }

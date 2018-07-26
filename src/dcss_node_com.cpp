@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,57 +27,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_NETWORK_H__
-#define __KAD_NETWORK_H__
 
-#include <cstdint>
-#include <map>
-#include <ostream>
-#include <string>
-#include <vector>
+#include "dcss_network.h"
+#include "dcss_node_com.h"
 
-#include "kad_node.h"
-#include "kad_node_com.h"
-#include "uint160.h"
+namespace dcss {
 
-namespace kad {
+bool NodeLocalCom::ping(const dht::NodeAddress& addr)
+{
+    (void)addr; // Unused for now, later we may implement offline node.
+    return true;
+}
 
-class Conf;
+std::vector<dht::NodeAddress> NodeLocalCom::find_node(
+    const dht::NodeAddress& addr,
+    const UInt160& target_id,
+    uint32_t nb_nodes)
+{
+    dcss::Node<NodeLocalCom>* node =
+        m_network->lookup_cheat(addr.id().to_string());
+    return (node != nullptr) ? node->find_node(target_id, nb_nodes)
+                             : std::vector<dht::NodeAddress>();
+}
 
-using tnode_callback_func = void (*)(const Node<NodeLocalCom>&, void*);
-using tkey_callback_func = void (*)(const UInt160&, void*);
-
-class Network {
-  public:
-    explicit Network(const Conf& configuration);
-
-    ~Network() = default;
-    Network(Network const&) = delete;
-    Network& operator=(Network const& x) = delete;
-    Network(Network&&) = delete;
-    Network& operator=(Network&& x) = delete;
-
-    void initialize_nodes(
-        uint32_t n_initial_conn,
-        std::vector<std::string> bstraplist);
-    void initialize_files(uint32_t n_files);
-    void rand_node(tnode_callback_func cb_func, void* cb_arg);
-    void rand_key(tkey_callback_func cb_func, void* cb_arg);
-    Node<NodeLocalCom>* lookup_cheat(const std::string& id) const;
-    Node<NodeLocalCom>* find_nearest_cheat(const UInt160& target_id);
-    void save(std::ostream& fout);
-    void graphviz(std::ostream& fout);
-    void check_files();
-
-  private:
-    const Conf* const conf;
-
-    std::vector<std::unique_ptr<Node<NodeLocalCom>>> nodes;
-    // Nothing to free: memory is owned by `nodes`.
-    std::map<std::string, Node<NodeLocalCom>*> nodes_map;
-    std::vector<UInt160> files;
-};
-
-} // namespace kad
-
-#endif
+} // namespace dcss

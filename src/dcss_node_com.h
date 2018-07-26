@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,30 +27,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_FILE_H__
-#define __KAD_FILE_H__
+#ifndef __DCSS_NODE_COM_H__
+#define __DCSS_NODE_COM_H__
 
 #include "dht/dht.h"
-#include "uint160.h"
 
-namespace kad {
+namespace dcss {
 
-class File : public dht::Entry {
+class Network;
+
+/// Communication module for "fake" node.
+class NodeLocalCom : public dht::NodeComBase {
   public:
-    File(const UInt160& key, std::string value)
-        : dht::Entry(key, std::move(value))
-    {
-    }
-    ~File() override = default;
-    File(File const&) = delete;
-    File& operator=(File const& x) = delete;
-    File(File&&) = delete;
-    File& operator=(File&& x) = delete;
+    explicit NodeLocalCom(const Network* network) : m_network(network) {}
+
+    bool ping(const dht::NodeAddress& addr) override;
+
+    std::vector<dht::NodeAddress> find_node(
+        const dht::NodeAddress& addr,
+        const UInt160& target_id,
+        uint32_t nb_nodes) override;
+
+    NodeLocalCom() = delete;
+    ~NodeLocalCom() override = default;
+    NodeLocalCom(NodeLocalCom const&) = default;
+    NodeLocalCom& operator=(NodeLocalCom const& x) = default;
+    NodeLocalCom(NodeLocalCom&&) = delete;
+    NodeLocalCom& operator=(NodeLocalCom&& x) = delete;
 
   private:
-    std::vector<UInt160> parts; /**< Keys of the file parts. */
+    // TODO: use shared_ptr?
+    const Network* m_network;
 };
 
-} // namespace kad
+} // namespace dcss
 
 #endif

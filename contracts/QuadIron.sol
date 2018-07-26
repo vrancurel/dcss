@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -200,7 +200,7 @@ contract TokenERC20 {
     }
 }
 
-contract QuadIron is owned, TokenERC20 {
+contract DCSS is owned, TokenERC20 {
 
   uint256 public sellPrice;
   uint256 public buyPrice;
@@ -218,7 +218,7 @@ contract QuadIron is owned, TokenERC20 {
   event FrozenFunds(address target, bool frozen);
 
   /* Initializes contract with initial supply tokens to the creator of the contract */
-  function QuadIron(
+  function DCSS(
     uint256 initialSupply,
     string  tokenName,
     string  tokenSymbol,

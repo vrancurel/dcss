@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_UTILS_H__
-#define __KAD_UTILS_H__
+#ifndef __DCSS_UTILS_H__
+#define __DCSS_UTILS_H__
 
 #include <algorithm>
 #include <cstdint>
@@ -42,7 +42,7 @@
 
 #include "exceptions.h"
 
-namespace kad {
+namespace dcss {
 
 static inline uint32_t
 stou32(std::string const& str, size_t* idx = nullptr, int base = 10)
@@ -94,6 +94,6 @@ safe_copy_n(const SrcContainer& src, size_t n, DstContainer& dst)
 #define ETH_LOG(_level) CLOG(_level, ETH_LOG_ID)
 #define ETH_VLOG(_level) CVLOG(_level, ETH_LOG_ID) << '(' << __func__ << "): "
 
-} // namespace kad
+} // namespace dcss
 
 #endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@
 TEST(BitMapTest, TestCheck) // NOLINT
 {
     const uint32_t nb_bits = 16;
-    kad::BitMap bitmap(nb_bits);
+    dcss::BitMap bitmap(nb_bits);
 
     for (uint32_t i = 0; i < nb_bits; ++i) {
         ASSERT_FALSE(bitmap.is_exhausted())
@@ -48,14 +48,14 @@ TEST(BitMapTest, TestCheck) // NOLINT
         bitmap.get_rand_uint();
     }
     ASSERT_TRUE(bitmap.is_exhausted()) << "all bits must be used";
-    ASSERT_THROW(bitmap.get_rand_uint(), kad::LogicError)
+    ASSERT_THROW(bitmap.get_rand_uint(), dcss::LogicError)
         << "can't call get_rand_uint on an exhausted BitMap";
 }
 
 TEST(BitMapTest, TestOutput) // NOLINT
 {
     const uint32_t nb_bits = 16;
-    kad::BitMap bitmap(nb_bits);
+    dcss::BitMap bitmap(nb_bits);
     std::vector<uint32_t> all_values;
     std::unordered_set<uint32_t> unique_values;
     std::unordered_set<uint32_t> expected;
