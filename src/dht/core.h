@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,12 +27,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_DHT_CORE_H__
-#define __KAD_DHT_CORE_H__
+#ifndef __DCSS_DHT_CORE_H__
+#define __DCSS_DHT_CORE_H__
 
 #include "uint160.h"
 
-namespace kad {
+namespace dcss {
 
 /** The Distributed Hash Table (DHT) implementation.
  *
@@ -51,6 +51,6 @@ static inline UInt160 compute_distance(const UInt160& id1, const UInt160& id2)
 }
 
 } // namespace dht
-} // namespace kad
+} // namespace dcss
 
 #endif

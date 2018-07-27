@@ -1,6 +1,6 @@
-# QuadIron
+# DCSS
 
-[![CircleCI][badgepub]](https://circleci.com/gh/vrancurel/quadiron)
+[![CircleCI][badgepub]](https://circleci.com/gh/vrancurel/dcss)
 
 A Decentralized Storage with the Ethereum Blockchain
 
@@ -11,7 +11,7 @@ A Decentralized Storage with the Ethereum Blockchain
 - OpenSSL
 - readline
 - [libjson-rpc-cpp](https://github.com/cinemast/libjson-rpc-cpp)
-- [NTTEC](https://github.com/vrancurel/nttec)
+- [QuadIron](https://github.com/scality/quadiron)
 
 ### Build
 
@@ -30,9 +30,9 @@ The following targets are available:
 - `format`: fix code source formatting
 - `lint`: run the linter
 - `fix-lint`: run the linter and try to apply the proposed fixes
-- `quadiron`: build the QuadIron binary
-- `shared`: build the QuadIron shared library
-- `static`: build the QuadIron static library
+- `dcss`: build the DCSS binary
+- `shared`: build the DCSS shared library
+- `static`: build the DCSS static library
 - `unit_tests`: build the unit tests
 - `check`: run the test suite
 
@@ -53,8 +53,8 @@ with GCC seems more reliable (not surprising as we are using gcov).
 
 ## How to use it:
 
-    $ ./quadiron -h
-    usage: quadiron
+    $ ./dcss -h
+    usage: dcss
        -l       path to the logging configuration
        -b       n_bits
        -k       Kademlia K parameter
@@ -63,12 +63,12 @@ with GCC seems more reliable (not surprising as we are using gcov).
        -c       initial number of connections per node
        -N       number of files
        -S       random seed
-    $ ./quadiron -n 100 -k 5
+    $ ./dcss -n 100 -k 5
     initialize files
     checking files
     file adfa681fd77852ae who was referenced by 30a3d70a3d70a3d4 was not found
     1/5000 files wrongly stored
-    quadiron>
+    dcss>
 
 In the example above, a replication factor of 5 is not sufficient to
 guarantee a 100% hit on 100 nodes.
@@ -77,11 +77,11 @@ guarantee a 100% hit on 100 nodes.
 
 ### Logging configuration
 
-Quadiron uses EasyLogging as a logging framework and the loggers can be
+DCSS uses EasyLogging as a logging framework and the loggers can be
 configured through a dedicated configuration file (which you can specify by
 using the option `-l`, if not provided a default configuration will be applied).
 
-Quadiron has three loggers that can be configured independently:
+DCSS has three loggers that can be configured independently:
 - "simulator": logging for the simulated network.
 - "ethereum": logging for the Ethereum transactions.
 - "DHT": logging for the DHT layer.
@@ -89,4 +89,4 @@ Quadiron has three loggers that can be configured independently:
 For more details on how to configure the loggers, see
 [the official documentation of EasyLogging](https://github.com/muflihun/easyloggingpp#configuration)
 
-[badgepub]: https://circleci.com/gh/vrancurel/quadiron.svg?style=shield&circle-token=:circle-token
+[badgepub]: https://circleci.com/gh/vrancurel/dcss.svg?style=shield&circle-token=:circle-token

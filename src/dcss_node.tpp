@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,14 +34,14 @@
 #include <memory>
 #include <sstream>
 
-#include "kad_conf.h"
+#include "dcss_conf.h"
 #include "nodeclient.h"
 #include "uint160.h"
 
-namespace kad {
+namespace dcss {
 
-// Address of the QuadIron contract on the blockchain.
-#define QUADIRON_CONTRACT_ADDR "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
+// Address of the DCSS contract on the blockchain.
+#define DCSS_CONTRACT_ADDR "0x5e667a8D97fBDb2D3923a55b295DcB8f5985FB79"
 
 static inline void call_contract(
     GethClient& geth,
@@ -232,7 +232,7 @@ void Node<NodeCom>::buy_storage(const std::string& seller, uint64_t nb_bytes)
     try {
         ETH_LOG(INFO) << eth_account
                       << ": buy " << nb_bytes << " bytes from " << seller;
-        call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+        call_contract(conf->geth, eth_account, DCSS_CONTRACT_ADDR, payload);
     } catch (jsonrpc::JsonRpcException& exn) {
         ETH_LOG(ERROR) << "cannot buy " << nb_bytes << "bytes from " << seller
                        << ": " << exn.what() << '\n';
@@ -252,7 +252,7 @@ void Node<NodeCom>::put_bytes(const std::string& seller, uint64_t nb_bytes)
     try {
         ETH_LOG(INFO) << eth_account
                       << ": put " << nb_bytes << " bytes from " << seller;
-        call_contract(conf->geth, eth_account, QUADIRON_CONTRACT_ADDR, payload);
+        call_contract(conf->geth, eth_account, DCSS_CONTRACT_ADDR, payload);
     } catch (jsonrpc::JsonRpcException& exn) {
         ETH_LOG(ERROR) << "cannot put " << nb_bytes << "bytes from " << seller
                        << ": " << exn.what() << '\n';
@@ -278,4 +278,4 @@ void Node<NodeCom>::get_bytes(const std::string& seller, uint64_t nb_bytes)
     }
 }
 
-} // namespace kad
+} // namespace dcss

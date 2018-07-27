@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,13 +27,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_BITMAP_H__
-#define __KAD_BITMAP_H__
+#ifndef __DCSS_BITMAP_H__
+#define __DCSS_BITMAP_H__
 
 #include <cstdint>
 #include <vector>
 
-namespace kad {
+namespace dcss {
 
 // If the performance/space usage ever becomes an issue, we may want to consider
 // an approach based on the quadratic residues (O(1) in time and space).
@@ -51,6 +51,6 @@ class BitMap {
     uint32_t pos;
 };
 
-} // namespace kad
+} // namespace dcss
 
 #endif

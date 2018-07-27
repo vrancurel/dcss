@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,7 +29,7 @@
  */
 #include "address.h"
 
-namespace kad {
+namespace dcss {
 namespace dht {
 
 std::ostream& operator<<(std::ostream& os, const NodeAddress& addr)
@@ -39,4 +39,4 @@ std::ostream& operator<<(std::ostream& os, const NodeAddress& addr)
 }
 
 } // namespace dht
-} // namespace kad
+} // namespace dcss

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,42 +27,68 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_CONF_H__
-#define __KAD_CONF_H__
+#ifndef __DCSS_NODE_H__
+#define __DCSS_NODE_H__
 
 #include <cstdint>
-#include <ostream>
 #include <string>
-#include <vector>
 
 #include <jsonrpccpp/client/connectors/httpclient.h>
 
-#include "gethclient.h"
+#include "dht/dht.h"
 
-namespace kad {
+class NodeClient;
 
-class Conf {
+namespace dcss {
+
+namespace dht {
+class NodeAddress;
+} // namespace dht
+
+class Conf;
+class UInt160;
+
+template <typename NodeCom>
+class Node : public dht::Node<NodeCom> {
   public:
-    Conf(
-        uint32_t nb_bits,
-        uint32_t k_param,
-        uint32_t alpha_param,
-        uint32_t nb_nodes,
-        const std::string& geth_addr,
-        std::vector<std::string> bootstrap_list);
+    Node(
+        const Conf& configuration,
+        const dht::NodeAddress& addr,
+        const NodeCom& com_iface);
 
-    void save(std::ostream& fout) const;
+    ~Node() override = default;
+    Node(Node const&) = delete;
+    Node& operator=(Node const& x) = delete;
+    Node(Node&&) = delete;
+    Node& operator=(Node&& x) = delete;
 
-    uint32_t n_bits;
-    uint32_t k;
-    uint32_t alpha;
-    uint32_t n_nodes;
+    const std::string& get_eth_account() const;
+    void show();
+    void set_verbose(bool enable);
+    void save(std::ostream& fout);
+    const std::vector<UInt160>& files() const;
+    void graphviz(std::ostream& fout);
 
-    jsonrpc::HttpClient httpclient;
-    mutable GethClient geth;
-    std::vector<std::string> bstraplist;
+    void buy_storage(const std::string& seller, uint64_t nb_bytes);
+    void put_bytes(const std::string& seller, uint64_t nb_bytes);
+    void get_bytes(const std::string& seller, uint64_t nb_bytes);
+
+  private:
+    void on_store(const dht::Entry& entry) override;
+
+    const Conf* const conf;
+
+    bool verbose;
+
+    std::vector<UInt160> m_file_keys;
+    std::string eth_passphrase;
+    std::string eth_account;
+    jsonrpc::HttpClient* httpclient;
+    NodeClient* nodec;
 };
 
-} // namespace kad
+} // namespace dcss
+
+#include "dcss_node.tpp"
 
 #endif

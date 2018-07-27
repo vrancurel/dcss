@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,8 +27,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_SHELL_H__
-#define __KAD_SHELL_H__
+#ifndef __DCSS_SHELL_H__
+#define __DCSS_SHELL_H__
 
 #include <cstdlib>
 #include <cstring>
@@ -43,7 +43,7 @@
 #include <editline/readline.h>
 #endif /* HAVE_READLINE */
 
-namespace kad {
+namespace dcss {
 
 #define SHELL_MAX_ARG_LEN 128
 #define SHELL_MAX_ARGV 16
@@ -90,6 +90,6 @@ class Shell {
     int parse(struct cmd_def** definitions, char* str, enum shell_error* errp);
 };
 
-} // namespace kad
+} // namespace dcss
 
 #endif

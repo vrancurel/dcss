@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -32,14 +32,14 @@
 #include <iostream>
 
 #include "bit_map.h"
+#include "dcss_conf.h"
+#include "dcss_file.h"
+#include "dcss_network.h"
+#include "dcss_node.h"
 #include "dht/dht.h"
-#include "kad_conf.h"
-#include "kad_file.h"
-#include "kad_network.h"
-#include "kad_node.h"
 #include "utils.h"
 
-namespace kad {
+namespace dcss {
 
 Network::Network(const Conf& configuration) : conf(&configuration) {}
 
@@ -164,9 +164,9 @@ void Network::check_files()
         // Check that at least one node has the file.
         bool found = false;
         for (const auto& it : node->node_lookup(file_key)) {
-            const auto kad_node = lookup_cheat(it.id().to_string());
+            const auto dcss_node = lookup_cheat(it.id().to_string());
 
-            for (const auto& node_file_key : kad_node->files()) {
+            for (const auto& node_file_key : dcss_node->files()) {
                 if (node_file_key == file_key) {
                     found = true;
                     break;
@@ -255,4 +255,4 @@ void Network::graphviz(std::ostream& fout)
     fout << "}\n";
 }
 
-} // namespace kad
+} // namespace dcss

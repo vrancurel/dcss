@@ -1,4 +1,4 @@
-# Copyright 2017-2018 the QuadIron authors
+# Copyright 2017-2018 the DCSS authors
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -30,9 +30,9 @@
 set(LIB_SRC
   ${SOURCE_DIR}/bit_map.cpp
   ${SOURCE_DIR}/cmds.cpp
-  ${SOURCE_DIR}/kad_conf.cpp
-  ${SOURCE_DIR}/kad_network.cpp
-  ${SOURCE_DIR}/kad_node_com.cpp
+  ${SOURCE_DIR}/dcss_conf.cpp
+  ${SOURCE_DIR}/dcss_network.cpp
+  ${SOURCE_DIR}/dcss_node_com.cpp
   ${SOURCE_DIR}/shell.cpp
   ${SOURCE_DIR}/uint160.cpp
 
@@ -55,10 +55,10 @@ configure_file(${SOURCE_DIR}/config.in ${GENERATE_DIR}/config.h @ONLY)
 find_package(Readline         REQUIRED)
 find_package(JsonRpcCppClient REQUIRED)
 find_package(EasyLogging      REQUIRED)
-find_package(NTTEC            REQUIRED)
+find_package(QUADIRON         REQUIRED)
 
-get_property(NTTEC_INCLUDE_DIRS
-  TARGET   NTTEC::static
+get_property(QUADIRON_INCLUDE_DIRS
+  TARGET   QUADIRON::static
   PROPERTY INTERFACE_INCLUDE_DIRECTORIES
 )
 
@@ -67,7 +67,7 @@ set(OBJECT_SYS_INCLUDES
   ${JsonRpcCppClient_INCLUDE_DIRS}
   ${EasyLogging_INCLUDE_DIRS}
   ${Readline_INCLUDE_DIRS}
-  ${NTTEC_INCLUDE_DIRS}
+  ${QUADIRON_INCLUDE_DIRS}
 )
 
 set(OBJECT_INCLUDES
@@ -104,7 +104,7 @@ foreach(lib ${SHARED_LIB} ${STATIC_LIB})
     ${Readline_LIBRARIES}
     ${JsonRpcCppClient_LIBRARIES}
     ${EasyLogging_LIBRARIES}
-    NTTEC::static
+    QUADIRON::static
   )
 endforeach()
 

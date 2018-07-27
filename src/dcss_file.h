@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,68 +27,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef __KAD_NODE_H__
-#define __KAD_NODE_H__
-
-#include <cstdint>
-#include <string>
-
-#include <jsonrpccpp/client/connectors/httpclient.h>
+#ifndef __DCSS_FILE_H__
+#define __DCSS_FILE_H__
 
 #include "dht/dht.h"
+#include "uint160.h"
 
-class NodeClient;
+namespace dcss {
 
-namespace kad {
-
-namespace dht {
-class NodeAddress;
-} // namespace dht
-
-class Conf;
-class UInt160;
-
-template <typename NodeCom>
-class Node : public dht::Node<NodeCom> {
+class File : public dht::Entry {
   public:
-    Node(
-        const Conf& configuration,
-        const dht::NodeAddress& addr,
-        const NodeCom& com_iface);
-
-    ~Node() override = default;
-    Node(Node const&) = delete;
-    Node& operator=(Node const& x) = delete;
-    Node(Node&&) = delete;
-    Node& operator=(Node&& x) = delete;
-
-    const std::string& get_eth_account() const;
-    void show();
-    void set_verbose(bool enable);
-    void save(std::ostream& fout);
-    const std::vector<UInt160>& files() const;
-    void graphviz(std::ostream& fout);
-
-    void buy_storage(const std::string& seller, uint64_t nb_bytes);
-    void put_bytes(const std::string& seller, uint64_t nb_bytes);
-    void get_bytes(const std::string& seller, uint64_t nb_bytes);
+    File(const UInt160& key, std::string value)
+        : dht::Entry(key, std::move(value))
+    {
+    }
+    ~File() override = default;
+    File(File const&) = delete;
+    File& operator=(File const& x) = delete;
+    File(File&&) = delete;
+    File& operator=(File&& x) = delete;
 
   private:
-    void on_store(const dht::Entry& entry) override;
-
-    const Conf* const conf;
-
-    bool verbose;
-
-    std::vector<UInt160> m_file_keys;
-    std::string eth_passphrase;
-    std::string eth_account;
-    jsonrpc::HttpClient* httpclient;
-    NodeClient* nodec;
+    std::vector<UInt160> parts; /**< Keys of the file parts. */
 };
 
-} // namespace kad
-
-#include "kad_node.tpp"
+} // namespace dcss
 
 #endif

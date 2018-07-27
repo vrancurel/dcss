@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 the QuadIron authors
+ * Copyright 2017-2018 the DCSS authors
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -35,11 +35,11 @@
 #include "core.h"
 #include "entry.h"
 #include "exceptions.h"
-#include "kad_conf.h"
+#include "dcss_conf.h"
 #include "node.h"
 #include "utils.h"
 
-namespace kad {
+namespace dcss {
 namespace dht {
 
 class ByDistanceFrom {
@@ -172,7 +172,7 @@ template <typename NodeCom>
 void Node<NodeCom>::refresh_routing_table(const NodeAddress& addr)
 {
     if (m_addr == addr) {
-        throw kad::LogicError("cannot add ourself in our own routing table");
+        throw dcss::LogicError("cannot add ourself in our own routing table");
     }
 
     const uint32_t bit_length = distance_to(addr.id()).bit_length();
@@ -368,4 +368,4 @@ std::vector<NodeAddress> Node<NodeCom>::node_lookup(const UInt160& target_id)
 }
 
 } // namespace dht
-} // namespace kad
+} // namespace dcss
