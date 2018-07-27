@@ -35,9 +35,9 @@ RUN git clone https://github.com/slaperche-scality/easyloggingpp.git &&\
     cmake -Dbuild_static_lib=ON -Dlib_utc_datetime=ON ../ && make && make install &&\
     cd ../../ && rm -rf easyloggingpp
 
-# Install NTTEC.
-RUN git clone git://github.com/scality/nttec.git &&\
-    mkdir nttec/build && cd nttec/build &&\
+# Install QuadIron.
+RUN git clone git://github.com/scality/quadiron.git &&\
+    mkdir quadiron/build && cd quadiron/build &&\
     cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release .. && make install
 
 RUN ldconfig

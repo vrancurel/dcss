@@ -34,14 +34,14 @@
 #include <vector>
 
 #include <getopt.h>
-#include <nttec/nttec.h>
+#include <quadiron/quadiron.h>
 
 #include "dcss.h"
 
 [[noreturn]] static void show_version()
 {
     std::cout << PACKAGE << " (" << VERSION << ")\n"
-              << "using NTTEC " << nttec::get_version() << '\n';
+              << "using NTTEC " << quadiron::get_version() << '\n';
     exit(0);
 }
 
